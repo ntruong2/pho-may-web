@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tổng kết tuần 3D</title>
+<style>
+  :root { --bg: #FFF8EC; --fg: #3B2A20; --muted: #7A6656; --card: #FFFFFF; --line: #EAD9C2; --accent: #C4553F; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1E1A17; --fg: #F2E6D8; --muted: #B8A592; --card: #2A2420; --line: #4A3E35; --accent: #FF8A6E; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; } h2 { font-size: 1.2rem; margin: 32px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
+  .so { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .so div { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .so b { display: block; font-size: 1.5rem; color: var(--accent); }
+  .anh { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  figure img { width: 100%; display: block; } figcaption { padding: 8px 12px; font-size: .92rem; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; } td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  ul { padding-left: 20px; } a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+<h1>Tổng kết tuần 3D · 28/09 – 04/10/2026</h1>
+<p class="sub">Phố Mây, bản mẫu 3D <code>prototype/mau-3d.html</code> · nhánh <code>pho-may</code> · chơi thử: <a href="https://ntruong2.github.io/pho-may/mau-3d.html">ntruong2.github.io/pho-may</a> · trang tổng kết đầu tiên (commit "[3D-TK]", mục 15 tài liệu bản đồ 3D).</p>
+
+<div class="so">
+  <div><b>207</b>commit trong tuần</div>
+  <div><b>Q31 → Q194</b>dòng quyết định mới (mục 1)</div>
+  <div><b>19</b>file dữ liệu khu <code>data/khu/</code></div>
+  <div><b>196</b>mục kiểm tra tự động (3 khung màn hình)</div>
+  <div><b>776 KB</b>bản mẫu một file</div>
+</div>
+
+<h2>Ảnh chụp bản mẫu</h2>
+<p class="sub">Chụp bằng <code>node tools/test-3d/anh-tuan.mjs 2026-10-05</code> (máy chủ vẽ bằng CPU, 1280 × 720).</p>
+<div class="anh">
+  <figure><img src="anh/2026-10-05-quang-truong.jpg" alt="Quảng Trường buổi chiều"><figcaption>Quảng Trường buổi chiều</figcaption></figure>
+  <figure><img src="anh/2026-10-05-ben-song-giong.jpg" alt="Bến Sông Trăng ngày Giông"><figcaption>Bến Sông Trăng ngày Giông: mưa, sấm chớp cả ban ngày, Cá Sấm Sét (Q185, Q186)</figcaption></figure>
+  <figure><img src="anh/2026-10-05-nong-trai-mua.jpg" alt="Nông trại lúc mưa phùn"><figcaption>Nông trại riêng lúc mưa phùn chiều: mưa tự tưới ô vừa gieo, đèn bật sớm (Q186, Q191)</figcaption></figure>
+  <figure><img src="anh/2026-10-05-cho-dem-giay.jpg" alt="Chợ Đêm ban đêm"><figcaption>Chợ Đêm Lồng Đèn ban đêm, giày phản quang sáng dưới chân (Q193)</figcaption></figure>
+  <figure><img src="anh/2026-10-05-vinh-hoang-hon.jpg" alt="Vịnh San Hô lúc hoàng hôn"><figcaption>Vịnh San Hô Mây lúc hoàng hôn, chế độ chụp ảnh có filter vàng (Q194)</figcaption></figure>
+  <figure><img src="anh/2026-10-05-rung-dem.jpg" alt="Rừng Đom Đóm ban đêm"><figcaption>Rừng Đom Đóm ban đêm</figcaption></figure>
+  <figure><img src="anh/2026-10-05-dao-bao.jpg" alt="Đảo Bão Xám"><figcaption>Đảo Bão Xám (sự kiện, Q143)</figcaption></figure>
+</div>
+
+<h2>Đã làm trong tuần</h2>
+<ul>
+  <li><b>Bản đồ và khu (3D-10 → 3D-22, 3D-29 → 3D-32):</b> Quảng Trường, Đồng Lúa Gió, Nông trại riêng, Sân Chơi Cầu Vồng, Bến Sông Trăng, Chợ Đêm, Hẻm Đèn Dầu, Khu Nhà Mái Ngói và các phòng trong, Vịnh San Hô, Rừng Đom Đóm, Đỉnh Đèo Sương, Đảo Bão Xám; mỗi khu dựng từ file dữ liệu và có mockup kiểm tra. Chuyển khu, Xe Buýt Gió, bản đồ lớn, camera xoay, mép đảo, lịch NPC theo giờ và khi mưa.</li>
+  <li><b>Chương truyện (3D-23):</b> Chương 1 tìm Linh Mây; các khu chương 3–5 mở theo cấp.</li>
+  <li><b>Nghề (3D-25 → 3D-28):</b> bảng nghề, đồng phục, Bảng Đơn Nhờ, nghề ngoài luồng (Dân Phòng, tuần tra, kiểm lâm, Điểm Tai Tiếng), nghề mới theo mốc cấp.</li>
+  <li><b>Nông trại và nuôi thú:</b> 15 loại cây (thanh long nở đêm, sen trong ao, cà phê, Trái Sao), Cây Khổng Lồ, bù nhìn, nuôi tằm, ong, gà mây; xay lúa, bếp và quầy pha chế.</li>
+  <li><b>Câu cá:</b> 28 loài theo nơi, giờ, thời tiết (đủ bảng GDD §9.2), mồi câu, Bách Khoa Cá, Giải Câu Cá Cuối Tuần, Bể cá Legendary.</li>
+  <li><b>Thời trang và nhà:</b> Tủ Đồ 5 bộ phối, bộ có hiệu ứng, nhuộm, áo dài lụa sen, Tủ Hoài Niệm, mục Giày mới; nội thất, Điểm Ấm Cúng.</li>
+  <li><b>Minigame và sự kiện:</b> Kéo Co, Ô Ăn Quan, Nhảy Sạp, Trốn Tìm Lồng Đèn, Đua Thúng…; Trung Thu, Tết, Giáng Sinh Tuyết Mây, Mùa Nước Nổi, Sinh Nhật, nhiệm vụ ngày, tuần, đơn hàng.</li>
+  <li><b>Thời tiết (cuối tuần, Q184 → Q194):</b> cá mưa, Giông và Cá Sấm Sét, mưa tự tưới, sấm chớp ban ngày, 5 loài cá còn thiếu, cầu vồng Vé Vui ×1,5, nắng gắt cây nhiệt đới +10% và đồ uống ×1,5, mưa phùn đèn bật sớm, chợ sáng +10%, giày phản quang, filter vàng hoàng hôn.</li>
+  <li><b>Hiệu năng (3D-24):</b> gộp lưới tĩnh, gộp nhân vật thành lưới da, cỏ có LOD; Quảng Trường bản Đẹp từ 467 nghìn xuống 397 nghìn tam giác.</li>
+</ul>
+
+<h2>Còn lại và việc tuần sau</h2>
+<table>
+  <tr><th>Việc</th><th>Tình trạng</th></tr>
+  <tr><td>Phần cần máy chủ</td><td>Hái trộm vườn bạn, chợ người chơi, bạn bè và Tri Kỷ, party, guild, Cá Voi Mây Con hợp tác, bảng xếp hạng: chờ máy chủ thật (ngoài phạm vi tự làm).</td></tr>
+  <tr><td>3D-24 hiệu năng</td><td>Cần đo trên điện thoại thật; máy kiểm tra chỉ vẽ bằng CPU.</td></tr>
+  <tr><td>Việc chơi một mình trong GDD</td><td>Tiếp tục rà: tạo nhân vật (§5: màu da, má hồng, tàn nhang), nhiệm vụ mẫu §14, sự kiện §18, giữ chân §21.</td></tr>
+</table>
+</main>
+</body>
+</html>

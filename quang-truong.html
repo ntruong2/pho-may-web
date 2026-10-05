@@ -3867,7 +3867,7 @@
     openSheet('spot-kite', `<h3>Đồi Thả Diều</h3><p class="sub">Gió lộng quanh năm</p><p>${me.kiteT > 0 ? 'Diều của bạn đang bay cao lắm đó!' : 'Anh Bảy để sẵn mấy con diều giấy ở đây, lấy một con thả lên cho vui nha.'}</p>
       <div class="acts"><button class="btn primary" type="button" data-act="kite" ${me.kiteT > 0 ? 'disabled' : ''}>Thả diều</button><button class="btn" type="button" data-act="close">Để sau</button></div>`);
   }
-  // Đua Thuyền Thúng chơi ngay trong khung game (race.html cùng artifact), kết quả gửi về qua postMessage
+  // Đua Thuyền Thúng chơi ngay trong khung game (race.html đi kèm: bản Đua Thuyền Thúng, tools/choi-thu/xuat.sh chép dua-thuyen-thung.html thành race.html), kết quả gửi về qua postMessage
   const RACE_XU = [30, 20, 15, 10, 10];
   // Bắt Đom Đóm (GDD §15): 2–5 người, chỉ chơi ban đêm; bản chơi thử 90 giây với 3 bot Linh Mây (ghi rõ là bot).
   // Chưa có Rừng Đom Đóm nên chơi ở chòi nghỉ Hồ Sen. Thua vẫn nhận 60% thưởng; Giờ Hội Sân Chơi 12:00–13:00 và 20:00–22:00 thưởng ×2.
