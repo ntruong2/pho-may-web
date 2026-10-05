@@ -165,6 +165,8 @@ Khoảng 40 giây/con, tính cả ném cần, chờ phao, kéo, 20% cá sổng v
 
 **Cần câu** (chỉ làm vùng xanh rộng hơn, không tăng tỉ lệ): Tre (miễn phí) → Trúc 800 → Carbon 4.000 → Mây Bạc 15.000 → Mây Vàng 40.000 + 1 Legendary.
 
+**Bản mẫu 3D (Q257):** Cá rô đồng 4 Xu và Cá nục 6 Xu theo đúng bảng trên. Cá Đèn Lồng Trăng (Legendary) chưa có Chợ nên Chú Bảy mua 300 Xu như Cá Rồng Mây (Q142); cá chỉ lên đêm rằm (khoảng 3 đêm mỗi tháng) ở Đỉnh Đèo nên không đổi Xu/giờ ở mục 6.2. Lực ném chỉ đổi cỡ cá (cm), không đổi loài hay giá. Không đổi tham số `tools/economy_sim.py`.
+
 ---
 
 ## 7. Vật nuôi
