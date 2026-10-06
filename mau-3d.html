@@ -3841,7 +3841,7 @@
     return true;
   }
   function drawBubble(a) {
-    if (a.bubSticker) { paint(a.bub, 80, 84, (x) => { x.scale(80 / 76, 80 / 76); veSticker(x, a.bubSticker); }); return; }   // sticker Linh Mây (Q323)
+    if (a.bubSticker) { paint(a.bub, 80, 84, (x) => { x.scale(80 / 76, 80 / 76); veSticker(x, a.bubSticker); }); a.bubBox = 70; return; }   // bubBox để đặt sticker trên nhãn tên (Q336)   // sticker Linh Mây (Q323)
     const font = `500 13px ${BODY_FONT}`, words = a.bubText.split(' '), lines = [];
     let cur = '';
     for (const wd of words) { const t = cur ? cur + ' ' + wd : wd; if (cur && measure(font, t) > 196) { lines.push(cur); cur = wd; } else cur = t; }
@@ -6010,7 +6010,7 @@
       // Chú Bảy chỉ thu mua cá (mục 7); mồi câu, cần câu để bản sau
       const F = FISH_BY(), ks = Object.keys(bag.fish).filter((k) => bag.fish[k] > 0 && F[k]);
       rows = marketTab === 'buy' ? MOI_CAU.map(([id, ten, gia]) => `<li><span>${ten} ×${bag.items[id] || 0}<span class="sub">${gia} Xu</span></span><span class="btns"><button type="button" data-buymoi="${id}" ${xu < gia ? 'disabled' : ''}>Mua</button></span></li>`).join('')
-        + (seller === chuBay && CAN_BAC[canBac + 1] ? (([ten, gia], leg) => `<li><span>${ten} (vùng giật cần rộng hơn)<span class="sub">${gia} Xu${leg ? ' + 1 cá Legendary' : ''} · đang dùng ${CAN_BAC[canBac][0].toLowerCase()}</span></span><span class="btns"><button type="button" data-canvang="1" ${xu < gia || (leg && !caLeg()) ? 'disabled' : ''}>Mua</button></span></li>`)(CAN_BAC[canBac + 1], canBac + 1 === 4) : `<li><span>Cần câu Mây Vàng<span class="sub">đã có bậc cao nhất</span></span></li>`)
+        + (seller !== chuBay ? '' : CAN_BAC[canBac + 1] ? (([ten, gia], leg) => `<li><span>${ten} (vùng giật cần rộng hơn)<span class="sub">${gia} Xu${leg ? ' + 1 cá Legendary' : ''} · đang dùng ${CAN_BAC[canBac][0].toLowerCase()}</span></span><span class="btns"><button type="button" data-canvang="1" ${xu < gia || (leg && !caLeg()) ? 'disabled' : ''}>Mua</button></span></li>`)(CAN_BAC[canBac + 1], canBac + 1 === 4) : `<li><span>Cần câu Mây Vàng<span class="sub">đã có bậc cao nhất</span></span></li>`)
         : ks.length ? ks.map((k) => `<li><span>${F[k].name} ×${bag.fish[k]}<span class="sub">${F[k].xu} Xu mỗi con</span></span><span class="btns"><button type="button" data-sellfish="${k}" data-n="1">Bán 1</button><button type="button" data-sellfish="${k}" data-n="all">Bán hết</button></span></li>`).join('')
           : '<li class="empty">Chưa có cá. Câu ở các điểm cá dọc sông rồi mang lại đây.</li>';
       $('#marketNote').textContent = `Đang có ${xu} Xu.`;
@@ -7027,7 +7027,7 @@
   function kcTick(dt) {
     if (!kc.on) return;
     kc.t += dt; const b = Math.floor(kc.t / 0.6);
-    if (b !== kc.beat) { kc.beat = b; if (b >= 2 && kc.hit !== b - 1 && kc.dl) { kc.dl = 0; $('#kcTip').textContent = 'Bỏ nhịp, mất chuỗi Đồng Lòng'; } kc.o += kcDoi(kc.dl) - 0.36 * (0.8 + Math.random() * 0.4); sfx.pop(); const el = $('#kcPull'); el.classList.add('beat'); setTimeout(() => el.classList.remove('beat'), 150); }
+    if (b !== kc.beat) { kc.beat = b; if (b >= 2 && kc.hit < b - 1 && kc.dl) {   /* bấm sớm (trước tiếng trống) ghi số nhịp sắp tới nên dùng <, Q336 */ kc.dl = 0; $('#kcTip').textContent = 'Bỏ nhịp, mất chuỗi Đồng Lòng'; } kc.o += kcDoi(kc.dl) - 0.36 * (0.8 + Math.random() * 0.4); sfx.pop(); const el = $('#kcPull'); el.classList.add('beat'); setTimeout(() => el.classList.remove('beat'), 150); }
     kcPlace();
     if (kc.o >= 2 || kc.o <= -2 || kc.t >= 40) kcEnd(kc.o > 0);
   }
@@ -7386,7 +7386,7 @@
     for (const l of hv.net) { x.beginPath(); l.forEach(([a, b], i) => (i ? x.lineTo(a * S[0], b * S[1]) : x.moveTo(a * S[0], b * S[1]))); if (l.length === 1) x.lineTo(l[0][0] * S[0] + 0.5, l[0][1] * S[1]); x.stroke(); }
   }
   function hvVong() {
-    const tus = Object.keys(HS), con = tus.filter((t) => !hv.da.includes(t)); hv.tu = con[Math.floor(Math.random() * con.length)]; hv.da.push(hv.tu); Object.assign(hv, { t: 0, net: [], doanT: HV_NHIP, sai: [] });
+    const tus = Object.keys(HS), con = tus.filter((t) => !hv.da.includes(t)); hv.tu = con[Math.floor(Math.random() * con.length)]; hv.da.push(hv.tu); Object.assign(hv, { t: 0, net: [], doanT: HV_NHIP, sai: [], ve: false });
     $('#hsTitle').textContent = `Họa Sĩ Nhí · bạn vẽ · vòng ${hv.vong + 1}/${HV_VONG} · ${hv.diem} điểm`; $('#hsGoiY').textContent = `Vẽ: ${hv.tu}`; $('#hsList').innerHTML = ''; $('#hsNote').textContent = 'Vẽ thật giống để 2 Linh Mây đoán ra nha! Mỗi Linh Mây đoán 3 giây một lần.'; hvVeLai();
   }
   function hvStart() {
@@ -7417,7 +7417,7 @@
   {
     const cv = $('#hsCv'), toaDo = (e) => { const r = cv.getBoundingClientRect(); return [Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100)), Math.max(0, Math.min(100, (e.clientY - r.top) / r.height * 100))]; };
     cv.addEventListener('pointerdown', (e) => { if (!hv.on) return; hv.ve = true; cv.setPointerCapture?.(e.pointerId); hv.net.push([toaDo(e)]); hvVeLai(); });
-    cv.addEventListener('pointermove', (e) => { if (!hv.on || !hv.ve) return; const l = hv.net.at(-1), q = toaDo(e), o = l.at(-1); if (Math.hypot(q[0] - o[0], q[1] - o[1]) >= 1.5) { l.push(q); hvVeLai(); } });
+    cv.addEventListener('pointermove', (e) => { if (!hv.on || !hv.ve) return; const l = hv.net.at(-1); if (!l) return; const q = toaDo(e), o = l.at(-1); if (Math.hypot(q[0] - o[0], q[1] - o[1]) >= 1.5) { l.push(q); hvVeLai(); } });
     for (const ev of ['pointerup', 'pointercancel']) cv.addEventListener(ev, () => { hv.ve = false; });
     $('#hsXoa').addEventListener('click', () => { hv.net = []; hv.sai = []; hvVeLai(); });
     $('#hsBo').addEventListener('click', () => { if (hv.on) hvHetVong(false); });
@@ -8197,7 +8197,7 @@
   const nvhHx = () => { const v = nvh(); return v.cap >= NVH_GIA.length ? 0 : Math.floor(NVH_GIA[v.cap] * Math.min(NVH_HX_MAX, NVH_HX * nvhNgay(v.bd))); };
   const nvhCon = () => { const v = nvh(); return v.cap >= NVH_GIA.length ? 0 : Math.max(0, NVH_GIA[v.cap] - v.gop - nvhHx()); };
   function nvhGop(n) {
-    const v = nvh(); if (!toDP.ten || v.cap >= NVH_GIA.length) return 0; n = Math.min(Math.floor(n), xu, nvhCon());
+    nvhKiem(); const v = nvh(); if (!toDP.ten || v.cap >= NVH_GIA.length) return 0; n = Math.min(Math.floor(n), xu, nvhCon());   // phần hàng xóm có thể đã đủ cấp (Q336)
     if (n <= 0) { note(xu <= 0 ? 'Chưa có Xu để góp' : 'Cấp này đã đủ Xu'); sfx.pop(); return 0; }
     addXu(-n); v.gop += n; sfx.buy(); nvhKiem(); store.set('toDP', toDP); toVe(); return n;
   }
@@ -8294,6 +8294,7 @@
     const nhan = co ? (k === 'nheo' ? (toDP.nheoDung === false ? 'Dùng cờ đuôi nheo' : 'Dùng cờ chữ nhật') : (outfit.acc === 'aoto' ? 'Cởi đồng phục tổ' : 'Mặc đồng phục tổ')) : `${ten} · ${g} điểm`;
     return `<button type="button" class="btn alt" data-todoi="${k}" ${!co && (toDP.diem || 0) < g ? 'disabled' : ''}>${nhan}</button>`; }).join(' ')}</p>`;
   function nvhVe() {   // phần Nhà Văn Hóa trong bảng tổ (Q328)
+    if (nvhCon() <= 0) { nvhKiem(); store.set('toDP', toDP); }   // hàng xóm góp đủ phần còn lại thì lên cấp ngay khi mở bảng (Q336)
     const v = nvh(), xong = v.cap >= NVH_GIA.length;
     if (xong) return `<p>🏛 <b>Nhà Văn Hóa Tổ</b> cấp ${v.cap}/${NVH_GIA.length}: đã xây xong, ${toDP.ten} là Tổ Kiểu Mẫu Phố Mây.</p>`;
     const gia = NVH_GIA[v.cap], hx = nvhHx(), con = nvhCon(), pct = Math.min(100, Math.round((v.gop + hx) / gia * 100));
@@ -9190,7 +9191,7 @@
       { const [x, z] = nsAt(); if (!ns.on && Math.abs(pp.x - x) < 2.6 && Math.abs(pp.z - z) < 2.6) return state.giong ? ['Nhảy Sạp (giông, tạm nghỉ)', giongBao('Nhảy Sạp')] : ['Chơi Nhảy Sạp', nsStart]; }
       { const t = zone.K.vat.find((v) => v.id === 'keo-co').diaDanh.toi; if (Math.hypot(pp.x - zone.cx - t[0], pp.z - zone.cz - t[1]) < 1.8) return state.giong ? ['Kéo Co: giông, vào nhà thi đấu', giongBao('Kéo Co', true)] : ['Chơi Kéo Co Mây', kcStart]; }
       { const t = zone.K.vat.find((v) => v.id === 'nha-thi-dau').diaDanh.toi; if (state.giong && Math.hypot(pp.x - zone.cx - t[0], pp.z - zone.cz - t[1]) < 2) return ['Vào nhà thi đấu chơi Kéo Co (trú giông)', kcStart]; }   // Q284
-      { const t = zone.K.vat.find((v) => v.id === 'ban-ve').diaDanh.toi; if (!hs.on && Math.hypot(pp.x - zone.cx - t[0], pp.z - zone.cz - t[1]) < 1.8) return ['Chơi Họa Sĩ Nhí', hsStart]; }
+      { const t = zone.K.vat.find((v) => v.id === 'ban-ve').diaDanh.toi; if (!hs.on && !hv.on && Math.hypot(pp.x - zone.cx - t[0], pp.z - zone.cz - t[1]) < 1.8) return ['Chơi Họa Sĩ Nhí', hsStart]; }
       { const t = zone.K.vat.find((v) => v.id === 'san-dien').diaDanh.toi; if (sdMo() && Math.hypot(pp.x - zone.cx - t[0], pp.z - zone.cz - t[1]) < 1.8) return [`Lên Sàn Diễn · ${sdChuDe()[0]}`, sanDien]; }
       for (const q of zone.hd) if (Math.hypot(pp.x - q.x, pp.z - q.z) < q.r) return [q.label, () => note(q.text)];
       return null;
@@ -10477,7 +10478,7 @@
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !thuPanel.hidden) { thuPanel.hidden = true; canvas.focus({ preventScroll: true }); } });
   thuDen(); if (hopThu.cho.length) setTimeout(() => note(`Hộp thư đỏ ở trạm xe có ${hopThu.cho.length} lá thư cho bạn (${hopThu.cho.join(', ')})`), 5200);
   function batchStatic() {
-    const dyn = new Set([meoQua, meoVet, htDecor, dcG, ...thuCo, ...cpDyn, ...hoaTDyn, xlMay, ndtG, ...ctvDyn, player.root, ZONES['phong-tro'].cauThang, ZONES['lau-nha'].cauThang, ZONES['phong-tro'].cuaVuon, ...walkers.map((w) => w.root), vendor.root, merchant.root, chiMan.root, mcLinh.root, chuBay.root, chiGhe.root, coSau.root, chuBa.root, anhLua.root, ongTam.root, bacLa.root, xeLa, cauVongM, ...dienDien, cayThong, ...nhaMesh.map((m) => m.g), ...otChim, cauOT, ...(ZONES['dao-bao'].truLe || []), thayDo.root, coCuuHo.root, kiemLam.root, thayDoDeo.root, ongTu.root, lmHoang, ZONES.rung.mieu, hoaCo, ZONES['dao-bao'].nen, nguoiTuyet, klVong, tetCay, dieuM, dayDieu, heVinh, coDua.root, ongLao.root, tiToc.root, ...danPhong.flatMap((c) => [c.root, c.ring]), boat, rongMesh, ...sapNpcs.map((c) => c.root), tutMarker, tutRing, footArrow, xe7, liveProp, kcG, nsG, ttG, bddG, boFx, aoSenG, ...dtThung, dtFx, ...vitM, caDan, domM, meo, notNhac, beCaG, ...trail, torch, dog, driftG, ...REVIVE.map((r) => r.g), CG.g0, ZONES['ben-song'].cauGio, ML.g0, ZONES['khu-nha'].congRung, ZONES['dong-lua'].congRung, LH.g0, ...LH.cab.map((q) => q.c), ZONES['dong-lua'].congDeo, ZONES.vinh.congBao, ...(ZONES['dao-bao'].nhaDo || []), gardenDyn, marketDyn, stars, moon, fishFx, pet, lmTrungG, whale, ...clouds, drops, sun, sun.target, tower, cat, ...MEO_HOI.map((m) => m.g), ...SV.map((c) => c.g), ...movers]);
+    const dyn = new Set([meoQua, meoVet, htDecor, dcG, ...thuCo, ...cpDyn, ...hoaTDyn, xlMay, ndtG, ...ctvDyn, player.root, ZONES['phong-tro'].cauThang, ZONES['lau-nha'].cauThang, ZONES['phong-tro'].cuaVuon, ...walkers.map((w) => w.root), vendor.root, merchant.root, chiMan.root, mcLinh.root, chuBay.root, chiGhe.root, coSau.root, chuBa.root, anhLua.root, ongTam.root, bacLa.root, xeLa, cauVongM, ...dienDien, cayThong, ...nhaMesh.map((m) => m.g), ...otChim, cauOT, ...(ZONES['dao-bao'].truLe || []), thayDo.root, coCuuHo.root, ongNam.root, ttLuMe, kiemLam.root, thayDoDeo.root, ongTu.root, lmHoang, ZONES.rung.mieu, hoaCo, ZONES['dao-bao'].nen, nguoiTuyet, klVong, tetCay, dieuM, dayDieu, heVinh, coDua.root, ongLao.root, tiToc.root, ...danPhong.flatMap((c) => [c.root, c.ring]), boat, rongMesh, ...sapNpcs.map((c) => c.root), tutMarker, tutRing, footArrow, xe7, liveProp, kcG, nsG, ttG, bddG, boFx, aoSenG, ...dtThung, dtFx, ...vitM, caDan, domM, meo, notNhac, beCaG, ...trail, torch, dog, driftG, ...REVIVE.map((r) => r.g), CG.g0, ZONES['ben-song'].cauGio, ML.g0, ZONES['khu-nha'].congRung, ZONES['dong-lua'].congRung, LH.g0, ...LH.cab.map((q) => q.c), ZONES['dong-lua'].congDeo, ZONES.vinh.congBao, ...(ZONES['dao-bao'].nhaDo || []), gardenDyn, marketDyn, stars, moon, fishFx, pet, lmTrungG, whale, ...clouds, drops, sun, sun.target, tower, cat, ...MEO_HOI.map((m) => m.g), ...SV.map((c) => c.g), ...movers]);
     const meshes = [];
     for (const o of [...scene.children]) {
       if (dyn.has(o) || o.isLight || o.isInstancedMesh || o.type === 'Reflector' || o.layers.mask !== 1) continue;
