@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kế hoạch model 3D</title>
+<style>
+  :root { --bg: #FFF8EC; --fg: #3B2A20; --muted: #7A6656; --card: #FFFFFF; --line: #EAD9C2; --accent: #C4553F; --ok: #2E7D4F; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1E1A17; --fg: #F2E6D8; --muted: #B8A592; --card: #2A2420; --line: #4A3E35; --accent: #FF8A6E; --ok: #7FD3A0; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; } h2 { font-size: 1.2rem; margin: 32px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  h3 { font-size: 1.02rem; margin: 18px 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
+  .the { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 0 0 12px; }
+  .the h3 { margin-top: 0; } .tag { display: inline-block; font-size: .8rem; padding: 0 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); margin-left: 6px; font-weight: 400; }
+  .bang { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 560px; } td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: .88rem; line-height: 1.45; }
+  code { font-size: .92em; } ul, ol { padding-left: 22px; } a { color: var(--accent); }
+  .chot { border-left: 4px solid var(--accent); }
+</style>
+</head>
+<body>
+<main>
+<h1>Kế hoạch tách bản đồ, model nhân vật, model vật trang trí</h1>
+<p class="sub">Phố Mây · Q342 · 06/10/2026 · theo yêu cầu người làm game: "lên kế hoạch, xây dựng từng phần: bản đồ riêng, model 3D nhân vật riêng, model 3D vật trang trí riêng, tạo bằng Unity, Godot hoặc Blender". <a href="ban-do-3d.html">Tài liệu bản đồ 3D</a> · <a href="ra-soat-do-hoa/2026-10-06.html">Rà soát đồ hoạ</a></p>
+
+<h2>Hiện trạng</h2>
+<p>Bản mẫu <code>prototype/mau-3d.html</code> (khoảng 1,1 MB, three.js r128) dựng <b>mọi hình bằng code</b>: 906 chỗ tạo hình hộp, trụ, cầu ngay trong trang. Bố cục 19 khu đã tách ra <code>data/khu/*.json</code> (215 vật, 96 loại), nhưng hình của từng loại vật, nhân vật (<code>makeChibi</code>, khoảng 70 món trong Tủ đồ) và mặt đất vẫn nằm lẫn trong code. Muốn đẹp hơn thì phải sửa code từng chỗ, không ai ngoài lập trình viên chỉnh được.</p>
+
+<h2>Đã thử ngày 06/10</h2>
+<figure style="margin:0 0 8px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)"><img src="ke-hoach-model/anh/2026-10-06-vat-thu.jpg" alt="Ghế gỗ, cây tán tròn, cột đèn lồng dựng bằng Blender, tô toon trong three.js" style="width:100%;display:block"><figcaption style="padding:6px 12px;font-size:.9rem;color:var(--muted)">Ba model đầu tiên dựng bằng script Blender (<code>art/blender/vat/ghe.py</code>, <code>cay.py</code>, <code>cot-den.py</code>), mở bằng three.js với cách tô và viền của game: ghế 972, cây 756, cột đèn 632 tam giác; 35–55 KB mỗi file. Chụp bằng <code>node tools/art/xem-truoc.mjs</code>.</figcaption></figure>
+<p>Đường ống đã chạy: Blender bản Python cài được trên máy chạy routine (<code>bash tools/art/setup.sh</code>), dựng và xuất <code>.glb</code> không cần giao diện (<code>bash tools/art/dung.sh</code>), three.js r128 của game đọc được. Model chưa được nạp vào bản chơi thử: đó là việc của giai đoạn 0.</p>
+
+<h2>Chọn công cụ</h2>
+<div class="bang"><table>
+<thead><tr><th></th><th>Blender</th><th>Godot</th><th>Unity</th></tr></thead>
+<tbody>
+<tr><td>Vai trò hợp nhất</td><td>Dựng model, khung xương, hoạt ảnh</td><td>Engine chạy game (thay three.js), trình sửa bản đồ</td><td>Engine chạy game</td></tr>
+<tr><td>Chạy tự động trên máy chủ (routine mỗi giờ)</td><td>Được: bản Python <code>bpy</code>, dựng model bằng script</td><td>Được: bản không giao diện</td><td>Khó: cần giấy phép, cài nặng</td></tr>
+<tr><td>Chi phí</td><td>Miễn phí</td><td>Miễn phí</td><td>Miễn phí tới mức doanh thu nhất định, có điều khoản riêng</td></tr>
+<tr><td>Xuất bản web nhẹ</td><td>(không phải engine)</td><td>Được, file khá nặng (khoảng 30 MB+)</td><td>Được, nặng</td></tr>
+</tbody>
+</table></div>
+
+<div class="the chot">
+<h3>Đề xuất</h3>
+<ol>
+<li><b>Model làm bằng Blender, xuất ra glTF (<code>.glb</code>).</b> glTF là định dạng chung: three.js đọc được ngay, Godot nhập sẵn, Unity nhập qua plugin. Model làm hôm nay không bỏ đi dù sau này đổi engine.</li>
+<li><b>Giữ three.js cho bản chơi thử</b> trong lúc thay hình, để 305 mục kiểm tra tự động và trang chơi thử vẫn chạy mỗi lượt.</li>
+<li><b>Bố cục bản đồ vẫn ở <code>data/khu/*.json</code></b> (nguồn sự thật cho vị trí, đường đi, va chạm). Blender chỉ dựng hình mặt đất và vật; Godot có thể là trình sửa bản đồ ở giai đoạn sau.</li>
+<li><b>Chuyển sang Godot là quyết định riêng</b> (giai đoạn 5), làm khi đã có đủ model và cần app điện thoại thật.</li>
+</ol>
+<p>Mỗi model được dựng bằng <b>script Blender lưu trong repo</b> (<code>art/blender/*.py</code>), nên chạy lại ra đúng file, routine sửa được, người khác đọc được. Khi có artist, họ mở file trong Blender vẽ đẹp hơn rồi xuất đè <code>.glb</code> cùng tên, cùng khung xương: game không phải sửa code.</p>
+</div>
+
+<h2>Cấu trúc thư mục</h2>
+<pre>art/
+  blender/            script dựng model (Python, chạy bằng bpy)
+    chung.py          bảng màu toon, vật liệu, hàm bo cạnh, xuất glb
+    vat/*.py          mỗi loại vật trang trí một file (nha-ong.py, ghe.py…)
+    nhan-vat/*.py     thân chibi + khung xương + hoạt ảnh; tóc, áo, mũ…
+    khu/*.py          mặt đất từng khu, đọc data/khu/&lt;id&gt;.json
+assets/model/         file .glb đã xuất (commit vào repo, xuất bản cùng trang)
+  vat/  nhan-vat/  khu/
+  danh-sach.json      tên, loại, số tam giác, dung lượng của từng file
+tools/art/dung.sh     dựng lại mọi model
+tools/art/kiem-model.mjs   kiểm tra model: tải được, đúng tỉ lệ, trong ngân sách</pre>
+
+<h2>Quy ước model (để thay model không phải sửa code)</h2>
+<ul>
+<li><b>Đơn vị:</b> 1 = 1 mét như trong game. Gốc toạ độ ở giữa đáy, mặt trước nhìn về +Z.</li>
+<li><b>Vật liệu:</b> đặt tên theo bảng màu (<code>go-nau</code>, <code>ngoi-do</code>, <code>vai-kem</code>…). Game đổi sang vật liệu toon của mình, nên ánh sáng, đêm ngày, chất lượng Cao/Thấp giữ như cũ. Vật liệu nhuộm được (màu áo, màu tóc, màu da) có tên bắt đầu bằng <code>nhuom-</code>.</li>
+<li><b>Ngân sách tam giác:</b> vật nhỏ ≤ 300, vật vừa ≤ 1.500, nhà ≤ 4.000, nhân vật trọn bộ ≤ 3.000. Cả khu vẫn trong mức đã chốt: Cao ≤ 150 lượt vẽ, ≤ 400k tam giác; Thấp ≤ 90, ≤ 200k.</li>
+<li><b>Dung lượng:</b> tổng model một khu ≤ 1,5 MB, mỗi món đồ mặc ≤ 60 KB.</li>
+<li><b>Nhân vật:</b> một khung xương chung, tên xương giữ như code hiện tại (thân, hông, gối, vai…). Đồ mặc là lưới riêng gắn vào cùng khung xương, đặt tên theo ô (<code>hat-</code>, <code>toc-</code>, <code>ao-</code>, <code>quan-</code>, <code>giay-</code>, <code>lung-</code>…). Mặt (mắt, mày, miệng) là ảnh dán, đổi bằng code.</li>
+<li><b>Dự phòng:</b> model nào chưa có hoặc tải lỗi thì game dùng hình dựng bằng code như hiện nay. Chuyển dần từng món, không có lúc game hỏng.</li>
+</ul>
+
+<h2>Các giai đoạn</h2>
+
+<div class="the"><h3>Giai đoạn 0 · Đường ống <span class="tag">2–3 lượt</span></h3>
+<ul>
+<li>Cài Blender (<code>bpy</code>) trong script khởi tạo môi trường; <code>art/blender/chung.py</code>; <code>tools/art/dung.sh</code>.</li>
+<li>Trang chơi thử nạp <code>GLTFLoader</code> (cùng bản three.js r128), hàng đợi tải model, dùng hình code khi chưa có model.</li>
+<li><code>xuat.sh</code> xuất bản cả <code>assets/</code>; kiểm tra tự động: mọi <code>.glb</code> tải được, đúng ngân sách, không ảnh thừa.</li>
+<li>Thử nghiệm: 1 vật (ghế đá) thay bằng model Blender, chụp ảnh trước/sau.</li>
+</ul></div>
+
+<div class="the"><h3>Giai đoạn 1 · Vật trang trí <span class="tag">8–12 lượt</span></h3>
+<ul>
+<li>Làm trước 15 loại dùng nhiều nhất: nhà ống (20 chỗ), bảng, bàn nhôm, ghế, sạp chợ, bàn cà phê, trạm xe buýt, bảng nghề, bếp, máy may, trụ lễ hội, nhà đỏ, bàn mộc, luống hoa, cột đèn; thêm cây, hàng rào, đá.</li>
+<li>Sau đó 81 loại còn lại và nội thất trong nhà (giường, tủ, thảm, đồ treo tường), mỗi lượt 4–6 loại.</li>
+<li>Vật gộp lô (batch) như hiện nay nên số lượt vẽ không tăng.</li>
+</ul></div>
+
+<div class="the"><h3>Giai đoạn 2 · Nhân vật <span class="tag">10–15 lượt</span></h3>
+<ul>
+<li>Thân chibi gốc dáng A/B, khung xương, hoạt ảnh: đứng, đi, chạy, vẫy tay, ngồi, câu cá, nấu, may, đào, nhảy, các emote đôi.</li>
+<li>Mặt: ảnh dán 20 kiểu mắt, 10 lông mày, 12 miệng; 10 tông da, 16 màu tóc nhuộm bằng vật liệu.</li>
+<li>16 kiểu tóc, rồi khoảng 70 món Tủ đồ theo ô (mũ, áo, quần, giày, lưng, tay cầm, kính…). Cư dân NPC dùng chung thân và đồ.</li>
+<li>Linh Mây, mèo, chó, sinh vật nhỏ làm cuối giai đoạn.</li>
+</ul></div>
+
+<div class="the"><h3>Giai đoạn 3 · Bản đồ <span class="tag">6–10 lượt</span></h3>
+<ul>
+<li>Mỗi khu một file mặt đất <code>assets/model/khu/&lt;id&gt;.glb</code>: hình đảo, mép đất, đường lát, nước, bậc thềm. Script Blender đọc <code>data/khu/&lt;id&gt;.json</code> nên đường và va chạm luôn khớp.</li>
+<li>Vật trên bản đồ vẫn đặt bằng JSON, trỏ tới model ở giai đoạn 1.</li>
+<li>Sửa luôn các lỗi rà soát: đêm tím phẳng (Đ1), mái che camera (Đ2), phòng trong nhà giống nhau (Đ3), khu bạc màu (Đ4), nhà xám (Đ5), khu trống (Đ6).</li>
+</ul></div>
+
+<div class="the"><h3>Giai đoạn 4 · Hoàn thiện <span class="tag">3–5 lượt</span></h3>
+<ul>
+<li>Chụp lại trang rà soát đồ hoạ, so trước/sau mọi khu; đo lượt vẽ, tam giác, thời gian tải trên điện thoại.</li>
+<li>Nén model (Draco) nếu tổng dung lượng vượt mức.</li>
+</ul></div>
+
+<div class="the"><h3>Giai đoạn 5 · Chuyển sang Godot <span class="tag">cần quyết định riêng</span></h3>
+<p>Không làm trong kế hoạch này. Khi cần app điện thoại thật: Godot nhập thẳng các file <code>.glb</code> và <code>data/khu/*.json</code>; phần còn phải viết lại là luật chơi (khoảng 1,1 MB code JavaScript).</p>
+</div>
+
+<h2>Thời gian</h2>
+<p>Khoảng <b>30–45 lượt chạy</b>, tức 1,5–2 ngày nếu routine chạy mỗi giờ chỉ làm việc này.</p>
+
+<h2>Rủi ro</h2>
+<ul>
+<li><b>Chất lượng hình:</b> model dựng bằng script sẽ gọn, đều tay, kiểu khối mềm, đẹp hơn hiện tại nhưng không bằng artist vẽ. Quy ước ở trên giúp artist thay sau mà không sửa code.</li>
+<li><b>Tải trang chậm hơn:</b> thêm vài MB model. Có ngân sách dung lượng và kiểm tra tự động, tải theo khu khi bước vào.</li>
+<li><b>Máy yếu:</b> nhân vật có khung xương nặng hơn khối gộp hiện nay. Giữ cách gộp lưới da đang dùng; chất lượng Thấp dùng model ít tam giác hơn.</li>
+</ul>
+</main>
+</body>
+</html>
