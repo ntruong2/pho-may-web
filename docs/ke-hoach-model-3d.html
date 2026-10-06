@@ -79,12 +79,13 @@ tools/art/kiem-model.mjs   kiểm tra model: tải được, đúng tỉ lệ, t
 
 <h2>Các giai đoạn</h2>
 
-<div class="the"><h3>Giai đoạn 0 · Đường ống <span class="tag">2–3 lượt</span></h3>
+<div class="the"><h3>Giai đoạn 0 · Đường ống <span class="tag">xong 06/10 · Q343</span></h3>
 <ul>
-<li>Cài Blender (<code>bpy</code>) trong script khởi tạo môi trường; <code>art/blender/chung.py</code>; <code>tools/art/dung.sh</code>.</li>
-<li>Trang chơi thử nạp <code>GLTFLoader</code> (cùng bản three.js r128), hàng đợi tải model, dùng hình code khi chưa có model.</li>
-<li><code>xuat.sh</code> xuất bản cả <code>assets/</code>; kiểm tra tự động: mọi <code>.glb</code> tải được, đúng ngân sách, không ảnh thừa.</li>
-<li>Thử nghiệm: 1 vật (ghế đá) thay bằng model Blender, chụp ảnh trước/sau.</li>
+<li>Cài Blender (<code>bpy</code>): <code>bash tools/art/setup.sh</code>; dựng lại mọi model: <code>bash tools/art/dung.sh</code>; bảng màu chung <code>art/bang-mau.json</code>.</li>
+<li>Mỗi model xuất từng khối riêng (gốc ở tâm khối, như <code>part()</code> trong game). <code>node tools/khu/nhung-du-lieu.mjs</code> nén (toạ độ 16 bit, pháp tuyến 8 bit, nhẹ hơn .glb khoảng 2,5 lần) và <b>nhúng vào trang</b> như dữ liệu khu; game đọc ngay lúc dựng cảnh, không phải chờ tải, mở file trên máy vẫn chạy (tự quyết: thay cho tải <code>.glb</code> qua mạng; khi gói nhúng vượt 1,5 MB thì chuyển sang tải theo khu, kiểm tra dữ liệu sẽ báo).</li>
+<li>Vật liệu theo bảng màu qua <code>mat()</code>, nên cùng màu thì gộp lô chung với hình code. Viền: đẩy mặt ra theo pháp tuyến trơn, dày đều 2,5 cm. Vật liệu đặc biệt thay theo tên (lá đung đưa, lồng đèn sáng đêm, màu lá theo khu).</li>
+<li>Không có model hoặc gói lỗi thì dựng bằng code như cũ; mở trang với <code>?khongmodel</code> để xem bản code, <code>node tools/test-3d/do-hieu-nang.mjs --khongmodel</code> để so hiệu năng.</li>
+<li>Đã thay: ghế gỗ (8 chỗ), cây tán tròn (107 cây), cột đèn lồng Quảng Trường (8 cột).</li>
 </ul></div>
 
 <div class="the"><h3>Giai đoạn 1 · Vật trang trí <span class="tag">8–12 lượt</span></h3>
@@ -118,6 +119,16 @@ tools/art/kiem-model.mjs   kiểm tra model: tải được, đúng tỉ lệ, t
 <div class="the"><h3>Giai đoạn 5 · Chuyển sang Godot <span class="tag">cần quyết định riêng</span></h3>
 <p>Không làm trong kế hoạch này. Khi cần app điện thoại thật: Godot nhập thẳng các file <code>.glb</code> và <code>data/khu/*.json</code>; phần còn phải viết lại là luật chơi (khoảng 1,1 MB code JavaScript).</p>
 </div>
+
+<h2>Tiến độ</h2>
+<div class="bang"><table>
+<thead><tr><th>Ngày</th><th>Giai đoạn</th><th>Việc</th><th>Mã</th></tr></thead>
+<tbody>
+<tr><td>06/10</td><td>chuẩn bị</td><td>Kế hoạch, Blender chạy trên máy routine, 3 model thử</td><td>Q342</td></tr>
+<tr><td>06/10</td><td>0 · xong</td><td>Model nhúng trong trang, game dựng ghế, cây, cột đèn bằng model; lượt vẽ bằng hoặc ít hơn bản code ở mọi khu, tam giác mức Cao giảm (Quảng Trường 390,5k → 385,6k), mức Thấp tăng 1–5k (vẫn trong ngân sách)</td><td>Q343</td></tr>
+</tbody>
+</table></div>
+<figure style="margin:12px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)"><img src="ke-hoach-model/anh/2026-10-06-gd0-truoc-sau.jpg" alt="So sánh trong game: bên trái hình dựng bằng code, bên phải model Blender (ghế Đồng Lúa, cột đèn Quảng Trường, cây Đồng Lúa)" style="width:100%;display:block"><figcaption style="padding:6px 12px;font-size:.9rem;color:var(--muted)">Trong game, trái: hình code cũ; phải: model Blender. Hàng trên: ghế gỗ Đồng Lúa; giữa: cột đèn lồng Quảng Trường; dưới: cây Đồng Lúa.</figcaption></figure>
 
 <h2>Thời gian</h2>
 <p>Khoảng <b>30–45 lượt chạy</b>, tức 1,5–2 ngày nếu routine chạy mỗi giờ chỉ làm việc này.</p>
