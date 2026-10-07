@@ -1034,7 +1034,7 @@
     },
     vertexShader: `uniform mat4 textureMatrix; varying vec4 vUv; varying vec2 vPos;
       void main(){ vUv = textureMatrix * vec4(position, 1.0); vPos = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `uniform vec3 color; uniform vec3 deep; uniform vec3 light; uniform sampler2D tDiffuse; uniform float time; uniform float sunAmt; uniform float rainK; uniform vec3 rip[4];
+    fragmentShader: `uniform vec3 color; uniform vec3 deep; uniform vec3 light; uniform sampler2D tDiffuse; uniform float time; uniform float sunAmt; uniform float rainK; uniform vec3 rip[4]; uniform vec2 offK;
       varying vec4 vUv; varying vec2 vPos;
       void main(){
         float r = length(vPos);
@@ -1051,7 +1051,7 @@
           }
         }
         float rainDots = rainK * pow(max(0.0, sin(vPos.x * 23.0 + time * 7.0) * sin(vPos.y * 21.0 - time * 6.0)), 24.0);
-        vec4 uv = vUv; uv.xy += off * uv.w;
+        vec4 uv = vUv; uv.xy += off * offK * uv.w;
         #ifdef LITE
         vec3 refl = mix(vec3(0.72, 0.86, 0.95), vec3(1.0), clamp(0.5 + (w1 + w2) * 0.2, 0.0, 1.0)) * light;   // Nhẹ: không vẽ phản chiếu, màu trời giả
         #else
@@ -1081,8 +1081,24 @@
     } else {
       water = new THREE.Reflector(new THREE.CircleGeometry(WATER_R, 64), { textureWidth: res, textureHeight: res, clipBias: 0.003, color: col('#7FD6DC'), shader: waterShader });
       // nước chỉ soi thấy tháp, bầu trời và người đứng gần: ẩn phần còn lại khi vẽ ảnh phản chiếu
-      const draw = water.onBeforeRender;
-      water.onBeforeRender = function (...args) { reflectHide(true, true); draw.apply(this, args); reflectHide(false, true); };
+      // ảnh phản chiếu chỉ vẽ vùng màn hình quanh mặt nước (Q358): trước đây camera phản chiếu nhìn cả khung hình nên vẽ cả mây trời, cá voi,
+      // Linh Mây ở xa dù mặt nước bán kính 2,6 m chỉ soi một góc nhỏ. Lệch khung camera (setViewOffset) đúng hình chiếu mặt nước cộng lề cho gợn sóng,
+      // vật ngoài vùng đó bị loại; gợn sóng nhân offK để lệch trên màn hình như cũ. Ảnh phản chiếu cùng độ phân giải nên còn nét hơn
+      const draw = water.onBeforeRender, pv = new THREE.Vector3(), offK = new THREE.Vector2(1, 1);
+      water.material.uniforms.offK = { value: offK };
+      water.onBeforeRender = function (rd, sc, cam, ...args) {
+        reflectHide(true, true);
+        let x0 = 1, x1 = -1, y0 = 1, y1 = -1, ok = cam.isPerspectiveCamera && !(cam.view && cam.view.enabled);
+        for (let i = 0; i < 24 && ok; i++) {
+          const t = i / 24 * Math.PI * 2; pv.set(Math.cos(t) * WATER_R, Math.sin(t) * WATER_R, 0).applyMatrix4(this.matrixWorld).applyMatrix4(cam.matrixWorldInverse);
+          if (pv.z > -cam.near) { ok = false; break; }
+          pv.applyMatrix4(cam.projectionMatrix); x0 = Math.min(x0, pv.x); x1 = Math.max(x1, pv.x); y0 = Math.min(y0, pv.y); y1 = Math.max(y1, pv.y);
+        }
+        const M = 0.14; x0 = Math.max(-1, x0 - M); x1 = Math.min(1, x1 + M); y0 = Math.max(-1, y0 - M); y1 = Math.min(1, y1 + M);   // lề 7% màn hình: gợn sóng lệch tối đa ~5%
+        ok = ok && x1 > x0 && y1 > y0 && (x1 - x0) * (y1 - y0) < 3.2;
+        if (ok) { const A = cam.aspect; cam.setViewOffset(A, 1, (x0 + 1) / 2 * A, (1 - y1) / 2, (x1 - x0) / 2 * A, (y1 - y0) / 2); offK.set(2 / (x1 - x0), 2 / (y1 - y0)); } else offK.set(1, 1);   // setViewOffset đặt aspect = rộng/cao khung đầy đủ: truyền đúng tỉ lệ màn hình
+        try { draw.call(this, rd, sc, cam, ...args); } finally { if (ok) cam.clearViewOffset(); reflectHide(false, true); }
+      };
     }
     water.rotation.x = -Math.PI / 2; water.position.y = 0.3; water.layers.set(LAYER_FX); scene.add(water);
   }
@@ -1128,7 +1144,7 @@
     tower.add(part(new THREE.SphereGeometry(0.16, 16, 12), saoThap, 0, 6.25, 0, 0.12));
   }
   const dropCount = 90;
-  const drops = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 8, 6), new THREE.MeshBasicMaterial({ color: col('#E6FBFF'), transparent: true, opacity: 0.85 }), dropCount);
+  const drops = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 6, 4), new THREE.MeshBasicMaterial({ color: col('#E6FBFF'), transparent: true, opacity: 0.85 }), dropCount);
   drops.frustumCulled = false; drops.layers.set(LAYER_FX); scene.add(drops);
   const dropSeed = Array.from({ length: dropCount }, (_, i) => ({ a: (i % 8) / 8 * Math.PI * 2 + hash(i) * 0.2, ph: hash(i * 3.1), sp: 0.8 + hash(i * 5.7) * 0.4 }));
 
@@ -1304,11 +1320,11 @@
     const A = posts[i].position, B = posts[(i + 1) % POST_N].position;
     const pts = [];
     for (let k = 0; k <= 20; k++) { const u = k / 20; pts.push(new THREE.Vector3(lerp(A.x, B.x, u), 2.95 - Math.sin(u * Math.PI) * 0.7, lerp(A.z, B.z, u))); }
-    scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 32, 0.015, 5), mat('#5B3A26')));
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, 0.015, 4), mat('#5B3A26')));   // dây 3 cm: 20 × 4 đoạn đủ cong (Q358, trước 32 × 5)
     for (let k = 1; k < 7; k++) {
       const u = k / 7;
       // đèn trên dây đung đưa bằng shader gió (không cần xoay từng quả) nên gộp được thành một lần vẽ
-      const l = part(new THREE.SphereGeometry(0.12, 12, 10), lanternMat(k % 2 ? '#FF6B5A' : '#FFC857', k % 2 ? '#FF5A30' : '#FFB030', true), lerp(A.x, B.x, u), 2.95 - Math.sin(u * Math.PI) * 0.7 - 0.16, lerp(A.z, B.z, u), 0.1, false, outlineSway);
+      const l = part(new THREE.SphereGeometry(0.12, 9, 6), lanternMat(k % 2 ? '#FF6B5A' : '#FFC857', k % 2 ? '#FF5A30' : '#FFB030', true), lerp(A.x, B.x, u), 2.95 - Math.sin(u * Math.PI) * 0.7 - 0.16, lerp(A.z, B.z, u), 0.1, false, outlineSway);
       l.scale.y = 1.2; scene.add(l); stringLanterns.push(l);
     }
   }
@@ -1333,8 +1349,8 @@
     const fc = ['#FF9FC6', '#FFFFFF', '#FFC857', '#FF6B5A', '#C9A2F0'];
     for (let i = 0; i < 12; i++) {
       const aa = i / 12 * Math.PI * 2, rr = 0.25 + hash(i + r) * 0.5;
-      const f = part(new THREE.SphereGeometry(0.1, fs(8), fs(6)), mat(fc[i % 5], { sway: true }), Math.cos(aa) * rr, 0.5, Math.sin(aa) * rr, 0.12, true, outlineSway); f.scale.y = 0.6; g.add(f);
-      g.add(part(new THREE.CylinderGeometry(0.012, 0.012, 0.2, 5), mat('#4E9A3E', { sway: true }), Math.cos(aa) * rr, 0.4, Math.sin(aa) * rr, 0, false));
+      const f = part(new THREE.SphereGeometry(0.1, fs(7), fs(5)), mat(fc[i % 5], { sway: true }), Math.cos(aa) * rr, 0.5, Math.sin(aa) * rr, 0.12, false, outlineSway); f.scale.y = 0.6; g.add(f);   // hoa 10 cm không đổ bóng (Q358): bóng chỉ là chấm nhỏ trên luống đất
+      g.add(part(new THREE.CylinderGeometry(0.012, 0.012, 0.2, 5, 1, true), mat('#4E9A3E', { sway: true }), Math.cos(aa) * rr, 0.4, Math.sin(aa) * rr, 0, false));
     }
     scene.add(g); obstacles.push({ x: g.position.x, z: g.position.z, r: 1.15 * sc });
   }
@@ -1476,7 +1492,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     g.add(part(new THREE.CylinderGeometry(0.16, 0.2, 0.2, 10), mat('#8A6450'), 0, 0.1, 0, 0.08));
     g.add(part(new THREE.CylinderGeometry(0.055, 0.065, 2.4, 8), mat('#6E5040'), 0, 1.2, 0, 0.3));
     const arm = part(new THREE.BoxGeometry(0.5, 0.05, 0.05), mat('#6E5040'), 0.22, 2.35, 0, 0.3); g.add(arm);
-    const l = part(new THREE.SphereGeometry(0.2, 14, 10), lanternMat(...lc), 0.45, 2.08, 0, 0.08); l.scale.y = 1.25; g.add(l);
+    const l = part(new THREE.SphereGeometry(0.2, 10, 8), lanternMat(...lc), 0.45, 2.08, 0, 0.08); l.scale.y = 1.25; g.add(l);
     g.add(part(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 10), mat('#C4553F'), 0.45, 2.33, 0, 0.15));
     g.rotation.y = -Math.atan2(z, x) + Math.PI; scene.add(g); obstacles.push({ x, z, r: 0.3 });
   }
@@ -1489,15 +1505,15 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     const fc = [['#FF9FC6', '#FFFFFF'], ['#FFC857', '#FF8A4C'], ['#C9A2F0', '#FFFFFF'], ['#FF6B5A', '#FFC857']][Math.floor(k * 4)];
     for (let i = 0; i < 9; i++) {
       const a = i * 2.4 + k * 6, r = 0.15 + hash(i + k * 50) * 0.55, fx = x + Math.cos(a) * r, fz = z + Math.sin(a) * r, h = 0.28 + hash(i * 3 + k) * 0.2;
-      scene.add(part(new THREE.CylinderGeometry(0.015, 0.015, h, 4), mat('#4E9A3E', { sway: true }), fx, h / 2, fz, 0, false));
-      const f = part(new THREE.SphereGeometry(0.085, fs(7), fs(5)), mat(fc[i % 2], { sway: true }), fx, h + 0.03, fz, 0.14, false, outlineSway); f.scale.y = 0.6; scene.add(f);
+      scene.add(part(new THREE.CylinderGeometry(0.015, 0.015, h, 4, 1, true), mat('#4E9A3E', { sway: true }), fx, h / 2, fz, 0, false));
+      const f = part(new THREE.SphereGeometry(0.085, fs(6), fs(4)), mat(fc[i % 2], { sway: true }), fx, h + 0.03, fz, 0.14, false, outlineSway); f.scale.y = 0.6; scene.add(f);
     }
   }
   function makeMushrooms(x, z, k) {
     for (let i = 0; i < 3; i++) {
       const a = i * 2.1 + k * 5, fx = x + Math.cos(a) * 0.25 * i, fz = z + Math.sin(a) * 0.25 * i, s = 1 - i * 0.25;
       scene.add(part(new THREE.CylinderGeometry(0.05 * s, 0.07 * s, 0.2 * s, 8), mat('#FFF4DE'), fx, 0.1 * s, fz, 0.12));
-      const cap = part(new THREE.SphereGeometry(0.15 * s, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), mat(k > 0.5 ? '#E0503C' : '#D9A066'), fx, 0.19 * s, fz, 0.1); scene.add(cap);
+      const cap = part(new THREE.SphereGeometry(0.15 * s, 10, 4, 0, Math.PI * 2, 0, Math.PI / 2), mat(k > 0.5 ? '#E0503C' : '#D9A066'), fx, 0.19 * s, fz, 0.1); scene.add(cap);
       if (k > 0.5) for (let d = 0; d < 3; d++) scene.add(part(new THREE.SphereGeometry(0.025 * s, 6, 4), mat('#FFFFFF'), fx + Math.cos(d * 2.1) * 0.08 * s, 0.3 * s, fz + Math.sin(d * 2.1) * 0.08 * s, 0, false));
     }
   }
@@ -1623,7 +1639,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       if (!md) {
         g.add(part(new THREE.BoxGeometry(0.62, 0.4, 0.62), mat('#C9C2B2'), s * 1.95, 0.2, 0, 0.05));
         g.add(part(new THREE.CylinderGeometry(0.17, 0.2, 3.3, 12), mat('#C4553F'), s * 1.95, 2.0, 0, 0.08));
-        const l = part(new THREE.SphereGeometry(0.2, 14, 10), lanternMat('#FF6B5A', '#FF5A30'), s * 1.4, 2.55, 0, 0.08); l.scale.y = 1.25; g.add(l);
+        const l = part(new THREE.SphereGeometry(0.2, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), s * 1.4, 2.55, 0, 0.08); l.scale.y = 1.25; g.add(l);
         const orn = part(new THREE.ConeGeometry(0.12, 0.42, 8), mat('#C4553F'), s * 2.55, 4.1, 0, 0.12); orn.rotation.z = -s * 0.9; g.add(orn);
       }
       obstacles.push({ x: x + Math.cos(rotY) * s * 1.95, z: z - Math.sin(rotY) * s * 1.95, r: 0.35 });
@@ -1921,35 +1937,44 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
         const L = Math.hypot(q.x - p.x, q.z - p.z), rail = part(new THREE.BoxGeometry(L, 0.08, 0.08), p.grey ? greyW : wood, (p.x + q.x) / 2, 0.88, (p.z + q.z) / 2, 0.08);
         rail.rotation.y = -Math.atan2(q.z - p.z, q.x - p.x); scene.add(rail);
       }
-      if (!p.grey && p.i % 6 === 0) { const l = part(new THREE.SphereGeometry(0.14, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), p.x, 1.1, p.z, 0.08); l.scale.y = 1.2; scene.add(l); }
+      if (!p.grey && p.i % 6 === 0) { const l = part(new THREE.SphereGeometry(0.14, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), p.x, 1.1, p.z, 0.08); l.scale.y = 1.2; scene.add(l); }
     });
   }
   // ban công mây: sàn gỗ nhô ra ngoài mép, lan can ba phía, ghế ngắm mây (đi ra được: inBalcony)
   BALCONIES.forEach((a, bi) => {
     const e = ISLE_R(a), grey = isGreyEdge(a), g = new THREE.Group(); g.position.set(Math.cos(a) * (e + 1.4), 0, Math.sin(a) * (e + 1.4)); g.rotation.y = Math.PI / 2 - a;
     const wm = grey ? mat('#B8B2AA') : woodMat, md = grey ? null : dungModel('vat/ban-cong', { ...HOA_GIAY_DD, 'go-sang': { cast: false }, 'do-gach': { cast: false } });   // model Blender (Q355): sàn ván, cột chống, lan can con tiện, ghế tựa, chậu hoa giấy; ban công xám và đèn lồng vẫn dựng bằng code
-    if (md) { g.add(md); const l = part(new THREE.SphereGeometry(0.16, 10, 8), lanternMat('#FFC857', '#FFB030'), 2.15, 1.15, 2.55, 0.08); l.scale.y = 1.2; g.add(l); scene.add(g); return; }
+    if (md) { g.add(md); const l = part(new THREE.SphereGeometry(0.16, 8, 6), lanternMat('#FFC857', '#FFB030'), 2.15, 1.15, 2.55, 0.08); l.scale.y = 1.2; g.add(l); scene.add(g); return; }
     g.add(part(new THREE.BoxGeometry(4.4, 0.24, 5.2), wm, 0, -0.05, 0, 0.04));
     for (const s2 of [-1, 1]) { g.add(part(new THREE.BoxGeometry(0.3, 1.6, 0.3), wm, s2 * 1.9, -0.9, 1.8, 0.06)); }
     for (const [x, z, w, d] of [[-2.15, 0.6, 0.08, 4.0], [2.15, 0.6, 0.08, 4.0], [0, 2.55, 4.3, 0.08]]) { g.add(part(new THREE.BoxGeometry(w, 0.08, d), wm, x, 0.88, z, 0.08)); }
     for (const [x, z] of [[-2.15, -1.3], [-2.15, 2.55], [2.15, -1.3], [2.15, 2.55], [0, 2.55]]) g.add(part(new THREE.CylinderGeometry(0.07, 0.07, 0.95, 6), wm, x, 0.47, z, 0.1));
-    if (!grey) { g.add(part(new THREE.BoxGeometry(2.0, 0.08, 0.4), woodMat, 0, 0.46, 1.9, 0.05)); for (const s2 of [-0.8, 0.8]) g.add(part(new THREE.BoxGeometry(0.08, 0.44, 0.36), mat('#8A6B55'), s2, 0.22, 1.9, 0.08)); const l = part(new THREE.SphereGeometry(0.16, 10, 8), lanternMat('#FFC857', '#FFB030'), 2.15, 1.15, 2.55, 0.08); l.scale.y = 1.2; g.add(l); }
+    if (!grey) { g.add(part(new THREE.BoxGeometry(2.0, 0.08, 0.4), woodMat, 0, 0.46, 1.9, 0.05)); for (const s2 of [-0.8, 0.8]) g.add(part(new THREE.BoxGeometry(0.08, 0.44, 0.36), mat('#8A6B55'), s2, 0.22, 1.9, 0.08)); const l = part(new THREE.SphereGeometry(0.16, 8, 6), lanternMat('#FFC857', '#FFB030'), 2.15, 1.15, 2.55, 0.08); l.scale.y = 1.2; g.add(l); }
     scene.add(g);
   });
   // biển mây: mặt mây xa và các cụm mây nổi; càng về phía Mắt Bão (Đông Nam) càng xám
   {
     const sea = new THREE.Mesh(new THREE.CircleGeometry(420, 64), mat('#EEF5FA')); sea.rotation.x = -Math.PI / 2; sea.position.y = -11; scene.add(sea);
-    const n = lowQ ? 140 : 260, puffs = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, lowQ ? 0 : 1), mat('#FFFFFF'), n);
+    // cụm mây biển (Q358): Đẹp giữ khối 80 mặt cho cụm gần mép đảo (r < 85 m, thấy rõ khi ngẩng camera) như cũ, cụm xa hơn trong sương dày
+    // dùng khối 20 mặt pháp tuyến trơn (Nhẹ dùng loại này cho mọi cụm như trước): Đẹp 260 cụm 20,8k → ~8k tam giác, thêm 1 lượt vẽ
+    const puffGeo = THREE.BufferGeometryUtils.mergeVertices(new THREE.IcosahedronGeometry(1, 0).deleteAttribute('normal').deleteAttribute('uv')); puffGeo.computeVertexNormals();
+    const n = lowQ ? 140 : 260, PUFF_GAN = lowQ ? 0 : 85, P = [];
+    for (let i = 0; i < n; i++) { const a = hash(i * 1.7) * Math.PI * 2, r = 47 + Math.pow(hash(i * 2.3), 0.7) * 130; P.push([i, a, r]); }
+    const xa = P.filter(([, , r]) => r >= PUFF_GAN), nGan = P.filter(([, , r]) => r < PUFF_GAN);
     const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), c = new THREE.Color(), grey = new THREE.Color('#9AA2AC');
-    for (let i = 0; i < n; i++) {
-      const a = hash(i * 1.7) * Math.PI * 2, r = 47 + Math.pow(hash(i * 2.3), 0.7) * 130, s2 = 3 + hash(i * 4.1) * 6;
-      m4.compose(v.set(Math.cos(a) * r, -9 + hash(i * 5.3) * 4, Math.sin(a) * r), q, sc.set(s2 * 1.4, s2 * 0.5, s2)); puffs.setMatrixAt(i, m4);
-      const gloom = Math.max(0, Math.cos(a - Math.PI / 4)) * Math.min(1, r / 90);
-      puffs.setColorAt(i, c.set('#FFFFFF').lerp(grey, gloom * 0.8));
+    for (const [geo, list] of [[new THREE.IcosahedronGeometry(1, 1), nGan], [puffGeo, xa]]) {
+      if (!list.length) continue;
+      const puffs = new THREE.InstancedMesh(geo, mat('#FFFFFF'), list.length);
+      list.forEach(([i, a, r], k) => {
+        const s2 = 3 + hash(i * 4.1) * 6;
+        m4.compose(v.set(Math.cos(a) * r, -9 + hash(i * 5.3) * 4, Math.sin(a) * r), q, sc.set(s2 * 1.4, s2 * 0.5, s2)); puffs.setMatrixAt(k, m4);
+        const gloom = Math.max(0, Math.cos(a - Math.PI / 4)) * Math.min(1, r / 90);
+        puffs.setColorAt(k, c.set('#FFFFFF').lerp(grey, gloom * 0.8));
+      });
+      scene.add(puffs);
     }
-    scene.add(puffs);
     // mây bông dưới đáy đảo
-    for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2, r = ISLE_R(a) - 4 - hash(i) * 6, p2 = part(new THREE.IcosahedronGeometry(3 + hash(i * 2) * 2, 1), mat(isGreyEdge(a) ? '#C9CDD2' : '#FFFFFF'), Math.cos(a) * r, -9 - hash(i * 3) * 1.5, Math.sin(a) * r, 0, false); p2.scale.y = 0.6; scene.add(p2); }
+    for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2, r = ISLE_R(a) - 4 - hash(i) * 6, p2 = part(puffGeo.clone().scale(3 + hash(i * 2) * 2, 3 + hash(i * 2) * 2, 3 + hash(i * 2) * 2), mat(isGreyEdge(a) ? '#C9CDD2' : '#FFFFFF'), Math.cos(a) * r, -9 - hash(i * 3) * 1.5, Math.sin(a) * r, 0, false); p2.scale.y = 0.6; scene.add(p2); }
   }
   // cầu gỗ dây treo qua mây ở 4 cổng, đảo láng giềng cuối cầu có cột mốc (mục 8.8)
   const NEIGHBOR_D = KHU.dao.cachLangGieng;
@@ -1958,14 +1983,14 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     g.add(part(new THREE.BoxGeometry(2.8, 0.18, L), woodMat, 0, 0.02, 0, 0.03, false));
     for (let k = -L / 2; k <= L / 2; k += 2.2) for (const s2 of [-1.35, 1.35]) g.add(part(new THREE.CylinderGeometry(0.06, 0.06, 1.0, 6), woodMat, s2, 0.5, k, 0.1, false));
     for (const s2 of [-1.35, 1.35]) { const rope = part(new THREE.CylinderGeometry(0.025, 0.025, L, 4), mat('#C9A27A'), s2, 0.95, 0, 0, false); rope.rotation.x = Math.PI / 2; g.add(rope); }
-    for (let k = -L / 2 + 3; k < L / 2; k += 7) for (const s2 of [-1.35, 1.35]) { const l = part(new THREE.SphereGeometry(0.15, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), s2, 1.15, k, 0.08, false); l.scale.y = 1.2; g.add(l); }
+    for (let k = -L / 2 + 3; k < L / 2; k += 7) for (const s2 of [-1.35, 1.35]) { const l = part(new THREE.SphereGeometry(0.15, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), s2, 1.15, k, 0.08, false); l.scale.y = 1.2; g.add(l); }
     scene.add(g);
     const [ix, iz] = onAxis(rd, e + NEIGHBOR_D, 0), isl = new THREE.Group(); isl.position.set(ix, 0, iz); scene.add(isl);
     isl.add(part(new THREE.CylinderGeometry(12, 11, 0.6, 28), mat('#9FCF7A'), 0, -0.3, 0, 0.02, false));
     const under = part(new THREE.ConeGeometry(11, 10, 28), mat('#B08E68'), 0, -5.6, 0, 0.02, false); under.rotation.x = Math.PI; isl.add(under);
     const [lx, lz] = onAxis(rd, e + NEIGHBOR_D - 3, 0);
     if (rd.neighbor === 'coi-xay') { makeWindmill(lx, lz); for (const s2 of [-1, 1]) makePaddy(lx + s2 * 5, lz - 3, 3.6, 2.6, 0); }
-    else if (rd.neighbor === 'cau-vong') { ['#FF6B5A', '#FFA24A', '#FFD45A', '#7CCB6A', '#4F8FC0', '#7B61B8'].forEach((cl, k) => { const t = part(new THREE.TorusGeometry(5.2 - k * 0.42, 0.2, 8, 40, Math.PI), mat(cl), lx, 0, lz, 0.02, false); t.rotation.y = Math.PI / 2 - rd.a + Math.PI / 2; scene.add(t); }); }
+    else if (rd.neighbor === 'cau-vong') { ['#FF6B5A', '#FFA24A', '#FFD45A', '#7CCB6A', '#4F8FC0', '#7B61B8'].forEach((cl, k) => { const t = part(new THREE.TorusGeometry(5.2 - k * 0.42, 0.2, 6, 28, Math.PI), mat(cl), lx, 0, lz, 0.02, false); t.rotation.y = Math.PI / 2 - rd.a + Math.PI / 2; scene.add(t); }); }
     else if (rd.neighbor === 'thap-den') { scene.add(part(new THREE.CylinderGeometry(1.1, 1.1, 2.2, 12), lanternMat('#FFC857', '#FFB030'), lx, 3.2, lz, 0.06)); scene.add(part(new THREE.CylinderGeometry(0.12, 0.12, 2.2, 8), woodMat, lx, 1.1, lz, 0.1)); for (let k = 0; k < 6; k++) { const l = part(new THREE.SphereGeometry(0.3, 10, 8), lanternMat(k % 2 ? '#FF6B5A' : '#FFC857', '#FF5A30'), lx - 5 + k * 2, 3.6 - Math.sin(k / 5 * Math.PI) * 0.6, lz + 3, 0.08); l.scale.y = 1.2; scene.add(l); } }
     else { makeHouse(lx + 2.5, lz - 2.5, -rd.a - Math.PI / 2, 1); makeHouse(lx - 2.5, lz + 2.5, -rd.a - Math.PI / 2, 2); scene.add(part(new THREE.BoxGeometry(0.8, 4.5, 0.8), mat('#B0402F'), lx - 5, 2.25, lz - 4, 0.06)); }
   });
@@ -2020,7 +2045,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       if (!built) for (const y of [0.45, 0.85]) g.add(part(new THREE.BoxGeometry(3.6, 0.12, 0.12), woodMat, 0, y, 0.3, 0.08));
       const L = 30, [bx, bz] = pol(a, r + 2.6 + L / 2), br = add(new THREE.Group()); br.position.set(bx, 0, bz); br.rotation.y = Math.PI / 2 - a;
       br.add(part(new THREE.BoxGeometry(2.8, 0.18, L), woodMat, 0, 0.02, 0, 0.03, false));
-      for (let k = -L / 2 + 3; k < L / 2; k += 7) for (const s2 of [-1.35, 1.35]) { const l = part(new THREE.SphereGeometry(0.15, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), s2, 1.15, k, 0.08, false); l.scale.y = 1.2; br.add(l); }
+      for (let k = -L / 2 + 3; k < L / 2; k += 7) for (const s2 of [-1.35, 1.35]) { const l = part(new THREE.SphereGeometry(0.15, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), s2, 1.15, k, 0.08, false); l.scale.y = 1.2; br.add(l); }
       return { x: gx, z: gz, fx, fz, a, to, name: ZONE_NAME[to], lock: khoa || (built ? null : 'chưa dựng') };
     });
     // lan can gỗ thấp, đèn lồng; chừa cổng
@@ -2029,11 +2054,11 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const a = i / n * Math.PI * 2; if (Z.gates.some((g) => Math.abs(Math.atan2(Math.sin(a - g.a), Math.cos(a - g.a))) < 2.2 / r)) continue;
       const [x, z] = pol(a, r + 0.35); add(part(new THREE.CylinderGeometry(0.07, 0.08, 0.95, 6), woodMat, x, 0.47, z, 0.1));
       const [x2, z2] = pol(a + Math.PI * 2 / n, r + 0.35), rail = add(part(new THREE.BoxGeometry(Math.hypot(x2 - x, z2 - z), 0.08, 0.08), woodMat, (x + x2) / 2, 0.88, (z + z2) / 2, 0.08)); rail.rotation.y = -Math.atan2(z2 - z, x2 - x);
-      if (i % 6 === 0) { const l = add(part(new THREE.SphereGeometry(0.14, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), x, 1.1, z, 0.08)); l.scale.y = 1.2; }
+      if (i % 6 === 0) { const l = add(part(new THREE.SphereGeometry(0.14, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), x, 1.1, z, 0.08)); l.scale.y = 1.2; }
     }
     // cột mốc của khu, cây xanh ven mép, biển "đang dựng", trạm xe
     if (S.mark === 'windmill') makeWindmill(cx + 14, cz - 12);
-    else if (S.mark === 'rainbow') ['#FF6B5A', '#FFA24A', '#FFD45A', '#7CCB6A', '#4F8FC0', '#7B61B8'].forEach((cl, k) => add(part(new THREE.TorusGeometry(5.2 - k * 0.42, 0.2, 8, 40, Math.PI), mat(cl), cx, 0, cz - 10, 0.02, false)));
+    else if (S.mark === 'rainbow') ['#FF6B5A', '#FFA24A', '#FFD45A', '#7CCB6A', '#4F8FC0', '#7B61B8'].forEach((cl, k) => add(part(new THREE.TorusGeometry(5.2 - k * 0.42, 0.2, 6, 28, Math.PI), mat(cl), cx, 0, cz - 10, 0.02, false)));
     else if (S.mark === 'lantern') for (let k = 0; k < 7; k++) { const l = add(part(new THREE.SphereGeometry(0.4, 10, 8), lanternMat(k % 2 ? '#FF6B5A' : '#FFC857', '#FF5A30'), cx - 6 + k * 2, 3.4 - Math.sin(k / 6 * Math.PI) * 0.7, cz + 4, 0.08)); l.scale.y = 1.25; }
     else { makeHouse(cx - 8, cz - 8, 0, 1); makeHouse(cx + 8, cz - 8, 0, 2); }
     for (let i = 0; i < 14; i++) { const a = hash(i * 3.1 + cx + cz) * Math.PI * 2, d = r * (0.55 + hash(i * 1.3) * 0.35), [x, z] = pol(a, d); if (Z.gates.some((g) => Math.abs(Math.atan2(Math.sin(a - g.a), Math.cos(a - g.a))) < 0.3)) continue; makeTree(x, z, 1.0 + hash(i) * 0.3, GREENS[i % 3]); }
@@ -2189,7 +2214,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       if (c.kieu === 'cap-treo') for (const s2 of [-0.8, 0.8]) { const cb = part(new THREE.CylinderGeometry(0.03, 0.03, L + 6, 4), mat('#5B5B66'), s2, 6 + (L / 2) * 0.35, 0, 0, false); cb.rotation.x = Math.PI / 2 - 0.35; br.add(cb); }
       else if (c.kieu !== 'cau-gio') {
         br.add(part(new THREE.BoxGeometry(2.8, 0.18, L), c.kieu === 'cau-tre' ? mat('#C9B26A') : c.kieu === 'bac-da' ? mat('#C9C2B2') : woodMat, 0, 0.02, 0, 0.03, false));
-        for (let k = -L / 2 + 3; k < L / 2; k += 7) for (const s2 of [-1.35, 1.35]) { const l = part(new THREE.SphereGeometry(0.15, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), s2, 1.15, k, 0.08, false); l.scale.y = 1.2; br.add(l); }
+        for (let k = -L / 2 + 3; k < L / 2; k += 7) for (const s2 of [-1.35, 1.35]) { const l = part(new THREE.SphereGeometry(0.15, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), s2, 1.15, k, 0.08, false); l.scale.y = 1.2; br.add(l); }
       }
       return { x: gx, z: gz, fx, fz, a: ha, to: c.toi, name: ZONE_NAME[c.toi], lock };
     });
@@ -2213,7 +2238,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const [x, z] = W(Math.cos(a) * (IR(a) + 0.35), Math.sin(a) * (IR(a) + 0.35)), [x2, z2] = W(Math.cos(a2) * (IR(a2) + 0.35), Math.sin(a2) * (IR(a2) + 0.35));
       add(part(new THREE.CylinderGeometry(0.07, 0.08, 0.95, 6), rail(i), x, 0.47, z, 0.1));
       if (!near(a2, gA, 0.075) && !near(a2, BAL, 0.06)) { const rail = add(part(new THREE.CylinderGeometry(0.05, 0.05, Math.hypot(x2 - x, z2 - z), 6), K.dao.lanCan === 'mau' ? RAIN[Math.floor(i / 3) % 6] : bam, (x + x2) / 2, 0.86, (z + z2) / 2, 0.08)); rail.rotation.z = Math.PI / 2; rail.rotation.y = -Math.atan2(z2 - z, x2 - x); }
-      if (i % 6 === 0) { const l = add(part(new THREE.SphereGeometry(0.14, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), x, 1.1, z, 0.08)); l.scale.y = 1.2; }
+      if (i % 6 === 0) { const l = add(part(new THREE.SphereGeometry(0.14, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), x, 1.1, z, 0.08)); l.scale.y = 1.2; }
     }
     BAL.forEach((a) => {
       const e = IR(a), [bx, bz] = W(Math.cos(a) * (e + 1.4), Math.sin(a) * (e + 1.4)), g = add(new THREE.Group()); g.position.set(bx, 0, bz); g.rotation.y = Math.PI / 2 - a;
@@ -2558,7 +2583,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
         else { g.add(part(new THREE.BoxGeometry(3.4, 0.6, 3.0), mat('#7B61B8'), 0, 0.3, 0, 0.04));
         for (const s2 of [-1.6, 1.6]) g.add(part(new THREE.BoxGeometry(0.14, 2.6, 0.14), woodMat, s2, 1.6, -1.4, 0.08));
         g.add(part(new THREE.BoxGeometry(3.4, 0.2, 0.2), woodMat, 0, 2.9, -1.4, 0.05)); }
-        if (!md) for (let k = 0; k < 5; k++) { const l = part(new THREE.SphereGeometry(0.14, 10, 8), lanternMat(k % 2 ? '#FF6B5A' : '#FFC857', '#FF5A30'), -1.4 + k * 0.7, 2.7, -1.4, 0.08, false); l.scale.y = 1.2; g.add(l); }
+        if (!md) for (let k = 0; k < 5; k++) { const l = part(new THREE.SphereGeometry(0.14, 8, 6), lanternMat(k % 2 ? '#FF6B5A' : '#FFC857', '#FF5A30'), -1.4 + k * 0.7, 2.7, -1.4, 0.08, false); l.scale.y = 1.2; g.add(l); }
         obstacles.push(...block(v));
       } else if (v.loai === 'quan') {
         // quán Cô Sáu (3D-19): nhà gỗ mở mặt ra hẻm, quầy pha chế, mái hiên bạt, biển tên
@@ -2570,7 +2595,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
         g.add(part(new THREE.BoxGeometry(w - 1.2, 2.2, 0.06), mat('#5B3A26'), 0, 1.1, d / 2 + 0.01, 0, false));
         g.add(part(new THREE.BoxGeometry(3.4, 1.0, 0.6), woodMat, -0.6, 0.5, d / 2 - 0.5, 0.04));
         for (let i = 0; i < 9; i++) { const st = part(new THREE.BoxGeometry(w / 9, 0.05, 1.4), mat(i % 2 ? '#FFF4DE' : '#3F8F5A'), -w / 2 + w / 18 + i * w / 9, 2.6, d / 2 + 0.6, 0.04); st.rotation.x = 0.3; g.add(st); }
-        for (let k = 0; k < 4; k++) { const l = part(new THREE.SphereGeometry(0.16, 10, 8), lanternMat('#FFC857', '#FFB030', true), -w / 2 + 1 + k * (w - 2) / 3, 2.2, d / 2 + 1.1, 0.08, false, outlineSway); l.scale.y = 1.25; g.add(l); } }
+        for (let k = 0; k < 4; k++) { const l = part(new THREE.SphereGeometry(0.16, 8, 6), lanternMat('#FFC857', '#FFB030', true), -w / 2 + 1 + k * (w - 2) / 3, 2.2, d / 2 + 1.1, 0.08, false, outlineSway); l.scale.y = 1.25; g.add(l); } }
         sign(g, v.chu, 3.2, 3.05, d / 2 + 0.05, '#FFC857'); Z.shop = { x: cx + v.diaDanh.toi[0], z: cz + v.diaDanh.toi[1] };
       } else if (v.loai === 'ban-cafe') {
         const md = dungModel('vat/ban-cafe');   // model Blender (Q344)
@@ -2892,12 +2917,22 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   const grassUniforms = { time: U.time, light: { value: new THREE.Color(1, 1, 1) }, base: { value: col('#4E9A3E') }, tip: { value: col('#B6E58F') }, wind: { value: 1 }, pushers: { value: pushers }, wet: U.wet };
   const bladeGeo = new THREE.PlaneGeometry(0.09, 0.55, 1, 2);   // 2 đoạn (4 tam giác) thay 4 đoạn: Đẹp Quảng Trường về ngân sách tam giác (Q151) bladeGeo.translate(0, 0.275, 0);
   { const p = bladeGeo.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setX(i, p.getX(i) * (1 - y / 0.6)); } }
+  // cỏ thưa dần theo khoảng cách tới camera (Q358): mỗi lá có hạng ngẫu nhiên aRank trong [0; 0,9); lá chỉ hiện khi hạng nhỏ hơn tỉ lệ giữ f(d)
+  // (đủ 100% trong 24 m quanh camera, tức cả vùng quanh người chơi ở mọi mức thu phóng; giảm dần còn 30% ở 40 m trở ra, nơi mỗi lá chỉ còn vài
+  // điểm ảnh). Lá gần ngưỡng co nhỏ dần trong khoảng hạng 0,1 nên không có lá bật ra hay biến mất; lá xa giữ được rộng hơn tới 80% để mặt cỏ vẫn
+  // phủ như cũ. CPU (grassLod) chỉ đưa vào lượt vẽ những lá còn hiện, xếp lại mỗi khi camera đi quá 0,75 m
+  const GRASS_LOD = { gan: 24, xa: 40, min: 0.3, mem: '0.1', rong: '0.8', f: (d) => `mix(1.0, ${GRASS_LOD.min}, clamp((${d} - ${GRASS_LOD.gan.toFixed(1)}) / ${(GRASS_LOD.xa - GRASS_LOD.gan).toFixed(1)}, 0.0, 1.0))` };
+  const grassF = (d) => 1 - (1 - GRASS_LOD.min) * Math.min(1, Math.max(0, (d - GRASS_LOD.gan) / (GRASS_LOD.xa - GRASS_LOD.gan)));
   const grassMat = new THREE.ShaderMaterial({
     uniforms: grassUniforms, side: THREE.DoubleSide,
-    vertexShader: `uniform float time; uniform float wind; uniform vec3 pushers[6]; varying float vH; varying float vShade;
+    vertexShader: `uniform float time; uniform float wind; uniform vec3 pushers[6]; varying float vH; varying float vShade; attribute float aRank;
       void main(){
         vH = uv.y;
-        vec4 wp = modelMatrix * instanceMatrix * vec4(position, 1.0);
+        // thưa dần theo khoảng cách camera (Q358): xem grassLod
+        float dc = distance((modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz, cameraPosition);
+        float gf = ${GRASS_LOD.f('dc')}, gs = clamp((gf - aRank) / ${GRASS_LOD.mem}, 0.0, 1.0);
+        vec3 gp = position; gp.y *= gs; gp.x *= gs * (1.0 + ${GRASS_LOD.rong} * (1.0 - gf));
+        vec4 wp = modelMatrix * instanceMatrix * vec4(gp, 1.0);
         float bend = uv.y * uv.y;
         float sway = (sin(time * 1.7 + wp.x * 0.45 + wp.z * 0.35) * 0.6 + sin(time * 3.1 + wp.x * 1.3) * 0.25) * wind;
         wp.x += sway * 0.22 * bend; wp.z += sway * 0.1 * bend;
@@ -2917,7 +2952,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // nên gom vào một nhóm và tắt khi người chơi ở khu khác (3D-24)
   const qtFx = new THREE.Group(); scene.add(qtFx);
   function makeGrass(count) {
-    if (grass) { qtFx.remove(grass); }
+    if (grass) { qtFx.remove(grass); if (grass.geometry !== bladeGeo) grass.geometry.dispose(); }
     grass = new THREE.InstancedMesh(bladeGeo, grassMat, count);
     grass.frustumCulled = false; grass.layers.set(LAYER_FX);
     const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
@@ -2933,16 +2968,34 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       grass.setMatrixAt(n++, m4);
     }
     grass.count = n;
+    // bản đầy đủ để grassLod chọn lá theo khoảng cách camera (Q358)
+    const rank = new Float32Array(n); for (let i = 0; i < n; i++) rank[i] = hash(i * 3.17 + 0.5) * 0.9;
+    grass.userData.lod = { n, m: grass.instanceMatrix.array.slice(0, n * 16), rank, cam: new THREE.Vector3(1e9, 0, 0) };
+    grass.geometry = bladeGeo.clone(); grass.geometry.setAttribute('aRank', new THREE.InstancedBufferAttribute(rank.slice(), 1));
     qtFx.add(grass);
+  }
+  function grassLod() {
+    const L = grass && grass.userData.lod; if (!L || !qtFx.visible || camera.position.distanceToSquared(L.cam) < 0.56) return;
+    L.cam.copy(camera.position);
+    const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z, M = grass.instanceMatrix.array, R = grass.geometry.attributes.aRank.array;
+    let k = 0;
+    for (let i = 0; i < L.n; i++) {
+      const o = i * 16, dx = L.m[o + 12] - cx, dy = L.m[o + 13] - cy, dz = L.m[o + 14] - cz;
+      if (L.rank[i] >= grassF(Math.sqrt(dx * dx + dy * dy + dz * dz)) + 0.03) continue;   // 0,03: lá sắp hiện khi camera đi tiếp vẫn có sẵn (đang co về 0)
+      for (let j = 0; j < 16; j++) M[k * 16 + j] = L.m[o + j];
+      R[k++] = L.rank[i];
+    }
+    grass.count = k; grass.instanceMatrix.needsUpdate = true; grass.geometry.attributes.aRank.needsUpdate = true;
   }
 
   // ------------------------------------------------------------------
   // Nhân vật chibi: mặt vẽ tay, tóc nhiều lọn, khớp chân tay, ô che mưa
   // ------------------------------------------------------------------
-  // mảnh cầu phía trước đầu để dán mặt
-  const faceGeo = new THREE.SphereGeometry(0.506, 32, 24, Math.PI / 2 - 0.95, 1.9, Math.PI / 2 - 0.62, 1.05);
+  // mảnh cầu phía trước đầu để dán mặt; 16 × 10 đoạn trên mảnh 1,9 × 1,05 rad (Q358: trước 32 × 24 = 1.536 tam giác mỗi người, dày hơn cả khối đầu;
+  // độ lõm dây cung dưới 1 mm, mặt vẫn nằm ngoài da 6 mm nên mặt không chìm vào đầu ở mọi dạng khuôn mặt)
+  const faceGeo = new THREE.SphereGeometry(0.506, 16, 10, Math.PI / 2 - 0.95, 1.9, Math.PI / 2 - 0.62, 1.05);
   // máy yếu (mặc định Nhẹ khi mở trang, 3D-24 Q106): nhân vật dựng ít mặt hơn (khoảng 55% số đoạn tròn, tối thiểu 5)
-  const CH_LOW = LOW0, sg = (n) => (CH_LOW ? Math.max(5, Math.round(n * 0.55)) : n);
+  const CH_LOW = LOW0; let chLo = CH_LOW; const sg = (n) => (chLo ? Math.max(5, Math.round(n * 0.55)) : n);   // chLo: dựng bản xa ít mặt (chibiXa, Q358)
   // mặt nạ giấy Trung Thu (GDD §18.3, Q245): đội ở ô Mũ để vẫn cầm được lồng đèn (ô Phụ kiện) khi rước đèn; [tên, màu giấy]
   const MAT_NA_GIAY = { mnongdia: ['Mặt nạ ông Địa', '#FFA894'], mntho: ['Mặt nạ thỏ ngọc', '#FFFFFF'], mncuoi: ['Mặt nạ chú Cuội', '#FFE0B0'] };
   // ô Quần/váy (GDD §10.1, Q259): kiểu → [tên, màu, dáng]; dáng: dai (quần dài), lung (quần lửng), short (quần short), vay (chân váy), ong (quần ống rộng)
@@ -3211,7 +3264,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       else { g.add(part(new THREE.ConeGeometry(0.09, 0.16, sg(8)), den, 0, 0.32, 0, 0.06)); for (const s2 of [-1, 1]) g.add(part(new THREE.BoxGeometry(0.06, 0.12, 0.03), den, s2 * 0.24, 0.16, 0.03, 0, false)); }   // chú Cuội: chỏm tóc trên đỉnh, tóc mai
     }
     root.traverse((m) => { if (m.isMesh) m.castShadow = m.material !== outlineMat && m !== face; });
-    return { root, body, legs, arms, head, faceMat, faces, shirt, umbrella, duoi, phase: 0, blinkT: 2 + Math.random() * 3, squash: 0, prevSpeed: 0, name: o.name, lookYaw: 0, idleYaw: 0, idleT: 2 + Math.random() * 3, breath: Math.random() * 6, look: null };
+    return { opt: o, root, body, legs, arms, head, faceMat, faces, shirt, umbrella, duoi, phase: 0, blinkT: 2 + Math.random() * 3, squash: 0, prevSpeed: 0, name: o.name, lookYaw: 0, idleYaw: 0, idleT: 2 + Math.random() * 3, breath: Math.random() * 6, look: null };
   }
   // tư thế làm việc (GDD §5 "tưới cây, gieo hạt, nấu, may, chụp ảnh", Q246): khoảng 1 giây cúi người + tay làm động tác khi tưới, gieo, thu hoạch,
   // nấu, may, nhuộm, chụp ảnh; bước đi là thôi ngay, đang ngồi/nhảy/câu thì bỏ qua; che ô thì tay trái giữ ô. Ít chuyển động: một tư thế đứng yên
@@ -3765,7 +3818,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   butterflies.instanceColor.needsUpdate = true;
   const fireflies = instanced(new THREE.SphereGeometry(0.035, 6, 4), new THREE.MeshBasicMaterial({ color: new THREE.Color(3, 2.6, 1.2) }), 60);
   const dustMat = new THREE.MeshBasicMaterial({ color: col('#EADCC0'), transparent: true, opacity: 0.8 });
-  const dust = instanced(new THREE.SphereGeometry(0.09, 8, 6), dustMat, 40);
+  const dust = instanced(new THREE.SphereGeometry(0.09, 6, 4), dustMat, 40);   // giọt nước, bụi nắng 6 × 4 đoạn (Q358): hạt 12–18 cm, 40 thay 80 tam giác
   const dustP = Array.from({ length: 40 }, () => ({ x: 0, y: -9, z: 0, t: 1 }));
   let dustI = 0, dustAcc = 0;
   const rainN = 1100;
@@ -4790,7 +4843,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     // 100%: biển "Cầu Gió" trên xà, cờ, đèn lồng dọc lan can, chuông gió (ống tre + tua giấy) treo dưới hai xà ngang
     const bien = P(100, 101, new THREE.PlaneGeometry(2.4, 0.5), texMat(signTex(300, 62, boardPaint('Cầu Gió', '#FFF4DE', '#5B3A26', 40))), 0, 4.15, 34.67); P(100, 101, bien.geometry, bien.material, 0, 4.15, 34.33).rotation.y = Math.PI;
     for (const sx of [-1.75, 1.75]) { P(100, 101, new THREE.ConeGeometry(0.28, 0.8, 4), mat(sx < 0 ? '#FF6B5A' : '#FFC857'), sx + 0.3 * Math.sign(sx), 5.0, zg).rotation.z = -Math.sign(sx) * Math.PI / 2;
-      for (let z = 36; z < z1; z += 7) P(100, 101, new THREE.SphereGeometry(0.15, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), sx * 0.92, 1.35, z).scale.y = 1.2; }
+      for (let z = 36; z < z1; z += 7) P(100, 101, new THREE.SphereGeometry(0.15, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), sx * 0.92, 1.35, z).scale.y = 1.2; }
     for (const [y0, z0, n, w] of [[3.47, 34.5, 5, 6], [4.55, zg, 3, 3]]) for (let k = 0; k < n; k++) {
       const c = new THREE.Group(); c.position.set(Z.cx - w / 2 + (k + 0.5) * w / n, y0, Z.cz + z0); c.scale.setScalar(1.7); Object.assign(c.userData, { tu: 100, den: 101 }); g0.add(c); chuong.push(c);
       c.add(part(new THREE.CylinderGeometry(0.008, 0.008, 0.3, 4), day, 0, -0.15, 0, 0, false), part(new THREE.CylinderGeometry(0.11, 0.11, 0.04, 8), woodMat, 0, -0.3, 0, 0.05, false));
@@ -4962,7 +5015,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     // 75%: dây lồng đèn giăng giữa bốn trụ, võng xuống giữa
     const vong = [...tru].sort((a, b) => Math.atan2(a.z, a.x) - Math.atan2(b.z, b.x));
     vong.forEach((A, i) => { const B = vong[(i + 1) % vong.length], M = [(A.x + B.x) / 2, 2.3, (A.z + B.z) / 2]; que(75, 101, [A.x, 3.1, A.z], M, 0.015, day); que(75, 101, M, [B.x, 3.1, B.z], 0.015, day);
-      for (let k = 1; k < 6; k++) { const u = k / 6; P(75, 101, new THREE.SphereGeometry(0.16, 10, 8), k % 2 ? lanternMat('#FF6B5A', '#FF5A30') : lanternMat('#FFC857', '#FFB020'), A.x + (B.x - A.x) * u, 3.1 - 0.8 * (1 - (2 * u - 1) ** 2) - 0.2, A.z + (B.z - A.z) * u, 0.06).scale.y = 1.2; } });
+      for (let k = 1; k < 6; k++) { const u = k / 6; P(75, 101, new THREE.SphereGeometry(0.16, 8, 6), k % 2 ? lanternMat('#FF6B5A', '#FF5A30') : lanternMat('#FFC857', '#FFB020'), A.x + (B.x - A.x) * u, 3.1 - 0.8 * (1 - (2 * u - 1) ** 2) - 0.2, A.z + (B.z - A.z) * u, 0.06).scale.y = 1.2; } });
     // 100%: biển "Lễ Hội Xua Bão" giữa hai xà, câu đối đỏ chữ vàng hai cột cổng (mặt hướng bến thuyền)
     const bien = P(100, 101, new THREE.PlaneGeometry(2.6, 0.42), texMat(signTex(340, 56, boardPaint('Lễ Hội Xua Bão', '#FFF4DE', '#8E3426', 34))), 0, 3.2, GZ - 0.1); bien.rotation.y = Math.PI; P(100, 101, bien.geometry, bien.material, 0, 3.2, GZ + 0.1);
     [['Phố', 'vui', 'người', 'tới'], ['Bão', 'xám', 'bay', 'xa']].forEach((cau, i) => { const t = signTex(64, 300, (x, w, h) => { x.fillStyle = '#C8312A'; x.fillRect(0, 0, w, h); x.fillStyle = '#FFE9A8'; x.font = `800 22px ${SIGN_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; cau.forEach((c, k) => x.fillText(c, w / 2, 40 + k * 72)); });
@@ -8346,7 +8399,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     m.position.set(x + Math.cos(a) * o, 0.14, z - Math.sin(a) * o); m.rotation.y = a; m.userData.s = s; m.visible = false; meoVet.add(m); }
   const meoQua = new THREE.Group(); meoQua.visible = false; meoQua.position.set(MT_Z.cx + MT.x, 0, MT_Z.cz + MT.z); scene.add(meoQua);   // hộp quà trăng + cột sáng
   meoQua.add(part(new THREE.BoxGeometry(0.5, 0.36, 0.4), mat('#3A5A8E'), 0, 0.18, 0, 0.05)); meoQua.add(part(new THREE.BoxGeometry(0.56, 0.1, 0.46), mat('#FFD45A'), 0, 0.41, 0, 0.05));
-  meoQua.add(part(new THREE.SphereGeometry(0.12, 12, 10), lanternMat('#FFF1A8', '#FFD45A'), 0, 0.58, 0, 0.05));
+  meoQua.add(part(new THREE.SphereGeometry(0.12, 9, 6), lanternMat('#FFF1A8', '#FFD45A'), 0, 0.58, 0, 0.05));
   { const tia = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.55, 5, 16, 1, true), new THREE.MeshBasicMaterial({ color: col('#FFF1A8'), transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })); tia.position.y = 2.5; meoQua.add(tia); }
   let meoDan = null;   // { k: kỳ trăng, s: quãng mèo đã đi, toi: tới chỗ giấu quà }
   function meoRamHoi() {
@@ -9018,7 +9071,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     for (const sx of [-1.15, 1.15]) { for (let i = 0; i < 4; i++) L[1].add(part(new THREE.BoxGeometry(0.08, 0.55, 0.08), mat('#F4EBDA'), sx + (i - 1.5) * 0.25 * Math.sign(sx), 0.28, fz - 1.3, 0.06)); L[1].add(part(new THREE.BoxGeometry(0.9, 0.06, 0.06), mat('#F4EBDA'), sx, 0.45, fz - 1.3, 0.04));
       L[1].add(part(new THREE.CylinderGeometry(0.18, 0.14, 0.3, 10), mat('#C4553F'), sx * 0.62, 0.15, fz - 0.6, 0.06)); L[1].add(part(new THREE.SphereGeometry(0.26, 10, 8), mat('#5FA86A'), sx * 0.62, 0.48, fz - 0.6, 0.06)); }
     for (const [x, y, r] of [[-0.8, 5.0, 0.55], [0, 5.25, 0.7], [0.8, 5.0, 0.55]]) L[2].add(part(new THREE.SphereGeometry(r, 12, 10), mat('#FFFFFF'), x, y, 0.2, 0.04));
-    for (const sx of [-0.7, 0.7]) L[2].add(part(new THREE.SphereGeometry(0.16, 10, 8), lanternMat('#FF6B5A', '#FF5A30'), sx, 2.2, fz - 0.15, 0.06)); }
+    for (const sx of [-0.7, 0.7]) L[2].add(part(new THREE.SphereGeometry(0.16, 8, 6), lanternMat('#FF6B5A', '#FF5A30'), sx, 2.2, fz - 0.15, 0.06)); }
   const showMatNha = () => matNha.children.forEach((g) => { g.visible = nhaCap >= g.userData.cap; });
   const showNha = () => { showMatNha(); const P = ZONES['phong-tro']; P.cauThang.visible = nhaCap >= 1; P.cuaVuon.visible = nhaCap >= 2; ZONES['lau-nha'].cauThang.visible = nhaCap >= 3; P.name = nhaCap >= 1 ? NHA_CAP[nhaCap].ten : P.K.ten; };
   showNha();
@@ -10033,7 +10086,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // trời lúc mở trang theo dự báo hôm nay (bài kiểm tra giữ nắng cố định)
   if (!/[?&]test\b/.test(location.search)) setWx(wxNgay(0)[1], wxNgay(0)[0]);
   if (/[?&]test\b/.test(location.search)) {
-    window.__test = { get q343() { return { MODEL_GOI, docModel, dungModel, VIEN_MODEL, hulls, scene, ZONES, ngoiMat, windowMat0 }; }, get q356() { return { NEN_QT, vetDenQT, ISLE_R, LOOP_R, LOOP_HALF, PLAZA_R, ROAD_W, KHU, inIsle, obstacles, noGrass, plazaMat, groundTex, GREY_EDGE }; }, get q340() { return { FISH, muaRao, state, player, viLuu: () => viLuu(), vi }; }, get q339() { return { pickFish: () => pickFish(), doi, doiCau, FISH, fishing, he, state }; }, get q338() { return { auraFx, AURA_VAT, auraTick, hmTick, hmFx, outfit, WARDROBE, outfitGoc, state }; }, get q337() { return { hatSang, hatTick, hatSong, HS_N, HAT_KIEU, hat, hatM, setRM: (v) => { reduceMotion = v; }, get rm() { return reduceMotion; } }; }, get q335() { return { khach, KHACH, KHACH_GIO, khachMo, khachTick, actors, ongNam, say: (a, t) => say(a, t) }; }, get q334() { return { LUNG, kinhCu, outfit, owned, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), BO, boDang, tuDo, tuMac: (i) => tuMac(i), rebuildPlayer: () => rebuildPlayer() }; }, get q333() { return { SHIP_CAN, shipDa, nvNghe, WARDROBE, makeChibi, owned, remoteLook: (p) => remoteLook(p), giaoThu: () => giaoThu(), thu }; }, get q332() { return { outfit, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), outfitGoc }; }, get q331() { return { DT_COC, DT_XOAY, DT_XUONG, DT_KET, dtXuongZ, dtVatCan, dtGoiLM, cocM, xoayM, xuongM }; }, get q330() { return { thuMoi, thuMoiMo, thuMoiTiep, thuMoiBoQua, moMan }; }, get q329() { return { toDoi, TO_DOI, toDP, owned, outfit, playerOpts: () => playerOpts(), myPresence: () => myPresence(), toCoDung, toCo, makeChibi, remoteLook: (p) => remoteLook(p) }; }, get q328() { return { toDP, nvh, nvhCap, nvhHx, nvhCon, nvhGop, nvhKiem, NVH_GIA, toVe: (m) => toVe(m), danhHieuCo: () => danhHieuCo(), toCoDung, toCo }; }, get q327() { return { ongNam, chuBay, toggleMarket: (o, w) => toggleMarket(o, w), banCaNPC, caMua, seller: () => seller }; }, get q326() { return { kc, kcDoi, KC_DL, KC_DL_MAX, kcStart: () => kcStart(), kcHit: () => kcHit(), kcTick: (t) => kcTick(t), kcEnd: (w) => kcEnd(w), kcBots }; }, get q325() { return { MON, tenNL, coNL, monMo, duNL, truNL, xpMon, renderBep: () => renderBep() }; }, get q324() { return { hv, HS, hvLuoi, hvGiong, hvStart, hvDoan, hvTick, hvHetVong, HV_VONG, HV_GIO, hs, hsStart: () => hsStart() }; }, get q323() { return { STICKER, veSticker, dangSticker, guiSticker, player, hudRedraw: () => hudRedraw(), say: (a, t) => say(a, t), resetT: () => { stickerT = 0; } }; }, get q321() { return { heSoNgay, todayK, giaTuan, veGiaTuan, ngayKhoa, chiMan, merchant, toggleMarket: (o, w) => toggleMarket(o, w) }; }, get q322() { return { EMO_DOI, DOI_T, doi, doiTick, doiTha, emoDoi, dtnNpc, dtnH, DTN, doThan }; }, get q320() { return { tr, TT_TRON, ttTronStart, ttNap, ttRung, ttTronTick, ttTronXong, ttChonDich, ttLuMe, ttVai, kcBots }; }, get q318() { return { dtThuong, dtXep, DUA_THUONG, DUA_HET, DT_DEM, DT_VANG, DT_SAU, dtMotVe, veHeSo }; }, get q316() { return { hopM, HOP, dt_, BUA, BUA_TL, buaRut, dtBatKip, dtDung, dtTrung, dtAll, vitM, caDan, domM, dtThung, dtDen, dtCv, lbM, lbX0, dtDong, lbDx, LB, dtFx, dtStart, dtTick: (t) => dtTick(t), dtBua: () => dtBua(), dtEnd: () => dtEnd(), state }; }, get q314() { return { VI_W, VI_H, VI_MAU, viLay, viHop, viMo, viTo, viLuu, vi, inAoMat, outfit, owned, makeChibi, playerOpts: () => playerOpts(), remoteLook: (p) => remoteLook(p), WARDROBE, nhaViec: (pp) => nhaViec(pp) }; }, get q310() { return { meoMai, meoGan: (pp) => meoGan(pp), MAU_NGHE, playerOpts: () => playerOpts(), nghe, makeChibi, meoDaoTick, MEO_HOI, ZONES, rebuildPlayer: () => rebuildPlayer() }; }, get q308() { return { hmMac, hmTick, hmFx, hmVong, outfit, ngayKhoa, today, homQua }; }, get q307() { return { KV, kvCan, kvTrao, kvXong, KV_H, doThan, dtnBoc: (a) => dtnBoc(a), bag, saveBag }; }, get q306() { return { khuay, khuayBat, khuayBam, khuayTick, khuayXong, khuayKim, KHUAY_CAN, KHUAY_LAN, bep }; }, get q305() { return { DTN, dtnCong: (t, n) => dtnCong(t, n), doThan, bag, saveBag, DO_BAY, doMesh: (id) => doMesh(id), DO_NHOM }; }, get q303() { return { xemTV, DO_BAY, doMesh: (id) => doMesh(id), XUONG, lamDo: (id) => lamDo(id), bag, saveBag, nghe, MUA_LA: () => null }; }, get q300() { return { WARD_TABS: () => WARD_TABS, kdMo: () => kdMo(), toggleWard: (o) => toggleWard(o), MON, monMo, dtnH, dtnCong: (t, n) => dtnCong(t, n), doThan, BI_H, matNha, showNha: () => showNha(), get nhaCap() { return nhaCap; }, set nhaCap(v) { nhaCap = v; } }; }, get q297() { return { TASK_POOL, bump: (id) => bump(id), quest, TASKS: () => TASKS.map((t) => t.id), veMini, DTN, dtnTang: (t, q) => dtnTang(t, q), doThan, busPhi, busCho, busToi, busDi, BUS_PHI, BUS_CHU_KY, renderBus: () => renderBus(), bag, saveBag }; }, get q294() { return { nguGiuong, NANG_NGU, cdan, cfMoi, coSau, greet: (w) => greet(w), bag, saveBag, xpCD: (n) => xpCD(n), capCD }; }, get q293() { return { msb, msbBan, msbThue, msbGiao, msbNhan, msbAction, msbG, msbGia, MSB_NHIP, MSB_MAX, MSB_THUE, nghe, bag, saveBag }; }, get q292() { return { bc, bcGoi, BC_BUOC, noiBC, tet, tetNgay, bag, saveBag, BUFF_AN, anDuoc, pickAction: () => pickAction() }; }, get q289() { return { goDan, DAN_NOT, XUONG, DO_BAY, doMesh: (id) => doMesh(id), lamDo: (id) => lamDo(id), emoDoi, EMO_DOI, doEmote: (k) => doEmote(k), danhHieuCo: () => danhHieuCo(), doThan, dtnNpc, DTN, makeChibi, playerOpts: () => playerOpts(), nghe, rebuildPlayer: () => rebuildPlayer(), player }; }, get q286() { return { phaTrang, moonBong, moon, qbm, qbmRut, qbmCan, qbmTrao, qbmNam, DTN, dtnBoc: (a) => dtnBoc(a), doThan, nsHqua, heSoNS, nsKy, nsBang, priceOf: (k) => priceOf(k), homQua, CROPS, setSeller: (q) => { const c = seller; seller = q; return c; }, chiMan, renderQuest: () => renderQuest() }; }, get q283() { return { BAC_NGHE, bacNghe, danhHieu, ngheLv, ngheXp, nghe, renderNghe: () => renderNghe(), giongBao, kcStart, pickAction: () => pickAction(), AOLEN_LAN, treoThong, thong, owned, makeChibi, remoteLook: (p) => remoteLook(p), WARDROBE }; }, get q282() { return { hiemTui, renderBag: () => renderBag(), bag, saveBag, HIEM_DO }; }, get q281() { return { diemGio, chaoGioThu, chaoGio, CHG_DIEM, CHG_MAX, CHG_GIO, chgCach, get gioMo() { return gioMo; }, set gioMo(v) { gioMo = v; } }; }, get q277() { return { MON, BUFF_AN, DON_POOL, giaoDon: (i) => giaoDon(i), don: () => don, haiNam, tre, harvest, plots, CROPS, cauVong, saoP: () => saoP, duNL, truNL, coNL, NL_TUI, tenHang }; }, get q274() { return { XP_CA, bacCa, xpMon, MON, FISH_ALL: FISH, hoangHon, doiCon, DOI_NGAY, DOI_HOI, nghe, renderNghe: () => renderNghe(), cdan, capCD, landFish, fishing, bep, bag, saveBag }; }, get q273() { return { makeChibi, WARDROBE, outfit, owned, kinhCu, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), addXu, get xu() { return xu; }, htCo }; }, get q272() { return { hs, HS, hsStart, hsGo, hsChon, hsTick, hsGoiY, boDau, get veVui() { return veVui; } }; }, get q271() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), toggleWard: (o) => toggleWard(o) }; }, get q269() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), owned, addXu, get xu() { return xu; }, htCo }; }, get q267() { return { makeChibi, WARDROBE, outfit, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts() }; }, get q266() { return { faceSet, WARDROBE, outfit, player, rebuildPlayer: () => rebuildPlayer() }; }, get q265() { return { faceSet, faceTex, outfit, outfitGoc, myPresence, playerOpts: () => playerOpts(), rebuildPlayer: () => rebuildPlayer(), player, WARDROBE, toggleWard: (o) => toggleWard(o) }; }, get q264() { return { WARDROBE, HT_GIAM, HT_SO, htPool, htTuan, htCo, giaMua, sdTuan, tryItem, renderWard, toggleWard: (o) => toggleWard(o), owned, outfit, addXu, get xu() { return xu; } }; }, get q262() { return { WARDROBE, pc, PC_BAC, pcBac, pcCong, pcMienPhi, sanDien, sd, sdChuDe, ttChao, ttNgay, chuDe, dungChuDe, outfit, renderQuest }; }, get q260() { return { lopDo, khuDo, oBay, vuongBay, viTriDo, nhaGan, nhaViec, nhaBayViec, NHA_KHU, BAN_CAO, THAM_O, TRAN_CAO, dungDo, quatTick }; }, get q261() { return { HOA_ONG, ONG_R, ongTo, ongGan, ongGanO, ongVong, ongBay, ongHoaTick, aoSenNT, aoSenHai, aoSenG, plotInfo, saveGarden, DR_KHU, DR_MAX, drNgay, doRoi, drRai, drNhat, drBo, doRoiTick, lmTrung, pet, get reduceMotion() { return reduceMotion; }, set reduceMotion(v) { reduceMotion = v; } }; }, get q259() { return { BO_KD, kdMoi, WARDROBE, outfitGoc, kdDang, macKD, kdMo, QUAN, KHUNG_TEN, BONG_BONG, DC_TEX, dcG, dcTick, drawTag, drawBubble, toggleWard, renderWard, get wardTab() { return wardTab; }, set chapDone(v) { chapDone = v; }, get chapDone() { return chapDone; } }; }, get q256() { return { BO_NT, BO_DIEM, boDuL, diemAC, diemDo, boCo, ntMo, ntVe, xoayDo, catDo, DO_NHOM, NDT_NHA, get doChon() { return doChon; }, set doChon(v) { doChon = v; }, get tgNgay() { return tgNgay; }, set tgNgay(v) { tgNgay = v; }, buff, coBuff }; }, get q257() { return { pull, nem, lucLuc, lucCo, kimBoi, chiaRungGia, dangRungGia, LUC_TU_NEM, bacCa, fishMax }; }, get q255() { return { bdd, bddMo, bddStart, bddBat, bddTick, bddXong, bddG, bddBai }; }, q258: { lh, LH, lhHx, lhBan, lhPct, lhVe, lhVao, lhGop, lhMoi, lhTick, CH5, C5, congC5Ve, deoMo, baoMo, aoChoangCheck, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, q254: { ml, ML, mlHx, mlBan, mlPct, mlVe, mlVao, mlGop, mlTick, CH4, CR, congRungVe, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, get q253() { return { svSkin, coHai, LAYER_BONG, hulls }; }, get q250() { return { treoThong, thong, cayThong, muaCauTuyet, lacCau, CAU_GIA, CAU_NGAY, hnNt, muaHoaiNiemDo, DO_NGUON, quatTick, hnMo }; }, get q252() { return { NV_NGHE, lamDo, phaNhuom, giaoThu, openNghe, lmDatTen, lmTenMo, lmCham, lmTagDat, lmTag, pet, get lmTen() { return lmTen; }, set lmTen(v) { lmTen = v; lmTagVe(); } }; }, q249: { htDecor, dcG, dcTick, dcDat, ttMa, ttMaSang, ttDen, ttDenM, ttMaM, HT_DO, remotes }, q251: { cg, CG, cgHx, cgBan, cgPct, cgVe, cgVao, cgGop, chEv, CH3, gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; }, haiDang: ZONES.vinh.haiDang, chapterRevive }, get q248() { return { nd, ndStart, ndBam, ndXong, ndTick, ndAction, ndBac, ndKhach, ndDiem, ong, ONG_CHUYEN, buff, veMini, ndDem, ndTap, NGHE, ongLao, sanKhau, demNhac, ngheLv }; }, q245: { heBoi, heTam, heVinh, coDua, heTick, lanNgam, muaDua, muaMatNa, mnKe, MAT_NA_GIAY, ruocTick, remoteLook, myPresence, he, trungThu }, get q244() { return { hoaTTick, hoaTSap, hoaTNpc, hoaTAction, get hoaTOn() { return hoaTOn; }, CH_NPC, phaoBan, doEmote, emoPhao, xinChu, tryItem, amCung, DO_BAY, tetNgay, renderWard, bayDo, catDo, hnDo: () => hnDo(), toggleWard: (o) => toggleWard(o) }; }, lamViec, LAM, KHUON, remoteLook, myPresence, outfitGoc, WARDROBE_MAT: () => WARDROBE.filter((q) => ['khuon', 'may', 'mieng', 'ruoi'].includes(q.key)), get q243() { return { lmTrung, lmTrungG, lmVo, lmTrungNhan, lmTrungTick, pet, pickFish, fishing, fishLog, bacCa, LM_NO_GIAY, get lmNoT() { return lmNoT; } }; }, get q247() { return { ti, TI, tiCho, tiChang, tiTick, tiCong, meoRam, meoDan, meoRamTick, ramKy, nuaDem, TRANG_TRON, moQuaRam, noiMeo, meoDem, meo, meoQua, meoVet, mtDai, MEO_NHA }; }, get q241() { return { hen, henCho, henTick, hopThu, HOP_DO, thuDen, moHopThu, thuGan, thuCo, THU_NPC }; }, otCau, otChim, cauOT, OT_KHU, OT_NGAM, THAT_TICH, otDot, otTick, DTN, doThan, dtnQua, dtnBoc, dtnCong, dtnH, toMtDem, datGop, datCan, datVe, datDA, datHx, datTin, datSao, datKiem, toMt, toMtMuc, toMtBot, toMtTin, animateChibi, batchChibi, WARDROBE_TOC: () => WARDROBE.find((q) => q.key === 'style'), renderWard: () => renderWard(), cpNpc, cpSap, cpNg, cpKhach, cpSt, cpMo, cpTick, cpAction, cpBay, cpDon, cpHang, cpSo, cpXY, CP_GIA, get cpOn() { return cpOn; }, xeLa, xlA, xlP, xlMay, xeLaTick, vc, vcO, vcGieo, vcTuoi, vcThu, vcHangXom, vcViec, coHai, VC_NHIP, camUoc, cuBuoc, cuLoc, cuMo, cuVe, cuG, CU_NPC, ndtVe, ndtTham, ndtG, get ndt() { return ndt; }, dongKhu, toDP, toLap, toCam, toGan, toTick, toCo, toNk, toCoLen, toVe, TO_MOC, ctvNpc, ongCo, coXoi, chuBanhMi, xeOm, ganhXoi, coBan, ctvSt, ctvTick, ctvAction, pickAction, get raoN() { return raoN; }, chBao, BAO_VIEC, baoBat, baoTat, baoGan, baoLam, baoTick, beBo, WX_BAO, SV, SV_LOAI, SV_CHO, svTick, veTranh, tranhVe, tranhGan, ngamTranh, khungTen, chupKhung, khungTick, khungAnh, pickAction0, renderQuest, NHAC, nhacBand, sfx, BIA, biaDoc, biaGan, docBia, BIA_TRUYEN, MEO_HOI, hoiMeo, meoGan, vuotMeo, meoHom, setItCD, setChuTo, setOpt, huongBip, huongTick, setHuong: (h) => { huongDich = h; }, get huongDich() { return huongDich; }, camera, get reduceMotion() { return reduceMotion; }, phoMoi, phaoBan, phaoTick, get phaoFx() { return phaoFx; }, toggleBus: (o) => toggleBus(o), get nvNghe() { return nvNghe; }, nvDem: (k) => nvDem(k), nhanNvNghe: (id) => nhanNvNghe(id), NV_NGHE: () => NV_NGHE, CAP_DAT, nangCap: (c) => nangCap(c), get nhaCapSet() { return null; }, set nhaCapSet(v) { nhaCap = v; }, MOI_CAU, diemCan, startFishing: (sp) => startFishing(sp), traiMua, tCay, plant, noiChuong, maxNuoi: (k) => maxNuoi(k), NANG_CHUONG, tocDoNguoi, duNL: (m) => duNL(m), truNL: (m) => truNL(m), get buff() { return buff; }, moKhe, KHE_MO, danhHieuCo: () => danhHieuCo(), DI_SAN, diSanMua, muaDiSan, quyPho, gopQuy, QUY_GOP, QUY_MOC, WARDROBE_LM: () => WARDROBE.find((q) => q.key === 'linhmay'), lmLong, muaCan, get canBac() { return canBac; }, set canBac(v) { canBac = v; }, CAN_BAC, rodStick, dauGia, raGia, dgKet, dgTran: (t) => dgTran(t), tuanNay, DG_KHOI, banNS, nsMua, nsConLai, nsDem, banCaNPC, caMua, DIEU_NHAY, bacCa, doEmote: (k) => doEmote(k), faceSet, FACES, WARDROBE_MV: () => WARDROBE.find((q) => q.key === 'matve'), WARDROBE_DA: () => WARDROBE.find((q) => q.key === 'da'), makeChibi, playerOpts: () => playerOpts(), locVang, grade, giayPQ, rebuildPlayer: () => rebuildPlayer(), setSeller: (q) => { const c = seller; seller = q; return c; }, setWx, lanternMats, banMon: () => banMon(), NHIET_DOI, veMini, muaTuoi, pickFish: () => pickFish(), get moiDung() { return moiDung; }, muaHoaiNiem: (k, v) => muaHoaiNiem(k, v), hnMo: () => hnMo(), detVaiMay, lamDo: (id) => lamDo(id), banDo: (id) => banDo(id), phaNhuomCham, nhuomAoCham, mayAoDai, aoDaiDu: () => aoDaiDu(), datBeLeg, caEpic: () => caEpic(), doMesh: (id) => doMesh(id), get DO_BAY() { return DO_BAY; }, aoSenNT, aoSenGieo, aoSenHai, aoSenChin, phaNhuomSen, nhuomAoSen, thaRong, thaRongTick, donHom: () => donHom(), giaoDon: (i) => giaoDon(i), get don() { return don; }, DON_POOL, tuanDem: (id) => tuanDem(id), get tuan() { return tuan; }, doiViec: (id) => doiViec(id), TASKS: () => TASKS.map((t) => t.id), get quest() { return quest; }, tuLuu: (i) => tuLuu(i), tuMac: (i) => tuMac(i), get tuDo() { return tuDo; }, get BO() { return BO; }, boDang: () => boDang(), get boFx() { return boFx; }, vuotVe, ccb, ccbChao, ccbCau, ccbSua, canK: () => canK(), sn, snKe, snHom, phaNhuom, nhuomAo, xayLua, giaTrung: (k) => giaTrung(k), nuoi, NUOI, muaNuoi, thuSp, dungChuong, hatMo, harvest, CROPS, tt, ttStart, ttSoi, ttTick, ttG, ns, nsStart, nsNhay, nsTick, nsAt, nsG, oaq, oaqDi, oaqStart, oaqChoi, oaqMay, at: (id) => at(id), lmTh, lmDiem, LM_NHANH, pet, cloudMat, lmMau, matOf: (h) => mat(h), lmh, lmHoang, voVeLM, ongTu, bao, baoVe, nhatVoSo, gopVoSo, hoaCo, BAO_CAN, thayDoDeo, deo, nguoiTuyet, ghePos, nhanLau, boat, tuanTra, kiemLam, dom, domP, domXY, tre, chatTre, batDom, endFishing: () => endFishing(), coCuuHo, lanNgay, get xemTruoc() { return xemTruoc; }, gateLock: (g) => gateLock(g), ngheMo, cdan, capCD, xpCD, xpCan, llMo, setCap: (L) => { let x = 0; for (let i = 1; i < L; i++) x += xpCan(i); cdan.xp = x; cdan.nang = 0; capHud(); }, aoSen, cauTrom, cauTromTick, trungThu, ruoc, sapNpcs, he, dieu, dieuM, tet, tetNgay, thayDo, tuyet, thong, cayThong, snowMesh, keoNgay, hoaTrang, ongTam, dienDien, ddHai, get owned() { return owned; }, nuocNoi, sd, sdChuDe, sdMo, sanDien, sangNgay, wxNgay, duBao, greet, chuDe, dungChuDe, ttNgay, outfit, cauVong, cauVongM, FISH_W: () => Object.fromEntries(FISH.map((f) => [f.id, f.w()])), giai, landFish, FISH_ALL: FISH, bacLa, xeLaKhung, linhTuoi, hoiCho, priceOf: (k) => priceOf(k), lich28, lichDangNhap, bkc, bkcCheck, fishLog, setSaoP: (v) => { saoP = v; }, buNhinO, setGiantP: (v) => { giantP = v; }, plots, loTre, WATER_R, get uocMo() { return uocMo; }, scene, bh, bhLam, moDoCu, ngheXp, lichXong: () => SCHED.forEach((c) => c.walk && lichXong(c)), get nhaCap() { return nhaCap; }, nuoi, vit, dtBua, hopM, dtFx, beCaG, demNhac, sanKhau, notNhac, anMon, buff, coBuff: (k) => coBuff(k), ongTam, cuDan, cuDanHits, setMapTab: (t) => setMapTab(t), amCung, nhaDo, nhaMesh, saveBag, quanMo, get denDau() { return denDau; }, meo, meoDem, hoaDang, hdNoi, dt_, dtCheo, hs, hsChon, kc, kcHit, get veVui() { return veVui; }, ga, addXu, plotCount: () => plots.length, buyDat, get datMo() { return datMo; }, live, liveProp, get liveDay() { return liveDay; }, priceK: () => liveK(), bep, MON, moMan: () => { moManStart(); return moMan; }, xe7, greyArc: () => [GREY_EDGE.map((r) => Math.round(r / DEG)), SUA], xuong, tramViec, timThay, npcViec, drawMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; drawMap(c, true); return c; }, pickRac, get racDen() { return racDen; }, dog, oi, get oiNight() { return oiNight; }, cauTrom, thu, tiToc, lc, graffiti, rac, get tiengTam() { return tiengTam; }, danPhong, rong, get taiTieng() { return taiTieng; }, get visited() { return visited; }, ong, ongLao, oiTrees, torch, bag, get haiTromOn() { return haiTromOn; }, nghe, NGHE, enterZone: (id) => enterZone(id, null, 'home'), applyQuality, greyCount: (n = 1) => REVIVE.filter((r) => r.ch <= n).reduce((n, r) => { r.g.traverse((m) => { if (m.isMesh && m.material === mat('#BDBDC6')) n++; }); return n; }, 0), marketFront: MARKET_FRONT, player, walkers, vendor, coSau, LICH_NPC, chEv, REVIVE, driftG, get chStep() { return chStep; }, get chapDone() { return chapDone; }, merchant, chiMan, mcLinh, chuBay, plots, fishing, bag, camera, state, renderer, obstacles, goTo, mapHits, LANDMARKS, GATES, segClear, U, ZONES, get zone() { return zone; }, get xu() { return xu; }, get camYawS() { return camYawS; },
+    window.__test = { get q358() { return { VIEN_MIN, vienDay, grass: () => grass, grassF, GRASS_LOD, water: () => water, faceGeo, XA, hulls, scene, camera, renderer, actors, player, applyQuality, state }; }, get q343() { return { MODEL_GOI, docModel, dungModel, VIEN_MODEL, hulls, scene, ZONES, ngoiMat, windowMat0 }; }, get q356() { return { NEN_QT, vetDenQT, ISLE_R, LOOP_R, LOOP_HALF, PLAZA_R, ROAD_W, KHU, inIsle, obstacles, noGrass, plazaMat, groundTex, GREY_EDGE }; }, get q340() { return { FISH, muaRao, state, player, viLuu: () => viLuu(), vi }; }, get q339() { return { pickFish: () => pickFish(), doi, doiCau, FISH, fishing, he, state }; }, get q338() { return { auraFx, AURA_VAT, auraTick, hmTick, hmFx, outfit, WARDROBE, outfitGoc, state }; }, get q337() { return { hatSang, hatTick, hatSong, HS_N, HAT_KIEU, hat, hatM, setRM: (v) => { reduceMotion = v; }, get rm() { return reduceMotion; } }; }, get q335() { return { khach, KHACH, KHACH_GIO, khachMo, khachTick, actors, ongNam, say: (a, t) => say(a, t) }; }, get q334() { return { LUNG, kinhCu, outfit, owned, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), BO, boDang, tuDo, tuMac: (i) => tuMac(i), rebuildPlayer: () => rebuildPlayer() }; }, get q333() { return { SHIP_CAN, shipDa, nvNghe, WARDROBE, makeChibi, owned, remoteLook: (p) => remoteLook(p), giaoThu: () => giaoThu(), thu }; }, get q332() { return { outfit, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), outfitGoc }; }, get q331() { return { DT_COC, DT_XOAY, DT_XUONG, DT_KET, dtXuongZ, dtVatCan, dtGoiLM, cocM, xoayM, xuongM }; }, get q330() { return { thuMoi, thuMoiMo, thuMoiTiep, thuMoiBoQua, moMan }; }, get q329() { return { toDoi, TO_DOI, toDP, owned, outfit, playerOpts: () => playerOpts(), myPresence: () => myPresence(), toCoDung, toCo, makeChibi, remoteLook: (p) => remoteLook(p) }; }, get q328() { return { toDP, nvh, nvhCap, nvhHx, nvhCon, nvhGop, nvhKiem, NVH_GIA, toVe: (m) => toVe(m), danhHieuCo: () => danhHieuCo(), toCoDung, toCo }; }, get q327() { return { ongNam, chuBay, toggleMarket: (o, w) => toggleMarket(o, w), banCaNPC, caMua, seller: () => seller }; }, get q326() { return { kc, kcDoi, KC_DL, KC_DL_MAX, kcStart: () => kcStart(), kcHit: () => kcHit(), kcTick: (t) => kcTick(t), kcEnd: (w) => kcEnd(w), kcBots }; }, get q325() { return { MON, tenNL, coNL, monMo, duNL, truNL, xpMon, renderBep: () => renderBep() }; }, get q324() { return { hv, HS, hvLuoi, hvGiong, hvStart, hvDoan, hvTick, hvHetVong, HV_VONG, HV_GIO, hs, hsStart: () => hsStart() }; }, get q323() { return { STICKER, veSticker, dangSticker, guiSticker, player, hudRedraw: () => hudRedraw(), say: (a, t) => say(a, t), resetT: () => { stickerT = 0; } }; }, get q321() { return { heSoNgay, todayK, giaTuan, veGiaTuan, ngayKhoa, chiMan, merchant, toggleMarket: (o, w) => toggleMarket(o, w) }; }, get q322() { return { EMO_DOI, DOI_T, doi, doiTick, doiTha, emoDoi, dtnNpc, dtnH, DTN, doThan }; }, get q320() { return { tr, TT_TRON, ttTronStart, ttNap, ttRung, ttTronTick, ttTronXong, ttChonDich, ttLuMe, ttVai, kcBots }; }, get q318() { return { dtThuong, dtXep, DUA_THUONG, DUA_HET, DT_DEM, DT_VANG, DT_SAU, dtMotVe, veHeSo }; }, get q316() { return { hopM, HOP, dt_, BUA, BUA_TL, buaRut, dtBatKip, dtDung, dtTrung, dtAll, vitM, caDan, domM, dtThung, dtDen, dtCv, lbM, lbX0, dtDong, lbDx, LB, dtFx, dtStart, dtTick: (t) => dtTick(t), dtBua: () => dtBua(), dtEnd: () => dtEnd(), state }; }, get q314() { return { VI_W, VI_H, VI_MAU, viLay, viHop, viMo, viTo, viLuu, vi, inAoMat, outfit, owned, makeChibi, playerOpts: () => playerOpts(), remoteLook: (p) => remoteLook(p), WARDROBE, nhaViec: (pp) => nhaViec(pp) }; }, get q310() { return { meoMai, meoGan: (pp) => meoGan(pp), MAU_NGHE, playerOpts: () => playerOpts(), nghe, makeChibi, meoDaoTick, MEO_HOI, ZONES, rebuildPlayer: () => rebuildPlayer() }; }, get q308() { return { hmMac, hmTick, hmFx, hmVong, outfit, ngayKhoa, today, homQua }; }, get q307() { return { KV, kvCan, kvTrao, kvXong, KV_H, doThan, dtnBoc: (a) => dtnBoc(a), bag, saveBag }; }, get q306() { return { khuay, khuayBat, khuayBam, khuayTick, khuayXong, khuayKim, KHUAY_CAN, KHUAY_LAN, bep }; }, get q305() { return { DTN, dtnCong: (t, n) => dtnCong(t, n), doThan, bag, saveBag, DO_BAY, doMesh: (id) => doMesh(id), DO_NHOM }; }, get q303() { return { xemTV, DO_BAY, doMesh: (id) => doMesh(id), XUONG, lamDo: (id) => lamDo(id), bag, saveBag, nghe, MUA_LA: () => null }; }, get q300() { return { WARD_TABS: () => WARD_TABS, kdMo: () => kdMo(), toggleWard: (o) => toggleWard(o), MON, monMo, dtnH, dtnCong: (t, n) => dtnCong(t, n), doThan, BI_H, matNha, showNha: () => showNha(), get nhaCap() { return nhaCap; }, set nhaCap(v) { nhaCap = v; } }; }, get q297() { return { TASK_POOL, bump: (id) => bump(id), quest, TASKS: () => TASKS.map((t) => t.id), veMini, DTN, dtnTang: (t, q) => dtnTang(t, q), doThan, busPhi, busCho, busToi, busDi, BUS_PHI, BUS_CHU_KY, renderBus: () => renderBus(), bag, saveBag }; }, get q294() { return { nguGiuong, NANG_NGU, cdan, cfMoi, coSau, greet: (w) => greet(w), bag, saveBag, xpCD: (n) => xpCD(n), capCD }; }, get q293() { return { msb, msbBan, msbThue, msbGiao, msbNhan, msbAction, msbG, msbGia, MSB_NHIP, MSB_MAX, MSB_THUE, nghe, bag, saveBag }; }, get q292() { return { bc, bcGoi, BC_BUOC, noiBC, tet, tetNgay, bag, saveBag, BUFF_AN, anDuoc, pickAction: () => pickAction() }; }, get q289() { return { goDan, DAN_NOT, XUONG, DO_BAY, doMesh: (id) => doMesh(id), lamDo: (id) => lamDo(id), emoDoi, EMO_DOI, doEmote: (k) => doEmote(k), danhHieuCo: () => danhHieuCo(), doThan, dtnNpc, DTN, makeChibi, playerOpts: () => playerOpts(), nghe, rebuildPlayer: () => rebuildPlayer(), player }; }, get q286() { return { phaTrang, moonBong, moon, qbm, qbmRut, qbmCan, qbmTrao, qbmNam, DTN, dtnBoc: (a) => dtnBoc(a), doThan, nsHqua, heSoNS, nsKy, nsBang, priceOf: (k) => priceOf(k), homQua, CROPS, setSeller: (q) => { const c = seller; seller = q; return c; }, chiMan, renderQuest: () => renderQuest() }; }, get q283() { return { BAC_NGHE, bacNghe, danhHieu, ngheLv, ngheXp, nghe, renderNghe: () => renderNghe(), giongBao, kcStart, pickAction: () => pickAction(), AOLEN_LAN, treoThong, thong, owned, makeChibi, remoteLook: (p) => remoteLook(p), WARDROBE }; }, get q282() { return { hiemTui, renderBag: () => renderBag(), bag, saveBag, HIEM_DO }; }, get q281() { return { diemGio, chaoGioThu, chaoGio, CHG_DIEM, CHG_MAX, CHG_GIO, chgCach, get gioMo() { return gioMo; }, set gioMo(v) { gioMo = v; } }; }, get q277() { return { MON, BUFF_AN, DON_POOL, giaoDon: (i) => giaoDon(i), don: () => don, haiNam, tre, harvest, plots, CROPS, cauVong, saoP: () => saoP, duNL, truNL, coNL, NL_TUI, tenHang }; }, get q274() { return { XP_CA, bacCa, xpMon, MON, FISH_ALL: FISH, hoangHon, doiCon, DOI_NGAY, DOI_HOI, nghe, renderNghe: () => renderNghe(), cdan, capCD, landFish, fishing, bep, bag, saveBag }; }, get q273() { return { makeChibi, WARDROBE, outfit, owned, kinhCu, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), addXu, get xu() { return xu; }, htCo }; }, get q272() { return { hs, HS, hsStart, hsGo, hsChon, hsTick, hsGoiY, boDau, get veVui() { return veVui; } }; }, get q271() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), toggleWard: (o) => toggleWard(o) }; }, get q269() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), owned, addXu, get xu() { return xu; }, htCo }; }, get q267() { return { makeChibi, WARDROBE, outfit, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts() }; }, get q266() { return { faceSet, WARDROBE, outfit, player, rebuildPlayer: () => rebuildPlayer() }; }, get q265() { return { faceSet, faceTex, outfit, outfitGoc, myPresence, playerOpts: () => playerOpts(), rebuildPlayer: () => rebuildPlayer(), player, WARDROBE, toggleWard: (o) => toggleWard(o) }; }, get q264() { return { WARDROBE, HT_GIAM, HT_SO, htPool, htTuan, htCo, giaMua, sdTuan, tryItem, renderWard, toggleWard: (o) => toggleWard(o), owned, outfit, addXu, get xu() { return xu; } }; }, get q262() { return { WARDROBE, pc, PC_BAC, pcBac, pcCong, pcMienPhi, sanDien, sd, sdChuDe, ttChao, ttNgay, chuDe, dungChuDe, outfit, renderQuest }; }, get q260() { return { lopDo, khuDo, oBay, vuongBay, viTriDo, nhaGan, nhaViec, nhaBayViec, NHA_KHU, BAN_CAO, THAM_O, TRAN_CAO, dungDo, quatTick }; }, get q261() { return { HOA_ONG, ONG_R, ongTo, ongGan, ongGanO, ongVong, ongBay, ongHoaTick, aoSenNT, aoSenHai, aoSenG, plotInfo, saveGarden, DR_KHU, DR_MAX, drNgay, doRoi, drRai, drNhat, drBo, doRoiTick, lmTrung, pet, get reduceMotion() { return reduceMotion; }, set reduceMotion(v) { reduceMotion = v; } }; }, get q259() { return { BO_KD, kdMoi, WARDROBE, outfitGoc, kdDang, macKD, kdMo, QUAN, KHUNG_TEN, BONG_BONG, DC_TEX, dcG, dcTick, drawTag, drawBubble, toggleWard, renderWard, get wardTab() { return wardTab; }, set chapDone(v) { chapDone = v; }, get chapDone() { return chapDone; } }; }, get q256() { return { BO_NT, BO_DIEM, boDuL, diemAC, diemDo, boCo, ntMo, ntVe, xoayDo, catDo, DO_NHOM, NDT_NHA, get doChon() { return doChon; }, set doChon(v) { doChon = v; }, get tgNgay() { return tgNgay; }, set tgNgay(v) { tgNgay = v; }, buff, coBuff }; }, get q257() { return { pull, nem, lucLuc, lucCo, kimBoi, chiaRungGia, dangRungGia, LUC_TU_NEM, bacCa, fishMax }; }, get q255() { return { bdd, bddMo, bddStart, bddBat, bddTick, bddXong, bddG, bddBai }; }, q258: { lh, LH, lhHx, lhBan, lhPct, lhVe, lhVao, lhGop, lhMoi, lhTick, CH5, C5, congC5Ve, deoMo, baoMo, aoChoangCheck, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, q254: { ml, ML, mlHx, mlBan, mlPct, mlVe, mlVao, mlGop, mlTick, CH4, CR, congRungVe, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, get q253() { return { svSkin, coHai, LAYER_BONG, hulls }; }, get q250() { return { treoThong, thong, cayThong, muaCauTuyet, lacCau, CAU_GIA, CAU_NGAY, hnNt, muaHoaiNiemDo, DO_NGUON, quatTick, hnMo }; }, get q252() { return { NV_NGHE, lamDo, phaNhuom, giaoThu, openNghe, lmDatTen, lmTenMo, lmCham, lmTagDat, lmTag, pet, get lmTen() { return lmTen; }, set lmTen(v) { lmTen = v; lmTagVe(); } }; }, q249: { htDecor, dcG, dcTick, dcDat, ttMa, ttMaSang, ttDen, ttDenM, ttMaM, HT_DO, remotes }, q251: { cg, CG, cgHx, cgBan, cgPct, cgVe, cgVao, cgGop, chEv, CH3, gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; }, haiDang: ZONES.vinh.haiDang, chapterRevive }, get q248() { return { nd, ndStart, ndBam, ndXong, ndTick, ndAction, ndBac, ndKhach, ndDiem, ong, ONG_CHUYEN, buff, veMini, ndDem, ndTap, NGHE, ongLao, sanKhau, demNhac, ngheLv }; }, q245: { heBoi, heTam, heVinh, coDua, heTick, lanNgam, muaDua, muaMatNa, mnKe, MAT_NA_GIAY, ruocTick, remoteLook, myPresence, he, trungThu }, get q244() { return { hoaTTick, hoaTSap, hoaTNpc, hoaTAction, get hoaTOn() { return hoaTOn; }, CH_NPC, phaoBan, doEmote, emoPhao, xinChu, tryItem, amCung, DO_BAY, tetNgay, renderWard, bayDo, catDo, hnDo: () => hnDo(), toggleWard: (o) => toggleWard(o) }; }, lamViec, LAM, KHUON, remoteLook, myPresence, outfitGoc, WARDROBE_MAT: () => WARDROBE.filter((q) => ['khuon', 'may', 'mieng', 'ruoi'].includes(q.key)), get q243() { return { lmTrung, lmTrungG, lmVo, lmTrungNhan, lmTrungTick, pet, pickFish, fishing, fishLog, bacCa, LM_NO_GIAY, get lmNoT() { return lmNoT; } }; }, get q247() { return { ti, TI, tiCho, tiChang, tiTick, tiCong, meoRam, meoDan, meoRamTick, ramKy, nuaDem, TRANG_TRON, moQuaRam, noiMeo, meoDem, meo, meoQua, meoVet, mtDai, MEO_NHA }; }, get q241() { return { hen, henCho, henTick, hopThu, HOP_DO, thuDen, moHopThu, thuGan, thuCo, THU_NPC }; }, otCau, otChim, cauOT, OT_KHU, OT_NGAM, THAT_TICH, otDot, otTick, DTN, doThan, dtnQua, dtnBoc, dtnCong, dtnH, toMtDem, datGop, datCan, datVe, datDA, datHx, datTin, datSao, datKiem, toMt, toMtMuc, toMtBot, toMtTin, animateChibi, batchChibi, WARDROBE_TOC: () => WARDROBE.find((q) => q.key === 'style'), renderWard: () => renderWard(), cpNpc, cpSap, cpNg, cpKhach, cpSt, cpMo, cpTick, cpAction, cpBay, cpDon, cpHang, cpSo, cpXY, CP_GIA, get cpOn() { return cpOn; }, xeLa, xlA, xlP, xlMay, xeLaTick, vc, vcO, vcGieo, vcTuoi, vcThu, vcHangXom, vcViec, coHai, VC_NHIP, camUoc, cuBuoc, cuLoc, cuMo, cuVe, cuG, CU_NPC, ndtVe, ndtTham, ndtG, get ndt() { return ndt; }, dongKhu, toDP, toLap, toCam, toGan, toTick, toCo, toNk, toCoLen, toVe, TO_MOC, ctvNpc, ongCo, coXoi, chuBanhMi, xeOm, ganhXoi, coBan, ctvSt, ctvTick, ctvAction, pickAction, get raoN() { return raoN; }, chBao, BAO_VIEC, baoBat, baoTat, baoGan, baoLam, baoTick, beBo, WX_BAO, SV, SV_LOAI, SV_CHO, svTick, veTranh, tranhVe, tranhGan, ngamTranh, khungTen, chupKhung, khungTick, khungAnh, pickAction0, renderQuest, NHAC, nhacBand, sfx, BIA, biaDoc, biaGan, docBia, BIA_TRUYEN, MEO_HOI, hoiMeo, meoGan, vuotMeo, meoHom, setItCD, setChuTo, setOpt, huongBip, huongTick, setHuong: (h) => { huongDich = h; }, get huongDich() { return huongDich; }, camera, get reduceMotion() { return reduceMotion; }, phoMoi, phaoBan, phaoTick, get phaoFx() { return phaoFx; }, toggleBus: (o) => toggleBus(o), get nvNghe() { return nvNghe; }, nvDem: (k) => nvDem(k), nhanNvNghe: (id) => nhanNvNghe(id), NV_NGHE: () => NV_NGHE, CAP_DAT, nangCap: (c) => nangCap(c), get nhaCapSet() { return null; }, set nhaCapSet(v) { nhaCap = v; }, MOI_CAU, diemCan, startFishing: (sp) => startFishing(sp), traiMua, tCay, plant, noiChuong, maxNuoi: (k) => maxNuoi(k), NANG_CHUONG, tocDoNguoi, duNL: (m) => duNL(m), truNL: (m) => truNL(m), get buff() { return buff; }, moKhe, KHE_MO, danhHieuCo: () => danhHieuCo(), DI_SAN, diSanMua, muaDiSan, quyPho, gopQuy, QUY_GOP, QUY_MOC, WARDROBE_LM: () => WARDROBE.find((q) => q.key === 'linhmay'), lmLong, muaCan, get canBac() { return canBac; }, set canBac(v) { canBac = v; }, CAN_BAC, rodStick, dauGia, raGia, dgKet, dgTran: (t) => dgTran(t), tuanNay, DG_KHOI, banNS, nsMua, nsConLai, nsDem, banCaNPC, caMua, DIEU_NHAY, bacCa, doEmote: (k) => doEmote(k), faceSet, FACES, WARDROBE_MV: () => WARDROBE.find((q) => q.key === 'matve'), WARDROBE_DA: () => WARDROBE.find((q) => q.key === 'da'), makeChibi, playerOpts: () => playerOpts(), locVang, grade, giayPQ, rebuildPlayer: () => rebuildPlayer(), setSeller: (q) => { const c = seller; seller = q; return c; }, setWx, lanternMats, banMon: () => banMon(), NHIET_DOI, veMini, muaTuoi, pickFish: () => pickFish(), get moiDung() { return moiDung; }, muaHoaiNiem: (k, v) => muaHoaiNiem(k, v), hnMo: () => hnMo(), detVaiMay, lamDo: (id) => lamDo(id), banDo: (id) => banDo(id), phaNhuomCham, nhuomAoCham, mayAoDai, aoDaiDu: () => aoDaiDu(), datBeLeg, caEpic: () => caEpic(), doMesh: (id) => doMesh(id), get DO_BAY() { return DO_BAY; }, aoSenNT, aoSenGieo, aoSenHai, aoSenChin, phaNhuomSen, nhuomAoSen, thaRong, thaRongTick, donHom: () => donHom(), giaoDon: (i) => giaoDon(i), get don() { return don; }, DON_POOL, tuanDem: (id) => tuanDem(id), get tuan() { return tuan; }, doiViec: (id) => doiViec(id), TASKS: () => TASKS.map((t) => t.id), get quest() { return quest; }, tuLuu: (i) => tuLuu(i), tuMac: (i) => tuMac(i), get tuDo() { return tuDo; }, get BO() { return BO; }, boDang: () => boDang(), get boFx() { return boFx; }, vuotVe, ccb, ccbChao, ccbCau, ccbSua, canK: () => canK(), sn, snKe, snHom, phaNhuom, nhuomAo, xayLua, giaTrung: (k) => giaTrung(k), nuoi, NUOI, muaNuoi, thuSp, dungChuong, hatMo, harvest, CROPS, tt, ttStart, ttSoi, ttTick, ttG, ns, nsStart, nsNhay, nsTick, nsAt, nsG, oaq, oaqDi, oaqStart, oaqChoi, oaqMay, at: (id) => at(id), lmTh, lmDiem, LM_NHANH, pet, cloudMat, lmMau, matOf: (h) => mat(h), lmh, lmHoang, voVeLM, ongTu, bao, baoVe, nhatVoSo, gopVoSo, hoaCo, BAO_CAN, thayDoDeo, deo, nguoiTuyet, ghePos, nhanLau, boat, tuanTra, kiemLam, dom, domP, domXY, tre, chatTre, batDom, endFishing: () => endFishing(), coCuuHo, lanNgay, get xemTruoc() { return xemTruoc; }, gateLock: (g) => gateLock(g), ngheMo, cdan, capCD, xpCD, xpCan, llMo, setCap: (L) => { let x = 0; for (let i = 1; i < L; i++) x += xpCan(i); cdan.xp = x; cdan.nang = 0; capHud(); }, aoSen, cauTrom, cauTromTick, trungThu, ruoc, sapNpcs, he, dieu, dieuM, tet, tetNgay, thayDo, tuyet, thong, cayThong, snowMesh, keoNgay, hoaTrang, ongTam, dienDien, ddHai, get owned() { return owned; }, nuocNoi, sd, sdChuDe, sdMo, sanDien, sangNgay, wxNgay, duBao, greet, chuDe, dungChuDe, ttNgay, outfit, cauVong, cauVongM, FISH_W: () => Object.fromEntries(FISH.map((f) => [f.id, f.w()])), giai, landFish, FISH_ALL: FISH, bacLa, xeLaKhung, linhTuoi, hoiCho, priceOf: (k) => priceOf(k), lich28, lichDangNhap, bkc, bkcCheck, fishLog, setSaoP: (v) => { saoP = v; }, buNhinO, setGiantP: (v) => { giantP = v; }, plots, loTre, WATER_R, get uocMo() { return uocMo; }, scene, bh, bhLam, moDoCu, ngheXp, lichXong: () => SCHED.forEach((c) => c.walk && lichXong(c)), get nhaCap() { return nhaCap; }, nuoi, vit, dtBua, hopM, dtFx, beCaG, demNhac, sanKhau, notNhac, anMon, buff, coBuff: (k) => coBuff(k), ongTam, cuDan, cuDanHits, setMapTab: (t) => setMapTab(t), amCung, nhaDo, nhaMesh, saveBag, quanMo, get denDau() { return denDau; }, meo, meoDem, hoaDang, hdNoi, dt_, dtCheo, hs, hsChon, kc, kcHit, get veVui() { return veVui; }, ga, addXu, plotCount: () => plots.length, buyDat, get datMo() { return datMo; }, live, liveProp, get liveDay() { return liveDay; }, priceK: () => liveK(), bep, MON, moMan: () => { moManStart(); return moMan; }, xe7, greyArc: () => [GREY_EDGE.map((r) => Math.round(r / DEG)), SUA], xuong, tramViec, timThay, npcViec, drawMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; drawMap(c, true); return c; }, pickRac, get racDen() { return racDen; }, dog, oi, get oiNight() { return oiNight; }, cauTrom, thu, tiToc, lc, graffiti, rac, get tiengTam() { return tiengTam; }, danPhong, rong, get taiTieng() { return taiTieng; }, get visited() { return visited; }, ong, ongLao, oiTrees, torch, bag, get haiTromOn() { return haiTromOn; }, nghe, NGHE, enterZone: (id) => enterZone(id, null, 'home'), applyQuality, greyCount: (n = 1) => REVIVE.filter((r) => r.ch <= n).reduce((n, r) => { r.g.traverse((m) => { if (m.isMesh && m.material === mat('#BDBDC6')) n++; }); return n; }, 0), marketFront: MARKET_FRONT, player, walkers, vendor, coSau, LICH_NPC, chEv, REVIVE, driftG, get chStep() { return chStep; }, get chapDone() { return chapDone; }, merchant, chiMan, mcLinh, chuBay, plots, fishing, bag, camera, state, renderer, obstacles, goTo, mapHits, LANDMARKS, GATES, segClear, U, ZONES, get zone() { return zone; }, get xu() { return xu; }, get camYawS() { return camYawS; },
       get route() { return route; }, get target() { return target; }, get dest() { return dest; } };
   }
   function mapTick(dt) {
@@ -10646,7 +10699,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     // đang thử đồ: dời điểm nhìn để nhân vật không bị bảng tủ đồ che (điện thoại: bảng ở trên, nhân vật ở nửa dưới)
     const dressShift = state.dressing ? (portrait ? -2.4 : 0.6) : 0;
     camLook.set(camFocus.x + sy * dressShift, CAM.aimY, camFocus.z + cy * dressShift);
-    camera.position.copy(camPos); camera.lookAt(camLook);
+    camera.position.copy(camPos); camera.lookAt(camLook); grassLod();
     U.seeC.value.copy(camPos); U.seeP.value.set(p.x, 1.1, p.z);
     // tilt-shift lấy nét đúng hàng ngang của người chơi
     if (tiltV.enabled) { v3.set(p.x, 1, p.z).project(camera); tiltV.uniforms.r.value = clamp(v3.y * 0.5 + 0.5, 0.2, 0.8); tiltH.uniforms.r.value = tiltV.uniforms.r.value; }
@@ -10698,7 +10751,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     for (const m of meshes) {
       // gộp riêng từng khu (khu đặt cách nhau 1000): lưới gộp không trải qua nhiều khu nên khu khác bị loại khỏi khung nhìn (3D-24)
       // vật liệu màu trơn (mat()) gộp chung một vật liệu màu đỉnh: mỗi khu chỉ còn vài lượt vẽ thay vì mỗi màu một lượt
-      const wp = m.getWorldPosition(new THREE.Vector3()), key = `${m.material.userData.plain ? 'VC' : m.material.userData.plainSway ? 'VCS' : m.material.uuid}|${m.castShadow}|${m.receiveShadow}|${m.renderOrder}|${m.layers.mask}|${Math.round(wp.x / 1000)},${Math.round(wp.z / 1000)}`;
+      // có lưới chỉ-đổ-bóng (bongO) thì lưới gộp không đổ bóng nữa: vật đổ bóng và không đổ bóng chung một lô (Q358, bớt 2–4 lượt vẽ mỗi khu); vật cắt alpha vẫn tách
+      const cast = bongO && !(m.material.alphaTest > 0) ? 'b' : m.castShadow;
+      const wp = m.getWorldPosition(new THREE.Vector3()), key = `${m.material.userData.plain ? 'VC' : m.material.userData.plainSway ? 'VCS' : m.material.uuid}|${cast}|${m.receiveShadow}|${m.renderOrder}|${m.layers.mask}|${Math.round(wp.x / 1000)},${Math.round(wp.z / 1000)}`;
       if (!buckets.has(key)) buckets.set(key, []);
       buckets.get(key).push(m);
     }
@@ -10723,9 +10778,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const src = list[0], mesh = new THREE.Mesh(merged, src.material.userData.plain ? vcMat : src.material.userData.plainSway ? vcSway : src.material);
       mesh.castShadow = src.castShadow; mesh.receiveShadow = src.receiveShadow; mesh.renderOrder = src.renderOrder; mesh.layers.mask = src.layers.mask;
       container.add(mesh);
-      if (bong && mesh.castShadow && !(mesh.material.alphaTest > 0)) {   // vật cắt alpha cần ảnh khi vẽ bóng: giữ như cũ
+      if (bong && !(mesh.material.alphaTest > 0)) {   // vật cắt alpha cần ảnh khi vẽ bóng: giữ như cũ
         mesh.castShadow = false; const side = mesh.material.side;
-        list.forEach((m, i) => { m.getWorldPosition(v); bong.push([v.x, v.z, geos[i], side]); });
+        list.forEach((m, i) => { if (m.castShadow) { m.getWorldPosition(v); bong.push([v.x, v.z, geos[i], side]); } });
       }
       if (src.material === outlineMat || src.material === outlineSway) hulls.push(mesh);
       for (const m of list) removed.add(m);
@@ -10805,7 +10860,31 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       o.traverse((m) => { if (m.isMesh && !m.isInstancedMesh && m.visible) meshes.push(m); });
     }
     atlasSigns(meshes);
+    vienMong(meshes);
     mergeMeshes(scene, meshes, 16);   // bóng theo ô 16 m ở khu trên 30k tam giác bóng (Q253): đo 10/12/16/24 m, 16 m cân giữa tam giác và lượt vẽ bóng
+  }
+  // viền mỏng hơn nửa điểm ảnh (Q358): ở khoảng cách camera chơi (18–30 m, mỗi điểm ảnh 2–3 cm) khối viền dày dưới 1 cm (cột lan can, cọc cầu,
+  // dây, hoa 10 cm trên luống, nấm nhỏ…) không thấy thành nét mà vẫn tốn bằng cả vật. Bỏ khối viền tĩnh có độ dày thật dưới VIEN_MIN.
+  // Độ dày: viền phóng (part: phóng 1 + ol quanh tâm khối) = ol × nửa cạnh giữa của khối (nét thấy được dọc cạnh dài, kể cả biển phẳng);
+  // viền model (đẩy theo pháp tuyến) = độ đẩy; nhân tỉ lệ thế giới của vật
+  const VIEN_MIN = 0.01;
+  function vienDay(h) {
+    const p = h.parent, s = p.getWorldScale(new THREE.Vector3()), g = h.geometry;
+    if (Math.abs(h.scale.x - 1) > 1e-6) {
+      if (!g.boundingBox) g.computeBoundingBox();
+      const b = g.boundingBox, e = [(b.max.x - b.min.x) * Math.abs(s.x), (b.max.y - b.min.y) * Math.abs(s.y), (b.max.z - b.min.z) * Math.abs(s.z)].sort((a, c) => a - c);
+      return (h.scale.x - 1) * e[1] / 2;
+    }
+    if (!p.isMesh || !p.geometry.attributes.position || !g.attributes.position) return 1;
+    const a = g.attributes.position, c = p.geometry.attributes.position;
+    return Math.hypot(a.getX(0) - c.getX(0), a.getY(0) - c.getY(0), a.getZ(0) - c.getZ(0)) * Math.min(Math.abs(s.x), Math.abs(s.y), Math.abs(s.z));
+  }
+  function vienMong(meshes) {
+    const bo = new Set();
+    for (const m of meshes) if ((m.material === outlineMat || m.material === outlineSway) && m.parent && m.parent.isMesh && vienDay(m) < VIEN_MIN) bo.add(m);
+    for (const m of bo) m.parent.remove(m);
+    for (let i = meshes.length - 1; i >= 0; i--) if (bo.has(meshes[i])) meshes.splice(i, 1);
+    for (let i = hulls.length - 1; i >= 0; i--) if (bo.has(hulls[i])) hulls.splice(i, 1);
   }
   // biển hiệu tĩnh (3D-24, Q104): chép ảnh từng biển vào một ảnh chung, đổi toạ độ ảnh của lưới, dùng chung một vật liệu
   // để gộp được như khối màu trơn (mỗi khu vài lượt vẽ thay vì mỗi biển một lượt). Biển đổi chữ lúc chơi (hồi sinh, hái trộm) giữ riêng
@@ -10840,31 +10919,43 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   }
   // gộp tay chân nhân vật (3D-24, Q103): mọi khối màu trơn của các khớp (thân, hông, vai, đầu) thành một lưới da (SkinnedMesh) theo khung xương
   // là chính các khớp; viền nét cũng thế. Mỗi người còn 2 lượt vẽ cho phần này thay vì 2 lượt mỗi khớp. Ô che mưa (bật/tắt) và khối có ảnh giữ riêng
+  const XA = new WeakMap();   // lưới da gần → { opt, skel, nb, lo } (không để trong userData vì three chép userData qua JSON)
   const vcSkin = vcMat.clone(); vcSkin.skinning = true; vcSkin.onBeforeCompile = vcMat.onBeforeCompile; vcSkin.customProgramCacheKey = vcMat.customProgramCacheKey;
-  function skinChibi(c) {
+  // khối của nhân vật theo xương: vc (màu trơn) và ol (viền), toạ độ theo gốc nhân vật, mỗi khối gắn một xương (chỉ số theo thứ tự duyệt)
+  function chibiKhoi(c) {
     const root = c.root, bones = []; root.updateMatrixWorld(true); root.traverse((o) => { if (o.isBone) bones.push(o); });
     const inUmb = (m) => { for (let a = m; a; a = a.parent) if (a === c.umbrella) return true; return false; };
     const boneOf = (m) => { let a = m.parent; while (a && !a.isBone) a = a.parent; return a; };
-    const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), rel = new THREE.Matrix4(), lists = { vc: [], ol: [] };
+    const lists = { vc: [], ol: [] };
     root.traverse((m) => { if (!m.isMesh || m.isSkinnedMesh || inUmb(m)) return; const b = boneOf(m); if (!b) return;
       if (m.material.userData.plain) lists.vc.push([m, b]); else if (m.material === outlineMat) lists.ol.push([m, b]); });
+    return { root, bones, lists };
+  }
+  function chibiGop(K, k) {
+    const inv = new THREE.Matrix4().copy(K.root.matrixWorld).invert(), rel = new THREE.Matrix4();
+    const geos = K.lists[k].map(([m, b]) => {
+      const g = m.geometry.clone(), n = g.attributes.position.count, bi = K.bones.indexOf(b);
+      for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
+      if (!g.index) g.setIndex([...Array(n).keys()]);
+      if (k === 'vc') { const cc = m.material.color, a = new Float32Array(n * 3); for (let q = 0; q < n; q++) { a[q * 3] = cc.r; a[q * 3 + 1] = cc.g; a[q * 3 + 2] = cc.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); }
+      const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4); for (let q = 0; q < n; q++) { si[q * 4] = bi; sw[q * 4] = 1; }
+      g.setAttribute('skinIndex', new THREE.BufferAttribute(si, 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
+      g.clearGroups(); g.applyMatrix4(rel.multiplyMatrices(inv, m.matrixWorld)); return g;
+    });
+    const merged = THREE.BufferGeometryUtils.mergeBufferGeometries(geos); geos.forEach((g) => g.dispose()); if (!merged) return null;
+    merged.userData.merged = true; merged.computeBoundingSphere(); merged.boundingSphere.radius += 0.6;   // tay chân vung ra ngoài tư thế gốc
+    return merged;
+  }
+  function skinChibi(c) {
+    const K = chibiKhoi(c), root = K.root, lists = K.lists;
     const removed = new Set(); let skel = null;
     for (const [k, list] of Object.entries(lists)) {
       if (list.length < 2) continue;
-      const geos = list.map(([m, b]) => {
-        const g = m.geometry.clone(), n = g.attributes.position.count, bi = bones.indexOf(b);
-        for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
-        if (!g.index) g.setIndex([...Array(n).keys()]);
-        if (k === 'vc') { const cc = m.material.color, a = new Float32Array(n * 3); for (let q = 0; q < n; q++) { a[q * 3] = cc.r; a[q * 3 + 1] = cc.g; a[q * 3 + 2] = cc.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); }
-        const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4); for (let q = 0; q < n; q++) { si[q * 4] = bi; sw[q * 4] = 1; }
-        g.setAttribute('skinIndex', new THREE.BufferAttribute(si, 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
-        g.clearGroups(); g.applyMatrix4(rel.multiplyMatrices(inv, m.matrixWorld)); return g;
-      });
-      const merged = THREE.BufferGeometryUtils.mergeBufferGeometries(geos); geos.forEach((g) => g.dispose()); if (!merged) continue;
-      merged.userData.merged = true; merged.computeBoundingSphere(); merged.boundingSphere.radius += 0.6;   // tay chân vung ra ngoài tư thế gốc
+      const merged = chibiGop(K, k); if (!merged) continue;
       const mesh = new THREE.SkinnedMesh(merged, k === 'vc' ? vcSkin : olSkin); mesh.castShadow = k === 'vc'; mesh.receiveShadow = k === 'vc';
-      root.add(mesh); root.updateMatrixWorld(true); mesh.bind(skel || (skel = new THREE.Skeleton(bones)), mesh.matrixWorld);
+      root.add(mesh); root.updateMatrixWorld(true); mesh.bind(skel || (skel = new THREE.Skeleton(K.bones)), mesh.matrixWorld);
       if (k === 'ol') hulls.push(mesh);
+      if (k === 'vc' && !CH_LOW && c.opt) { XA.set(mesh, { opt: c.opt, skel, nb: K.bones.length }); mesh.userData.xa = true; }   // bản xa ít mặt dựng khi cần (chibiXa)
       for (const [m] of list) removed.add(m);
     }
     for (const m of removed) { for (const ch of [...m.children]) if (!removed.has(ch)) m.parent.attach(ch); m.parent.remove(m); }
@@ -10872,13 +10963,37 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   }
   // Nhẹ tắt bóng mềm (mục 2.4): nhân vật thôi đổ bóng thật (mỗi khớp một lượt vẽ bóng), thay bằng bóng tròn dưới chân vẽ chung một lượt (3D-24).
   // Đẹp: nhân vật cách người chơi quá 11 (Q151, trước là 14) cũng tắt viền nét và bóng thật, dùng bóng tròn (mỗi người bớt khoảng 14 lượt vẽ)
-  function chibiShadow(root, far) {
+  // Nhân vật xa (Q358): trang dựng ở Đẹp thì nhân vật cách người chơi quá 11 (lúc đã tắt viền và bóng thật, Q151) dùng lưới da ít mặt như mức Nhẹ
+  // (khoảng 55% số đoạn tròn, Q106: ~6.400 → ~2.300 tam giác mỗi người). Bản xa dựng lần đầu nhân vật đi xa: chạy lại makeChibi cùng bộ đồ với
+  // chLo rồi gộp như skinChibi, gắn vào đúng bộ xương của nhân vật (cùng thứ tự xương, cùng ma trận gắn) nên hoạt hình y như bản gần
+  // Bản ít mặt còn làm bóng cho nhân vật gần (Q358): ở Đẹp nhân vật trong 11 m đổ bóng thật; bóng (bản đồ 2048 trên 26 m, làm mềm) của bản ít mặt
+  // không phân biệt được với bản đủ mặt nên bản gần thôi đổ bóng, bản ít mặt nằm ở lớp LAYER_BONG (chỉ lượt vẽ bóng thấy) đổ bóng thay.
+  // Dựng bản ít mặt tối đa 2 người mỗi khung, chỉ cho người trong 80 m (khu đang ở); người khác chờ tới khi lại gần (xaCho)
+  let xaLuot = 0;
+  function chibiXa(m, far) {
+    const X = XA.get(m); if (!X) return false;
+    if (X.lo === undefined) {
+      const pp = player.root.position, w = m.getWorldPosition(new THREE.Vector3());
+      if (xaLuot <= 0 || Math.hypot(w.x - pp.x, w.z - pp.z) > 80) return true;   // để khung sau
+      xaLuot--; X.lo = null; chLo = true; let c2 = null; try { c2 = makeChibi(X.opt); } catch (e) { c2 = null; } finally { chLo = CH_LOW; }
+      const K = c2 && chibiKhoi(c2), g = K && K.bones.length === X.nb && K.lists.vc.length > 1 ? chibiGop(K, 'vc') : null;
+      if (c2) { const bo = new Set(); c2.root.traverse((o) => bo.add(o)); for (let i = hulls.length - 1; i >= 0; i--) if (bo.has(hulls[i])) hulls.splice(i, 1); }   // part() đã ghi viền của bản tạm vào hulls
+      if (g) { const lo = new THREE.SkinnedMesh(g, vcSkin); lo.receiveShadow = true; lo.userData.xaLo = true; m.parent.add(lo); lo.bind(X.skel, m.bindMatrix); X.lo = lo; }
+    }
+    const lo = X.lo; if (!lo) return false;
     const high = state.quality === 'high';
-    root.traverse((m) => { if (!m.isMesh) return; if (m.material === outlineMat || m.material === olSkin) { m.userData.far = far; m.visible = !far && !state.photo; return; } if (m.userData.cs == null) m.userData.cs = m.castShadow; m.castShadow = high && !far && m.userData.cs; });
+    m.visible = !far; m.castShadow = false; lo.visible = far || high;
+    lo.layers.set(far ? 0 : LAYER_BONG); lo.castShadow = !far && high && m.userData.cs !== false;
+    return false;
+  }
+  function chibiShadow(root, far) {
+    const high = state.quality === 'high', xa = [];
+    root.traverse((m) => { if (!m.isMesh) return; if (m.userData.xa) xa.push(m); if (m.userData.xaLo) return; if (m.material === outlineMat || m.material === olSkin) { m.userData.far = far; m.visible = !far && !state.photo; return; } if (m.userData.cs == null) m.userData.cs = m.castShadow; m.castShadow = high && !far && m.userData.cs; });
+    root.userData.xaCho = false; for (const m of xa) if (chibiXa(m, far)) root.userData.xaCho = true;
   }
   function lodTick() {
-    const pp = player.root.position;
-    for (const a of actors) { const far = a !== player && Math.hypot(a.root.position.x - pp.x, a.root.position.z - pp.z) > 11; if (a.far !== far) { a.far = far; chibiShadow(a.root, far); } }
+    const pp = player.root.position; xaLuot = 2;
+    for (const a of actors) { const d = Math.hypot(a.root.position.x - pp.x, a.root.position.z - pp.z), far = a !== player && d > 11; if (a.far !== far || (a.root.userData.xaCho && d < 80 && xaLuot > 0)) { a.far = far; chibiShadow(a.root, far); } }
   }
   const blobs = new THREE.InstancedMesh(new THREE.CircleGeometry(0.42, 16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: col('#3A2A20'), transparent: true, opacity: 0.28, depthWrite: false }), 64);
   blobs.frustumCulled = false; blobs.renderOrder = 1; scene.add(blobs);
@@ -10925,11 +11040,13 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   svGop();
   // những thứ nước đài phun cần soi; còn lại (nhà, cây, sân, viền nét) được ẩn khi vẽ phản chiếu
   const reflectKeep = new Set([tower, player.root, ...walkers.map((w) => w.root), pet, whale, ...clouds, stars, moon]);
-  const reflectFar = scene.children.filter((o) => !reflectKeep.has(o) && !o.isLight && o.layers.mask === 1 && o.type !== 'Reflector');
+  // lưới viền gộp tĩnh (con trực tiếp của scene) đã do vòng hulls ở reflectHide ẩn rồi hiện lại: để trong danh sách này thì nó ghi lại trạng thái
+  // "đang ẩn" và trả về ẩn luôn, nên từ khung phản chiếu đầu tiên mọi viền tĩnh ở mọi khu biến mất (Q358)
+  const reflectFar = scene.children.filter((o) => !reflectKeep.has(o) && !hulls.includes(o) && !o.isLight && o.layers.mask === 1 && o.type !== 'Reflector');
   let reflectDepth = 0;
   for (const c of [player, ...walkers, vendor, merchant, chiMan, mcLinh, chuBay, chiGhe, coSau, chuBa, anhLua, ongLao, tiToc, ...danPhong, ...sapNpcs, ongTam, bacLa, thayDo, coCuuHo, kiemLam, thayDoDeo, ongTu, ...ctvNpc, coDua, coHai, ...cpAll, ...hoaTNpc]) batchChibi(c);   // Cô Hai (Q235) chưa gộp: ~45 lượt vẽ ở Đồng Lúa (Q253)
   for (const c of clouds) mergeMeshes(c, c.children.filter((m) => m.isMesh));
-  for (const g of [pet, whale, ...MEO_HOI.map((m) => m.g).filter((g) => g !== meo)]) mergeMeshes(g, g.children.filter((m) => m.isMesh).flatMap((m) => [m, ...m.children.filter((h) => h.isMesh)]));
+  for (const g of [pet, whale, tail, ...MEO_HOI.map((m) => m.g).filter((g) => g !== meo)]) mergeMeshes(g, g.children.filter((m) => m.isMesh).flatMap((m) => [m, ...m.children.filter((h) => h.isMesh)]));   // đuôi cá voi (nhóm vẫy riêng) gộp trong nhóm đuôi (Q358): bớt 2 lượt vẽ cảnh, 1 bóng, 1 phản chiếu
 
   // ------------------------------------------------------------------
   // 3D-13: đi qua cổng sang khu khác (màn mây che), Xe Buýt Gió tới khu đã tới, lưu khu và vị trí
