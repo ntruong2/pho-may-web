@@ -9687,12 +9687,43 @@
   // nền bản đồ khu dựng tạm (3D-13): biển mây, đảo tròn, đường ra cổng, cây
   // tranh bản đồ vẽ tay (data/ban-do/<khu>.svg sinh từ tools/ban-do/<khu>.py, nhúng id="ban-do"): khu có tranh thì lấy tranh làm nền bản đồ lớn và nhỏ.
   // Tranh nạp không đồng bộ; nạp xong mới thay, trước đó vẫn dùng nền vẽ bằng máy. Toạ độ tranh khớp MAP_R nên nhãn, cổng, biểu tượng vẫn vẽ đè như cũ.
-  const TRANH = {};
-  try { for (const [id, svg] of Object.entries(JSON.parse(document.getElementById('ban-do').textContent))) { const im = new Image(); im.onload = () => { TRANH[id] = im; }; im.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })); } } catch (e) { /* trang chưa nhúng tranh */ }
+  const TRANH = {}, TRANH_SVG = {};
+  try { for (const [id, svg] of Object.entries(JSON.parse(document.getElementById('ban-do').textContent))) { TRANH_SVG[id] = svg; const im = new Image(); im.onload = () => { TRANH[id] = im; }; im.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })); } } catch (e) { /* trang chưa nhúng tranh */ }
   function tranhBase(size, id) {
     const key = 'tranh:' + id + ':' + size; if (baseCache.has(key)) return baseCache.get(key);
     const c = document.createElement('canvas'); c.width = c.height = size; c.getContext('2d').drawImage(TRANH[id], 0, 0, size, size);
     baseCache.set(key, c); return c;
+  }
+  // Khung bản đồ lớn theo cỡ khu (Q353): khu nhỏ (nông trại, phòng trong nhà, đảo bán kính 30) phóng to cho vừa khung thay vì nằm giữa khung 94 m.
+  // Bán kính = phần xa nhất của đảo hoặc cổng + 8 m lề cho cầu và nhãn cổng, tối đa MAP_R. Bản đồ nhỏ vẫn theo MINI_R quanh người chơi như cũ.
+  const mapRCache = new Map();
+  function mapRKhu(Z) {
+    if (mapRCache.has(Z.id)) return mapRCache.get(Z.id);
+    const D = Z.K && Z.K.dao; let e = MAP_R;
+    if (D && Z.id !== 'quang-truong') {
+      e = D.hcn ? Math.max(...D.hcn) : D.nen ? Math.max(...D.nen.map(Math.abs)) : D.r + (D.song || []).reduce((t, q) => t + Math.abs(q[0]), 0);
+      for (const g of Z.gates) e = Math.max(e, Math.abs(g.x - Z.cx), Math.abs(g.z - Z.cz));
+      e = Math.min(MAP_R, Math.ceil(e + 8));
+    }
+    mapRCache.set(Z.id, e); return e;
+  }
+  // tranh cắt khung: đổi viewBox của SVG cho nét vẫn sắc khi phóng to; nạp không đồng bộ, chưa xong thì trả null
+  const TRANH_CAT = {};
+  function tranhCat(id, R) {
+    const k = id + ':' + R; if (k in TRANH_CAT) return TRANH_CAT[k];
+    TRANH_CAT[k] = null; const im = new Image(); im.onload = () => { TRANH_CAT[k] = im; };
+    im.src = URL.createObjectURL(new Blob([TRANH_SVG[id].replace(/viewBox="[^"]*"/, `viewBox="${-R} ${-R} ${2 * R} ${2 * R}"`)], { type: 'image/svg+xml' }));
+    return null;
+  }
+  function baseKhung(size, R) {
+    if (R >= MAP_R) return baseOf(size);
+    const cat = TRANH[zone.id] && tranhCat(zone.id, R), key = (cat ? 'cat:' : 'phong:') + zone.id + ':' + R + ':' + size;
+    if (baseCache.has(key)) return baseCache.get(key);
+    const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d');
+    if (cat) x.drawImage(cat, 0, 0, size, size);
+    else { const B = size * MAP_R / R, src = baseOf(Math.min(Math.round(B), 2048)); x.drawImage(src, (size - B) / 2, (size - B) / 2, B, B); }   // chưa có tranh cắt: phóng nền đầy đủ (giới hạn 2048 điểm ảnh cho đỡ tốn bộ nhớ)
+    if (cat || !TRANH[zone.id]) baseCache.set(key, c);   // nền tạm khi tranh cắt đang nạp thì không giữ
+    return c;
   }
   const baseOf = (size) => (TRANH[zone.id] ? tranhBase(size, zone.id) : zone.id === 'quang-truong' ? mapBase(size) : zone.real ? dataBase(size, zone) : stubBase(size, zone));
   function stubBase(size, Z) {
@@ -9806,8 +9837,9 @@
     if (full && mapTab === 'the-gioi') { drawWorld(cv, dpr); return; }
     if (full && mapTab === 'cu-dan') { drawCuDan(cv, dpr); return; }
     const ox = zone.cx, oz = zone.cz;   // khu đặt xa tâm (3D-13): bản đồ vẽ theo toạ độ trong khu
-    let S = size / 2 / MAP_R, P = (wx, wz) => [size / 2 + (wx - ox) * S, size / 2 + (wz - oz) * S], rot = 0;
-    if (full) x.drawImage(baseOf(size), 0, 0);
+    const RK = full ? mapRKhu(zone) : MAP_R;
+    let S = size / 2 / RK, P = (wx, wz) => [size / 2 + (wx - ox) * S, size / 2 + (wz - oz) * S], rot = 0;
+    if (full) x.drawImage(baseKhung(size, RK), 0, 0);
     else {
       S = size / 2 / MINI_R; rot = state.miniNorth ? 0 : camYawS;
       const cr = Math.cos(rot), sr = Math.sin(rot);
@@ -9842,7 +9874,7 @@
       }
       // la bàn (tranh vẽ tay đã có la bàn riêng)
       x.fillStyle = '#5B3A26'; x.font = f(13); x.textAlign = 'center';   // giữ trạng thái vẽ như cũ cho phần sau
-      if (!TRANH[zone.id]) { x.fillText('B', size - 18 * dpr, 16 * dpr); x.beginPath(); x.moveTo(size - 18 * dpr, 22 * dpr); x.lineTo(size - 23 * dpr, 34 * dpr); x.lineTo(size - 13 * dpr, 34 * dpr); x.closePath(); x.fill(); }
+      if (!TRANH[zone.id] || RK < MAP_R) { x.fillText('B', size - 18 * dpr, 16 * dpr); x.beginPath(); x.moveTo(size - 18 * dpr, 22 * dpr); x.lineTo(size - 23 * dpr, 34 * dpr); x.lineTo(size - 13 * dpr, 34 * dpr); x.closePath(); x.fill(); }
     }
     // vùng yên tĩnh (mục 8.15): đánh dấu nhẹ
     for (const q of zone.yenTinh || []) { const [px, py] = P(q.x, q.z), [ex, ey] = P(q.x + q.r, q.z), pr = Math.hypot(ex - px, ey - py); x.fillStyle = 'rgba(123,97,184,0.14)'; x.strokeStyle = 'rgba(123,97,184,0.5)'; x.lineWidth = 1 * dpr; x.setLineDash([3 * dpr, 3 * dpr]); x.beginPath(); x.arc(px, py, pr, 0, Math.PI * 2); x.fill(); x.stroke(); x.setLineDash([]); }
@@ -9908,7 +9940,7 @@
     const hit = [...mapHits].reverse().find((h) => u * size >= h.bb[0] && u * size <= h.bb[2] && v * size >= h.bb[1] && v * size <= h.bb[3]);
     toggleMap(false);
     if (hit) goTo(hit.go[0], hit.go[1], hit.name);
-    else { const wx = zone.cx + (u - 0.5) * 2 * MAP_R, wz = zone.cz + (v - 0.5) * 2 * MAP_R; goTo(wx, wz, zone.id === 'quang-truong' ? districtAt(wx, wz) : zone.name); }
+    else { const RK = mapRKhu(zone), wx = zone.cx + (u - 0.5) * 2 * RK, wz = zone.cz + (v - 0.5) * 2 * RK; goTo(wx, wz, zone.id === 'quang-truong' ? districtAt(wx, wz) : zone.name); }
   });
   let mapAcc = 0, miniAcc = 0, whereShown = '';
   // móc cho bài kiểm tra tự động (tools/test-3d): chỉ bật khi mở trang với ?test
