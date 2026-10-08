@@ -31,11 +31,13 @@
     <div class="khung">
       <aside id="trai" class="lo-trai"></aside>
       <section class="lo-giua">
-        <div class="cv-boc"><canvas id="cv"></canvas><div id="trong" class="trong">Chưa có model. Viết mô tả bên trái rồi bấm <b>Tạo</b> — hay thử ngay với <b>Chế độ thử</b>.</div></div>
+        <div class="cv-boc"><canvas id="cv"></canvas><div id="trong" class="trong"><div>Chưa có model. Viết mô tả bên trái rồi bấm <b>Tạo</b> — hay thử ngay với <b>Chế độ thử</b>.</div></div></div>
         <div class="thanh-xem" id="bat"></div>
         <div class="thanh-xem" id="hoat-anh"></div>
+        <div id="dong-thoi-gian" class="dong-thoi-gian" hidden></div>
         <div id="co" class="co"></div>
         <div id="tien-do" class="tien-do" hidden></div>
+        <div id="phuong-an" class="phuong-an" hidden></div>
       </section>
       <aside id="phai" class="lo-phai"></aside>
     </div>
@@ -71,6 +73,7 @@
       <div class="hai"><label>API key (bỏ trống nếu máy cục bộ)<input type="password" name="oaKey" autocomplete="off"></label><label>Tên model<input name="oaModel" placeholder="gpt-5 · qwen3-coder…"></label></div>
       <label>Header thêm (JSON, tuỳ chọn)<textarea name="oaHeaders" rows="2" placeholder='{"HTTP-Referer": "https://ntruong2.github.io"}'></textarea></label>
       <div class="hai"><label>Temperature (trống = mặc định)<input name="oaNhiet" type="number" step="0.1" min="0" max="2"></label><label>max_tokens<input name="oaMaxTok" type="number" min="256" step="256"></label></div>
+      <label class="chk"><input type="checkbox" name="oaVision"> Model hỗ trợ ảnh (vision): gửi ảnh tham khảo / ảnh tự soát dạng <code>image_url</code> data URI.</label>
       <div class="hai"><label>Giá vào USD / 1 triệu token (tuỳ chọn)<input name="oaGiaVao" type="number" step="0.01" min="0"></label><label>Giá ra USD / 1 triệu token<input name="oaGiaRa" type="number" step="0.01" min="0"></label></div>
       <p class="nho">Gọi <code>POST {Base URL}/chat/completions</code> thẳng từ trình duyệt (stream). Máy chủ phải cho phép CORS. Thử JSON schema, không được thì JSON object, rồi tách JSON từ chữ. Khoá chỉ gửi tới Base URL này.</p>
     </div>
