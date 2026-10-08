@@ -2,7 +2,7 @@
 
 > Social sim online 2D chibi · Mobile-first, chơi được trên web và Windows (Steam) · Không khí Việt Nam hiện đại pha fantasy nhẹ
 >
-> Tài liệu chi tiết: [Bảng cân bằng kinh tế](Kinh-te-Can-bang.md) · [Minigame Đua Thuyền Thúng](Minigame-Dua-Thuyen-Thung.md)
+> Bản tóm tắt mới nhất (thắng khi khác bản này): [GDD tóm tắt v0.2](GDD-tom-tat.md) · Tài liệu chi tiết: [Bảng cân bằng kinh tế](Kinh-te-Can-bang.md) · [Minigame Đua Thuyền Thúng](Minigame-Dua-Thuyen-Thung.md)
 
 ---
 
