@@ -181,6 +181,8 @@
   .tut-bar { flex: 1; height: 6px; border-radius: 99px; background: #EADCC0; overflow: hidden; }
   .tut-bar i { display: block; height: 100%; background: #72C46C; transition: width .4s; }
   .tut button { border: 0; background: none; padding: 2px 4px; font: 700 12px var(--body); color: var(--ink-soft); text-decoration: underline; cursor: pointer; }
+  .tut-goi { margin: 0 0 5px; font: 600 12px/1.3 var(--body); color: var(--ink-soft); }
+  .tut.gon .tut-text, .tut.gon .tut-goi, .tut.gon #tutGo { display: none; }
   .tut button:focus-visible { outline: 3px solid var(--gold); outline-offset: 1px; }
   @media (max-width: 700px) { .tut { left: 12px; right: 12px; top: 82px; width: auto; padding: 6px 10px 7px; } .tut-text { font-size: 13px; margin: 1px 0 4px; } }
   .stage:has(.emotes:not([hidden])) .tut, .stage:has(.panel:not([hidden])) .tut { display: none; }
@@ -247,7 +249,7 @@
   .presets .btn { padding: 6px 12px; font-size: 14px; }
   .stage .fps { bottom: auto; top: 84px; left: 10px; right: auto; }
   .stage .note { bottom: 96px; }
-  .stage .tut { top: auto; bottom: 92px; right: 10px; }
+  .stage .tut { top: 118px; bottom: auto; left: 10px; right: auto; }   /* Q364: thẻ việc Chương 1 luôn hiện: góc trên trái, không đè bản đồ nhỏ */
   .stage .emotes, .stage .fish, .stage .act { bottom: 96px; }
   html.rot .viewer { inset: auto; top: 0; left: 0; width: var(--vh, 100vh); height: var(--vw, 100vw); transform-origin: top left; transform: rotate(90deg) translateY(-100%); }
   html.short .viewer > .bar.char { flex-wrap: nowrap; left: 8px; right: 8px; bottom: 6px; padding: 4px 6px; gap: 4px; border-radius: 14px; }
@@ -348,9 +350,10 @@
       <div class="khung" id="khung"><p class="khung-ten" id="khungTen" aria-live="polite"></p><button class="btn khung-chup" type="button" id="chupBtn">Chụp (C)</button></div>
       <p class="hint" id="hint">WASD / chạm để đi · Q E / chuột phải / hai ngón để xoay · F để tương tác</p>
       <section class="tut" id="tut" hidden aria-live="polite">
-        <p class="tut-step" id="tutStep">Bước 1/7</p>
+        <p class="tut-step" id="tutStep">Chương 1</p>
         <p class="tut-text" id="tutText"></p>
-        <div class="tut-row"><span class="tut-bar"><i id="tutBar"></i></span><button type="button" id="tutSkip">Bỏ qua</button></div>
+        <p class="tut-goi" id="tutGoi" hidden></p>
+        <div class="tut-row"><span class="tut-bar"><i id="tutBar"></i></span><button type="button" id="tutGo" hidden>Mở tạo hình</button><button type="button" id="tutLog">Nhật ký</button><button type="button" id="tutSkip">Thu gọn</button></div>
       </section>
       <p class="xu" id="xu"><span aria-hidden="true">✦</span> <b id="xuN">0</b> Xu · Cấp <b id="capN">1</b></p>
       <button class="btn act" type="button" id="actBtn" hidden>Ngồi</button>
@@ -368,11 +371,12 @@
       </section>
       <section class="panel" id="questPanel" hidden aria-label="Nhiệm vụ hôm nay">
         <header><h2 id="questTitle">Nhiệm vụ hôm nay</h2><button type="button" class="x" id="questClose" aria-label="Đóng">×</button></header>
-        <div class="ward-tabs" role="tablist" id="questTabs"><button type="button" role="tab" data-qtab="tasks" aria-selected="true">Nhiệm vụ</button><button type="button" role="tab" data-qtab="bag" aria-selected="false">Túi đồ</button><button type="button" role="tab" data-qtab="fish" aria-selected="false">Sổ cá</button></div>
+        <div class="ward-tabs" role="tablist" id="questTabs"><button type="button" role="tab" data-qtab="tasks" aria-selected="true">Nhiệm vụ</button><button type="button" role="tab" data-qtab="bag" aria-selected="false">Túi đồ</button><button type="button" role="tab" data-qtab="fish" aria-selected="false">Sổ cá</button><button type="button" role="tab" data-qtab="log" aria-selected="false">Lời thoại</button></div>
         <p class="panel-note" id="chapLine"></p>
         <ul id="questList"></ul>
         <ul id="bagList" class="shop" hidden></ul>
         <ul id="fishLogList" class="fishlog" hidden></ul>
+        <ul id="logList" class="shop" hidden></ul>
         <p class="panel-note" id="questNote">Làm mới mỗi ngày. Phần thưởng tự cộng vào Xu.</p>
       </section>
       <section class="panel" id="marketPanel" hidden aria-label="Chợ">
@@ -1825,7 +1829,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     scene.add(g); houseSpots.push({ x, z, r: rotY, grey: true });
     return g;
   }
-  KHU.vat.filter((v) => v.loai === 'ki-ot').forEach((v) => { const { x, z } = vatXY(v), g = makeKiosk(x, z, vatRot(v), v.xam.ten, true); obstacles.push(...vatBlock(v)); if (v.xam.mo === 'Chương 1') REVIVE.push({ g, ch: 1 }); });
+  KHU.vat.filter((v) => v.loai === 'ki-ot').forEach((v) => { const { x, z } = vatXY(v), g = makeKiosk(x, z, vatRot(v), v.xam.ten, true); obstacles.push(...vatBlock(v)); if (v.xam.mo === 'Chương 1') REVIVE.push({ g, ch: 1, tiemHoa: v.id === 'tiem-hoa' }); });   // Tiệm Hoa hồi màu ở bước 21 Chương 1 (Q364)
   // thảm hoa uốn dài ở 3 góc
   for (const v of KHU.vat.filter((v) => v.loai === 'tham-hoa')) {
     const d = v.goc, { x: cx, z: cz } = vatXY(v), g = new THREE.Group(); g.position.set(cx, 0, cz); g.rotation.y = vatRot(v);
@@ -3669,13 +3673,14 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   for (const c of SCHED) { c.home0 = c.root.position.clone(); c.yaw0 = c.homeYaw ?? c.root.rotation.y; }
   const khungNow = () => Object.keys(LICH.khung).find((k) => { const [a, b] = LICH.khung[k], h = state.hour; return a < b ? h >= a && h < b : h >= a || h < b; });
   function lichSpot(ten) {
+    { const g = c1Giu(ten); if (g) return g; }   // Chương 1 (Q364): NPC của bước đang làm đứng chờ ở chỗ của chương
     const L = LICH.npc[ten]; let c = L[khungNow()];
     if (c && c.den != null && state.hour >= c.den) c = null;
     return c && state.rain && L.mua ? L.mua : c;
   }
   let lichKey = '';
   function lichTick() {
-    const key = khungNow() + Math.floor(state.hour) + (state.rain ? 'm' : ''); if (key === lichKey) return; const first = !lichKey; lichKey = key;
+    const key = khungNow() + Math.floor(state.hour) + (state.rain ? 'm' : '') + c1KhoaLich(); if (key === lichKey) return; const first = !lichKey; lichKey = key;
     for (const [ten, c] of Object.entries(LICH_NPC)) {
       const sp = lichSpot(ten);
       const apply = () => {
@@ -4192,7 +4197,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   for (const a of actors) { a.tag = hudSprite(); a.bub = hudSprite(); a.bubText = ''; a.bubOn = false; a.bubA = 0; a.sayT = 0; drawTag(a); }
   function hudRedraw() { for (const a of actors) { drawTag(a); if (a.bubText) drawBubble(a); } }
   if (document.fonts) { document.fonts.ready.then(hudRedraw); document.fonts.addEventListener('loadingdone', hudRedraw); }
-  function say(a, text) { a.bubSticker = null; a.bubText = text; drawBubble(a); a.bubOn = true; a.sayT = 3.5 + text.length * 0.05; }
+  function say(a, text) { if (a !== player && a.name && !a.remote) c1Log(a.name, text); a.bubSticker = null; a.bubText = text; drawBubble(a); a.bubOn = true; a.sayT = 3.5 + text.length * 0.05; }
   const emotes = [];
   function emote(a, text) {
     const L = hudSprite(), font = `800 26px ${DISPLAY_FONT}`, W = Math.ceil(measure(font, text)) + 20;
@@ -4700,21 +4705,265 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   }
 
   // ------------------------------------------------------------------
+  // Chương 1 "Cư Dân Mới" theo kịch bản đã duyệt docs/chuong-1-kich-ban.md (Q364): hướng dẫn TUT gộp vào chương, một luồng duy nhất, 25 bước trong 4 hồi.
+  // Mỗi bước là một dòng dữ liệu: id, hồi, số bước trong kịch bản (so), chữ, NPC cần gặp + chỗ đứng chờ (cho), đích dẫn đường (dich), điều kiện xong
+  // (phut: phút ước lượng của kịch bản; ev: sự kiện đếm đủ n lần; ok: điều kiện kiểm mỗi 0,4 giây; tac: việc làm tại chỗ), thưởng, lời NPC (noi), gợi ý (goiY, tối đa 2).
+  // Tiến độ lưu 'ch1' (số bước) như trước, kèm 'ch1v' = 2 (bản 25 bước) và 'c1' (đếm trong bước, nồi canh, nhật ký thoại).
+  // Bản lưu cũ 8 bước (chưa có 'ch1v') đổi sang bước mới gần nhất, xem c1Doi; người đã xong Chương 1 ('chap' ≥ 1) giữ nguyên.
+  // Các hệ khai báo ở mảnh sau (túi đồ, cá, bếp…) chỉ dùng trong hàm chạy lúc chơi; biến dùng sớm khai báo bằng var
+  // ------------------------------------------------------------------
+  var c1 = Object.assign({ n: 0, vv: {}, canh: 0, ca: 0, mua: 0, ket: 0, log: [], an: false }, store.get('c1', {}));
+  const c1Luu = () => store.set('c1', c1);
+  const C1_W = (khu, x, z) => { const Z = ZONES[khu]; return { khu, x: Z.cx + x, z: Z.cz + z }; };
+  const C1_NPC = () => ({ 'Bé Bơ': walkers.find((w) => w.name === 'Bé Bơ'), 'Chị Mận': chiMan, 'Chú Bảy': chuBay, 'Cô Sáu': coSau, 'Cô Mưa': vendor, 'Chú Tư': merchant });
+  const C1_CHO = { 'Bé Bơ': ['quang-truong', 2.2, 7.4], 'Chị Mận': ['dong-lua', -6.1, 22], 'Chú Bảy': ['ben-song', 8, -12.4], 'Cô Sáu': ['hem', -14.6, 1.6], 'Cô Mưa': ['quang-truong', 25.2, -36], 'Chú Tư': ['cho-dem', -3.1, -20.4] };
+  const C1_CO = [[-2.4, 12], [2.3, 13.5], [-2.2, 16], [2.4, 18.5], [-2.5, 19.6]];   // 5 bụi cỏ dại ven đường đá Đồng Lúa, trước sạp Chị Mận
+  const C1_BEP = [-16, 1.4], C1_CHOI = [-5, -5.4], C1_DOM = 10, C1_CANH_MS = 180000;   // bếp sau Cô Sáu (bếp chung Hẻm), chòi canh, số đốm mây cần bắt, canh chín 3 phút thật
+  const C1_TH = (() => { const v = KHU.vat.find((q) => q.id === 'tiem-hoa'), [dx, dz] = v.diaDanh.toi, L = Math.hypot(dx, dz), u = [-dx / L, -dz / L], p = [-u[1], u[0]];
+    return { x: dx + u[0] * 2.0 + p[0] * 2.4, z: dz + u[1] * 2.0 + p[1] * 2.4, u, ry: Math.atan2(u[0], u[1]) }; })();   // bảng Dự Án Tiệm Hoa trước ki-ốt xám, quay ra sân
+  const c1Rau = () => (bag.crops.rau || 0), c1Co = (k) => (k === 'caloc' ? bag.fish.caloc || 0 : bag.crops[k] || 0), c1Canh = () => bag.items['mon-canhloc'] || 0;
+  const c1Toi = () => state.hour >= 18.5 || state.hour < 4;
+  const c1Dat = () => plots.filter((q) => plotStage(q) === 0).length;
+  const c1Bay = (id) => nhaDo.some((d) => d.id === id && (d.k || 'phong-tro') === 'phong-tro');
+  const c1NauXong = () => c1.canh > 0 && Date.now() >= c1.canh;
+  // đích: hàm trả về chỗ trên thế giới { khu, x, z, y }; 'npc' thì lấy chỗ NPC đang đứng
+  const c1Gan = (khu, pts) => { const pp = player.root.position; let b = null, bd = 1e9; for (const q of pts) { const d = Math.hypot(q.x - pp.x, q.z - pp.z); if (d < bd) { bd = d; b = q; } } return b ? { khu, x: b.x, z: b.z, y: b.y || 1.2 } : null; };
+  const CH1 = [
+    // Hồi 1 · Đến nơi
+    { id: 'tao-hinh', hoi: 1, so: 1, phut: 3, text: 'Tạo nhân vật: chọn kiểu tóc, màu tóc, màu mắt, tông da, màu áo, quần/váy ở thẻ Khởi đầu, xong bấm × đóng Tủ đồ', ev: 'tao-hinh', nut: 'Mở tạo hình', goiY: ['Đổi lại lúc nào cũng được ở Tủ đồ'] },
+    { id: 'be-bo', hoi: 1, so: 2, phut: 2, text: 'Bé Bơ đang khóc dưới Tháp Đồng Hồ: chạm vào bé để hỏi chuyện', npc: 'Bé Bơ', ev: 'greet:Bé Bơ', noi: ['Bé Bơ', 'Hu hu… Linh Mây của em bị gió cuốn bay mất rồi! Anh chị giúp em tìm nha?'], goiY: ['Chạm vào cư dân để đi tới chào', 'Lời thoại xem lại ở nút Nhật ký'] },
+    { id: 'hat-may', hoi: 1, so: 3, phut: 2, text: 'Nhặt 3 Hạt Mây (đám mây nhỏ phát sáng) quanh Tháp Đồng Hồ', ev: 'seed', n: 3, dich: () => c1Gan('quang-truong', seedP.filter((s) => s.on).map((s) => ({ x: s.x, z: s.z, y: 1.35 }))), thuong: { xu: 15 }, goiY: [coarse ? 'Chạm xuống đất (hoặc giữ và kéo) để đi' : 'WASD / phím mũi tên hoặc bấm chuột xuống đất để đi'] },
+    { id: 'chi-man', hoi: 1, so: 4, phut: 3, text: 'Theo mũi tên qua cổng Bắc tới Đồng Lúa Gió: gặp Chị Mận ở sạp thu mua', npc: 'Chị Mận', ev: 'greet:Chị Mận', thuong: { hat: { rau: 6 }, items: { binhtuoi: 1 } }, noi: ['Chị Mận', 'Linh Mây hả? Chị thấy một đốm mây bay về phía nông trại! Cầm 6 hạt rau muống với bình tưới này, gieo thử đi em.'], goiY: ['Cổng sáng vàng là cổng dẫn tới việc đang làm'] },
+    { id: 'gieo', hoi: 1, so: 5, phut: 3, text: 'Vào Nông trại riêng (cổng rào giữa đồng): gieo 6 ô rau muống rồi tưới hết', ev: 'plant', n: 6, ok: () => c1Dat() === 0, dich: () => (zone.id === 'nong-trai' ? c1Gan('nong-trai', (c1.n < 6 ? plots.filter((q) => !q.c) : plots.filter((q) => plotStage(q) === 0)).map((q) => ({ x: q.x, z: q.z, y: 0.9 }))) : { khu: 'nong-trai', ...C1_W('nong-trai', 0, 0) }), thuong: { cap: 2 }, goiY: ['Đứng cạnh luống trống bấm Gieo hạt, rồi bấm Tưới', 'Trời mưa thì rau tự được tưới'] },
+    { id: 'nho-co', hoi: 1, so: 6, phut: 3, text: 'Trong lúc chờ rau lớn: giúp Chị Mận nhổ 5 bụi cỏ dại ven đường Đồng Lúa', npc: 'Chị Mận', ev: 'nho-co', n: 5, dich: () => c1Gan('dong-lua', C1_CO.filter((q, i) => !((c1.coBo || 0) >> i & 1)).map(([x, z]) => C1_W('dong-lua', x, z))), thuong: { xu: 20 }, noi: ['Chị Mận', 'Sạch bong rồi! Cảm ơn em nha, rau chắc cũng sắp lớn rồi đó.'], goiY: ['Rau muống lớn trong 45 giây sau khi tưới'] },
+    { id: 'thu', hoi: 1, so: 7, phut: 3, text: 'Về Nông trại thu hoạch 6 rau muống, rồi gieo lại để có đợt sau', ev: 'harvest', n: 6, dich: () => (zone.id === 'nong-trai' ? c1Gan('nong-trai', plots.filter((q) => plotStage(q) >= 1).map((q) => ({ x: q.x, z: q.z, y: 0.9 }))) : { ...C1_W('nong-trai', 0, 0) }), goiY: ['Rau chưa chín thì đi dạo một vòng rồi quay lại', 'Thu xong gieo lại ngay: đất trống phí lắm'] },
+    { id: 'ban', hoi: 1, so: 8, phut: 2, text: 'Mang rau về Đồng Lúa: Chị Mận mua 3 rau muống đầu tiên của bạn', npc: 'Chị Mận', ev: 'ban-rau', tac: { label: 'Bán 3 rau muống cho Chị Mận (+30 Xu)', npc: 'Chị Mận', can: () => (c1Rau() >= 3 ? '' : `Cần 3 rau muống (có ${c1Rau()}): thu ở Nông trại`), lam: () => { bag.crops.rau -= 3; saveBag(); bump('sell'); sfx.buy(); } }, thuong: { xu: 30 }, noi: ['Chị Mận', 'Rau tươi ghê! Em mang giùm chị ít rau xuống Bến Sông cho Chú Bảy nha, chú hay thấy mây bay ngang sông lắm.'], goiY: ['Sau này bán thêm ở sạp Chị Mận: chạm vào chị'] },
+    // Hồi 2 · Bến Sông
+    { id: 'chu-bay', hoi: 2, so: 9, phut: 3, text: 'Xuống Bến Sông Trăng gặp Chú Bảy: đi bộ qua Quảng Trường, hoặc đứng ở trạm Xe Buýt Gió chọn khu đã tới', npc: 'Chú Bảy', ev: 'greet:Chú Bảy', thuong: { items: { cancau: 1 } }, noi: ['Chú Bảy', 'Rau của Chị Mận hả? Cảm ơn con! Chú tặng con Cần Câu Tre nè, câu thử vài con coi.'], goiY: ['Xe Buýt Gió miễn phí tới Cấp Cư Dân 5', 'Lần đầu tới khu nào cũng phải đi bộ qua cổng'] },
+    { id: 'cau', hoi: 2, so: 10, phut: 8, text: 'Câu 3 con cá ở Bến Sông (đứng ở vòng tròn trắng ven sông, bấm Câu, giật đúng lúc)', ev: 'fish', n: 3, dich: () => c1Gan('ben-song', (ZONES['ben-song'].fishSpots || []).map((s) => ({ x: s.sx, z: s.sz, y: 0.9 }))), thuong: { cap: 3, items: { duoiLM: 1 } }, noi: ['Chú Bảy', 'Cá Chép Đỏ hiếm lắm đó con! À, Linh Mây hay ra sông lúc mưa. Chú nhặt được mảnh đuôi mây này nè, giữ lấy.'], goiY: ['Mỗi loài mới vào Sổ cá (nút Nhiệm vụ, thẻ Sổ cá)', 'Cá hiếm có viền màu theo độ hiếm'] },
+    { id: 'ao', hoi: 2, so: 12, phut: 6, text: 'Ra Chợ Đêm: bán bớt cá cho Chú Bảy nếu thiếu Xu, mua Áo thun "Tui ❤ Phố Mây" ở sạp Chú Tư, nhớ mua 1 gói hạt cà chua', npc: 'Chú Tư', ev: 'mua-ao', tac: { label: 'Mua Áo thun "Tui ❤ Phố Mây" (25 Xu) và mặc luôn', at: () => ({ khu: 'cho-dem', x: MARKET_FRONT.x, z: MARKET_FRONT.z }), can: () => (owned.has('inAo:tuiphomay') || xu >= 25 ? '' : `Cần 25 Xu (có ${xu}): bán cá cho Chú Bảy ở Bến Sông`), lam: () => { if (!owned.has('inAo:tuiphomay')) { addXu(-25); owned.add('inAo:tuiphomay'); store.set('owned', [...owned]); } outfit.inAo = 'tuiphomay'; store.set('outfit', outfit); rebuildPlayer(); sfx.buy(); emote(player, '✦'); } }, noi: ['Chú Tư', 'Áo mới hợp ghê! Hạt cà chua cũng ở sạp chú nè, lâu lớn hơn rau nhưng bán được giá.'], goiY: ['Đồ đã mua xem ở Tủ đồ', 'Hạt cà chua 8 Xu một gói ở sạp Chú Tư'] },
+    { id: 'ca-chua', hoi: 2, so: 13, phut: 3, text: 'Về Nông trại thu rau đợt 2, gieo hạt cà chua (lớn trong 90 giây)', ev: 'plant:cachua', dich: () => (zone.id === 'nong-trai' ? c1Gan('nong-trai', plots.filter((q) => !q.c || plotStage(q) === 3).map((q) => ({ x: q.x, z: q.z, y: 0.9 }))) : (bag.seeds.cachua || 0) ? { ...C1_W('nong-trai', 0, 0) } : { khu: 'cho-dem', x: MARKET_FRONT.x, z: MARKET_FRONT.z, y: 1 }), goiY: ['Chưa có hạt cà chua thì mua ở sạp Chú Tư, Chợ Đêm'] },
+    { id: 'keo-co', hoi: 2, so: 14, phut: 5, text: 'Trong lúc chờ cà chua: ghé Sân Chơi Cầu Vồng chơi 1 ván Kéo Co', ev: 'keo-co', dich: () => { const Z = ZONES['san-choi'], t = Z.K.vat.find((v) => v.id === 'keo-co').diaDanh.toi; return { ...C1_W('san-choi', t[0], t[1]) }; }, thuong: { ve: 10, cap: 4 }, goiY: ['Bấm Kéo! (Space) đúng lúc trống đánh', 'Thua cũng có thưởng'] },
+    // Hồi 3 · Hẻm thức dậy một chút
+    { id: 'be-bo-doi', hoi: 3, so: 15, phut: 3, text: 'Về Quảng Trường: Bé Bơ đói bụng, khóc to hơn. Hỏi bé chuyện gì', npc: 'Bé Bơ', ev: 'greet:Bé Bơ', noi: ['Bé Bơ', 'Em đói… Bà Bồng nói Cô Sáu ở Hẻm nấu canh chua ngon nhất phố. Linh Mây cũng mê mùi canh lắm!'], goiY: ['Hẻm Đèn Dầu: đi qua Chợ Đêm, cổng Tây'] },
+    { id: 'co-sau', hoi: 3, so: 16, phut: 4, text: 'Vào Hẻm Đèn Dầu gặp Cô Sáu ở bếp sau (quán đóng từ hồi Bão Xám, chỉ bếp còn lửa)', npc: 'Cô Sáu', ev: 'greet:Cô Sáu', noi: ['Cô Sáu', 'Canh chua cá lóc hả? Cô chỉ cho: 1 cá lóc, 1 cà chua, 1 rau muống. Gom đủ rồi nấu ở bếp này với cô.'], goiY: ['Quán Cô Sáu mở lại ở Chương 2'] },
+    { id: 'nguyen-lieu', hoi: 3, so: 17, phut: 10, text: 'Gom nguyên liệu Canh chua cá lóc: 1 cá lóc (câu ở Bến Sông), 1 cà chua, 1 rau muống (Nông trại)', ok: () => c1Co('caloc') >= 1 && c1Co('cachua') >= 1 && c1Co('rau') >= 1, dich: () => (!c1Co('cachua') || !c1Co('rau') ? { ...C1_W('nong-trai', 0, 0) } : !c1Co('caloc') ? c1Gan('ben-song', (ZONES['ben-song'].fishSpots || []).map((s) => ({ x: s.sx, z: s.sz, y: 0.9 }))) : { ...C1_W('hem', ...C1_BEP) }), goiY: ['Câu ở Bến Sông lúc này chắc chắn gặp cá lóc', 'Thiếu thì xem Túi đồ (nút Nhiệm vụ)'] },
+    { id: 'nau', hoi: 3, so: 18, phut: 3, text: 'Nấu Canh chua cá lóc ở bếp Cô Sáu (Hẻm): canh chín sau 3 phút, trong lúc chờ làm việc tiếp', npc: 'Cô Sáu', ev: 'nau-canh', tac: { label: 'Bếp Cô Sáu · nấu Canh chua cá lóc', at: () => C1_W('hem', ...C1_BEP), can: () => (c1Co('caloc') && c1Co('cachua') && c1Co('rau') ? '' : 'Cần 1 cá lóc, 1 cà chua, 1 rau muống'), lam: () => { bag.fish.caloc--; bag.crops.cachua--; bag.crops.rau--; saveBag(); c1.canh = Date.now() + C1_CANH_MS; c1Luu(); sfx.water(); emote(player, '🍲'); ngheXp('dau-bep', 10); } }, thuong: { items: { ghenhua: 1, longdengiay: 1 } }, noi: ['Cô Sáu', 'Để lửa liu riu 3 phút nha. Phòng con còn trống trơn hả? Cô cho mượn cái ghế nhựa đỏ với cái lồng đèn giấy nè!'], goiY: ['Canh chín thì quay lại bếp múc canh'] },
+    { id: 'bay-do', hoi: 3, so: 19, phut: 6, text: 'Về Phòng Trọ Số 0 (Khu Nhà Mái Ngói, hoặc nút Về nhà): bày Ghế nhựa đỏ và Đèn lồng giấy', ok: () => c1Bay('ghenhua') && c1Bay('longdengiay'), dich: () => ({ ...C1_W('phong-tro', 0, 0), y: 1 }), goiY: ['Đứng giữa phòng, bấm Bày … (ô trước mặt)', 'Nút Về nhà: miễn phí lần đầu mỗi ngày'] },
+    { id: 'viec-vat', hoi: 3, so: 20, phut: 10, text: 'Mở Bảng Tin (nút Nhiệm vụ) làm 2 việc vặt đầu tiên: nhặt 3 Hạt Mây, thu hoạch 2 lần', ev: 'viec-vat', n: 2, dich: () => ({ khu: 'quang-truong', x: BOARD.x - 1.2, z: BOARD.z, y: 2.6 }), thuong: { cap: 5 }, goiY: ['Mỗi ngày có việc vặt mới, thưởng Xu'] },
+    { id: 'tiem-hoa', hoi: 3, so: 21, phut: 4, text: 'Góp 10 rau muống + 20 Xu vào Dự Án Tiệm Hoa (bảng trước ki-ốt xám ở góc Nam Quảng Trường)', ev: 'tiem-hoa', tac: { label: 'Góp 10 rau + 20 Xu cho Dự Án Tiệm Hoa', at: () => C1_W('quang-truong', C1_TH.x + C1_TH.u[0] * 1.3, C1_TH.z + C1_TH.u[1] * 1.3), can: () => (c1Rau() >= 10 && xu >= 20 ? '' : `Cần 10 rau muống (có ${c1Rau()}) và 20 Xu (có ${xu})`), lam: () => { bag.crops.rau -= 10; addXu(-20); saveBag(); c1TiemHoa(true); } }, goiY: ['Rau muống lớn nhanh nhất: gieo nhiều ô một lúc'] },
+    // Hồi 4 · Tìm Linh Mây
+    { id: 'co-mua', hoi: 4, so: 22, phut: 3, text: 'Hỏi Cô Mưa trước Đài Khí Tượng (góc Bắc Quảng Trường) về thời tiết tối nay', npc: 'Cô Mưa', ev: 'greet:Cô Mưa', noi: ['Cô Mưa', 'Chiều nay mưa, tối tạnh là có cầu vồng! Linh Mây lạc thích hiện ra ở chòi canh Đồng Lúa lúc mưa vừa tạnh đó.'], goiY: ['Đài Khí Tượng vào được: xem dự báo 4 ngày'] },
+    { id: 'cho-toi', hoi: 4, so: 23, phut: 10, text: 'Chuẩn bị: múc canh chua ở bếp Cô Sáu, mang theo mảnh đuôi Linh Mây, chờ trời tối (sau 18:30) và mưa tạnh', ok: () => c1Toi() && c1Canh() > 0, dich: () => (c1Canh() ? null : { ...C1_W('hem', ...C1_BEP) }), goiY: ['Trong lúc chờ: câu cá, làm việc vặt, trang trí phòng', 'Một ngày game = 2 phút rưỡi thật'] },
+    { id: 'dom-may', hoi: 4, so: 24, phut: 5, text: `Ra chòi canh giữa ruộng Đồng Lúa lúc mưa tạnh: dỗ Linh Mây lạc bằng cách bắt ${C1_DOM} đốm mây sáng`, ev: 'dom-may', tac: { label: 'Dỗ Linh Mây lạc (bắt đốm mây sáng)', at: () => C1_W('dong-lua', ...C1_CHOI), can: () => (c1Toi() ? '' : 'Linh Mây lạc chỉ hiện buổi tối (18:30–4h)'), chi: () => bddMay() }, thuong: { items: { linhMayBeBo: 1 } }, goiY: ['Đi tới gần đốm mây rồi bấm Bắt! (Space)', 'Rời Đồng Lúa thì phải chơi lại'] },
+    { id: 'ket', hoi: 4, so: 25, phut: 4, text: 'Mang Linh Mây và canh chua về cho Bé Bơ ở Quảng Trường', npc: 'Bé Bơ', ev: 'ket', tac: { label: 'Trao Linh Mây và canh chua cho Bé Bơ', npc: 'Bé Bơ', can: () => (c1Canh() ? '' : 'Cần 1 tô Canh chua cá lóc: múc ở bếp Cô Sáu'), lam: () => { bag.items['mon-canhloc']--; bag.items.linhMayBeBo = 0; saveBag(); c1Ket(); } }, goiY: ['Đứng cạnh Bé Bơ để trao quà'] },
+    { id: 'trung', hoi: 4, so: 26, phut: 3, text: 'Bé Bơ có quà cho bạn: chờ chút…', ev: 'trung', thuong: { cap: 6 } },
+  ];
+  // NPC của bước đang làm đứng yên chờ ở chỗ của chương (bỏ qua lịch) cho tới khi xong bước
+  function c1Giu(ten) {
+    if (chapDone || c1.an === 'tat') return null; const s = CH1[chStep]; if (!s || s.npc !== ten || !C1_CHO[ten]) return null;
+    const [khu, x, z] = C1_CHO[ten]; return { khu, x, z };
+  }
+  const c1KhoaLich = () => (chapDone ? '' : (CH1[chStep] || {}).npc || '');
+  // bản lưu cũ 8 bước (Q238) → bước mới gần nhất: 0 chào Bé Bơ → 1 (người đã qua mở màn) hoặc 0 (người mới), 1 chào Chị Mận → 3, 2 gieo hạt → 4,
+  // 3 chào Chú Bảy → 8, 4 câu cá → 9, 5 mua hạt → 10, 6 nấu món đầu tiên → 14 (gặp Cô Sáu), 7 chòi canh → 20 (Cô Mưa; Tiệm Hoa coi như đã góp)
+  const C1_DOI = [1, 3, 4, 8, 9, 10, 14, 20];
+  function c1Doi(cu, moi) {
+    const s = cu === 0 && moi ? 0 : C1_DOI[Math.min(cu, 7)];
+    const them = (k, n = 1) => { if (!(bag0().items[k] > 0)) bag0().items[k] = n; };
+    if (s > 9) them('duoiLM'); if (s > 16) { them('ghenhua'); them('longdengiay'); }
+    store.set('bag', bag0()); return s;
+  }
+  const bag0 = () => (c1Doi.b ||= Object.assign({ seeds: { rau: 2 }, crops: {}, items: {}, fish: {} }, store.get('bag', {})));   // túi đồ chưa khai báo lúc đổi bản lưu: đọc thẳng từ bộ nhớ
+  // nhật ký lời thoại: 20 câu gần nhất của NPC (người chơi không ghi)
+  function c1Log(ten, t) { if (!c1 || !ten || !t) return; const L = c1.log; if (L.length && L[L.length - 1][1] === t) return; L.push([ten, t]); if (L.length > 20) L.splice(0, L.length - 20); c1Luu(); }
+  const c1LogHtml = () => (c1.log.length ? c1.log.slice().reverse().map(([n, t]) => `<li><span><b>${escHtml(n)}</b>: ${escHtml(t)}</span></li>`).join('') : '<li class="muted"><span>Chưa có lời thoại nào. Chạm vào cư dân để trò chuyện.</span></li>');
+  // phần thưởng, lên cấp (Cấp Cư Dân, xem xpCan): đủ XP tới cấp L thì thôi, chưa đủ thì cộng phần còn thiếu
+  function c1LenCap(L) { let t = 0; for (let i = 1; i < L; i++) t += xpCan(i); if (capCD() < L) { const b = Math.min(cdan.nang, t - cdan.xp); cdan.nang -= b; xpCD(Math.max(1, t - cdan.xp - b)); } }
+  function c1Thuong(T) {
+    if (!T) return ''; const r = [];
+    if (T.xu) { addXu(T.xu); r.push(`+${T.xu} Xu`); }
+    for (const [k, n] of Object.entries(T.hat || {})) { bag.seeds[k] = (bag.seeds[k] || 0) + n; r.push(`${n} hạt ${CROPS[k].name.toLowerCase()}`); }
+    for (const [k, n] of Object.entries(T.items || {})) { bag.items[k] = (bag.items[k] || 0) + n; r.push(C1_DO[k] || k); }
+    if (T.ve) { veVui += T.ve; store.set('veVui', veVui); r.push(`+${T.ve} Vé Vui`); }
+    saveBag(); if (T.cap) { c1LenCap(T.cap); r.push(`Cấp Cư Dân ${T.cap}`); }
+    return r.join(', ');
+  }
+  const C1_DO = { binhtuoi: 'Bình tưới', cancau: 'Cần Câu Tre', duoiLM: 'Mảnh đuôi Linh Mây', ghenhua: 'Ghế nhựa đỏ', longdengiay: 'Đèn lồng giấy', linhMayBeBo: 'Linh Mây của Bé Bơ' };
+  // sự kiện của chương 1 (chEv gọi khi chapDone = 0)
+  function c1Ev(ev) {
+    const s = CH1[chStep]; if (!s || s.ev !== ev) return false;
+    if (s.tac && s.tac.lam && ev !== 'dom-may') { const ly = s.tac.can && s.tac.can(); if (ly) { say(player, ly); sfx.pop(); return false; } s.tac.lam(); }
+    c1.n++; c1Luu(); if (s.n > 1 && c1.n < s.n) { note(`${s.text} · ${c1.n}/${s.n}`); c1Ve(); return true; }
+    c1Xet(); return true;
+  }
+  function c1Xet() {
+    const s = CH1[chStep]; if (!s || chapDone) return;
+    if (s.ev && c1.n < (s.n || 1)) return; if (s.ok && !s.ok()) return;
+    c1Qua();
+  }
+  function c1Qua() {
+    const s = CH1[chStep], th = c1Thuong(s.thuong);
+    if (s.noi) { const c = C1_NPC()[s.noi[0]]; setTimeout(() => { if (c) { say(c, s.noi[1]); emote(c, '♥'); } c1Log(s.noi[0], s.noi[1]); }, 1300); }
+    chStep++; c1.n = 0; store.set('ch1', chStep); c1Luu(); sfx.pop(); emote(player, '✓'); c1Sau(s.id); c1CoVe(); c1BangVe();
+    if (chStep >= CH1.length) { chapterDone(); c1Ve(); return; }
+    const t = CH1[chStep]; note(`${th ? `Xong bước ${s.so}: ${th} · ` : ''}Bước ${chStep + 1}/${CH1.length}: ${t.text}`);
+    c1Ve(); if (!questPanel.hidden) renderQuest(); lichKey = '';
+  }
+  // việc thêm khi xong một bước
+  function c1Sau(id) {
+    if (id === 'chi-man') note('Chị Mận cho 6 hạt rau muống và bình tưới');
+    if (id === 'co-mua') { c1.mua = 1; c1Luu(); }
+    if (id === 'dom-may') { c1LM.visible = true; c1.lmTheo = 1; c1Luu(); }
+  }
+  // việc làm tại chỗ của bước (nút hành động): trả về [nhãn, hàm] khi đứng gần
+  function c1Act(pp) {
+    if (chapDone) return null; const s = CH1[chStep]; if (!s) return null;
+    // nồi canh ở bếp Cô Sáu: chín thì múc (từ lúc nấu tới khi múc)
+    if (c1.canh > 0 && zone.id === 'hem') { const w = C1_W('hem', ...C1_BEP); if (Math.hypot(pp.x - w.x, pp.z - w.z) < 2.2) return c1NauXong() ? ['Múc Canh chua cá lóc', c1Muc] : [`Canh đang nấu · còn ${Math.ceil((c1.canh - Date.now()) / 1000)} giây`, () => note('Canh chua đang sôi liu riu, chín thì quay lại múc nha')]; }
+    if (s.id === 'nho-co' && zone.id === 'dong-lua') for (let i = 0; i < C1_CO.length; i++) { if ((c1.coBo || 0) >> i & 1) continue; const w = C1_W('dong-lua', ...C1_CO[i]); if (Math.hypot(pp.x - w.x, pp.z - w.z) < 1.6) return ['Nhổ cỏ dại', () => c1NhoCo(i)]; }
+    const T = s.tac; if (!T) return null;
+    const w = T.npc ? (() => { const c = C1_NPC()[T.npc]; return c && c.root.visible ? { khu: zone.id, x: c.root.position.x, z: c.root.position.z } : null; })() : T.at();
+    if (!w || (!T.npc && w.khu !== zone.id) || Math.hypot(pp.x - w.x, pp.z - w.z) > (T.npc ? 2.6 : 2.2)) return null;
+    if (T.npc && C1_CHO[T.npc][0] !== zone.id) return null;
+    return [T.label, () => { const ly = T.can && T.can(); if (ly) { say(player, ly); sfx.pop(); return; } if (T.chi) T.chi(); else chEv(s.ev); }];
+  }
+  function c1NhoCo(i) { c1.coBo = (c1.coBo || 0) | (1 << i); c1Luu(); c1CoVe(); sfx.pick(); emote(player, '✿'); lamViec('thu'); chEv('nho-co'); }
+  function c1Muc() { c1.canh = -1; c1Luu(); bag.items['mon-canhloc'] = (bag.items['mon-canhloc'] || 0) + 1; saveBag(); sfx.buy(); emote(player, '🍲'); ngheXp('dau-bep', 15); say(coSau, 'Thơm chưa! Mang cho Bé Bơ một tô nha con.'); c1Log('Cô Sáu', 'Thơm chưa! Mang cho Bé Bơ một tô nha con.'); note('Múc được 1 tô Canh chua cá lóc ✦ Rare (túi đồ)'); c1Xet(); }
+  // việc vặt rút gọn ở bước 20: chỉ 2 việc dễ, đếm riêng (không đụng Việc Vặt ngày)
+  const C1_VV = [['seed', 'Nhặt 3 Hạt Mây', 3], ['harvest', 'Thu hoạch 2 lần', 2]];
+  function c1Bump(id) {
+    if (chapDone) return; const s = CH1[chStep]; if (!s) return;
+    if (s.id === 'hat-may' && id === 'seed') chEv('seed');
+    if (s.id === 'thu' && id === 'harvest') chEv('harvest');
+    if (s.id === 'viec-vat') { const v = C1_VV.find((q) => q[0] === id); if (!v || (c1.vv[id] || 0) >= v[2]) return; c1.vv[id] = (c1.vv[id] || 0) + 1; c1Luu();
+      if (c1.vv[id] >= v[2]) { addXu(20); note(`Xong việc vặt: ${v[1]} · +20 Xu`); chEv('viec-vat'); } else { c1Ve(); if (!questPanel.hidden) renderQuest(); } }
+  }
+  // cá đảm bảo ở bước 10 (rô đồng, cá lóc, Cá Chép Đỏ hiếm) và cá lóc ở bước 17 khi còn thiếu
+  function c1Ca() {
+    if (chapDone || zone.id !== 'ben-song') return null; const s = CH1[chStep]; if (!s) return null;
+    if (s.id === 'cau') return ['caro', 'caloc', 'chepdo'][Math.min(2, c1.n)];
+    if (s.id === 'nguyen-lieu' && !c1Co('caloc')) return 'caloc';
+    return null;
+  }
+  // ------ cảnh: cỏ dại, bảng Dự Án Tiệm Hoa, bồn hoa quanh tháp, đèn tháp, Linh Mây của Bé Bơ ------
+  const c1CoM = instanced(new THREE.ConeGeometry(0.32, 0.55, 6), mat('#5E9A3E'), C1_CO.length, scene);
+  function c1CoVe() { const on = !chapDone && CH1[chStep] && CH1[chStep].id === 'nho-co'; C1_CO.forEach(([x, z], i) => { const w = C1_W('dong-lua', x, z), co = on && !((c1.coBo || 0) >> i & 1); dummy.position.set(w.x, 0.28, w.z); dummy.rotation.set(0, i, 0); dummy.scale.setScalar(co ? 1 : 0.0001); dummy.updateMatrix(); c1CoM.setMatrixAt(i, dummy.matrix); }); c1CoM.instanceMatrix.needsUpdate = true; c1CoM.visible = on; }
+  const c1Bang = (() => { const Z = ZONES['quang-truong'], g = new THREE.Group(); g.position.set(Z.cx + C1_TH.x, 0, Z.cz + C1_TH.z); g.rotation.y = C1_TH.ry;
+    const tex = canvasTex(320, 160, () => {}); g.add(new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.95), texMat(tex))); g.children[0].position.y = 1.5;
+    for (const x of [-1, 1]) g.add(part(new THREE.BoxGeometry(0.1, 1.95, 0.1), mat('#8A5A33'), x, 0.98, -0.03, 0.05)); scene.add(g); return { g, tex }; })();
+  function c1BangVe() {
+    const xong = chapDone || chStep > 19, x = c1Bang.tex.image.getContext('2d'), w = 320, h = 160; c1Bang.g.visible = !xong;
+    x.fillStyle = '#FFF4DE'; x.fillRect(0, 0, w, h); x.strokeStyle = '#5B3A26'; x.lineWidth = 8; x.strokeRect(0, 0, w, h); x.fillStyle = '#5B3A26'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = `800 27px ${SIGN_FONT}`; x.fillText('Dự Án Tiệm Hoa', w / 2, 32); x.font = `700 20px ${SIGN_FONT}`; x.fillText('Cần: 10 rau muống + 20 Xu', w / 2, 76); x.fillText('Góp xong là tiệm hồi màu!', w / 2, 112); c1Bang.tex.needsUpdate = true;
+  }
+  const C1_BON = 8, c1BonDat = instanced(new THREE.CylinderGeometry(0.75, 0.85, 0.32, 12), mat('#8A6A48'), C1_BON, scene), c1Hoa = instanced(new THREE.SphereGeometry(0.24, 8, 6), new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: grad }), C1_BON * 6, scene);
+  const c1Den = instanced(new THREE.SphereGeometry(0.22, 10, 8), lanternMat('#FFF1A8', '#FFD45A'), 10, scene);
+  { const Z = ZONES['quang-truong'], HM = ['#FF9FC6', '#FFD45A', '#FF6B5A', '#FFFFFF', '#C9A2F0', '#FFB3CE'], cc = new THREE.Color();
+    for (let i = 0; i < C1_BON; i++) { const a = (i + 0.5) / C1_BON * Math.PI * 2, x = Z.cx + Math.sin(a) * 7.4, z = Z.cz + Math.cos(a) * 7.4; dummy.position.set(x, 0.16, z); dummy.rotation.set(0, 0, 0); dummy.scale.setScalar(1); dummy.updateMatrix(); c1BonDat.setMatrixAt(i, dummy.matrix);
+      for (let k = 0; k < 6; k++) { const b = k / 6 * Math.PI * 2 + i; c1Hoa.setColorAt(i * 6 + k, cc.set(HM[(i + k) % 6])); c1Hoa.userData[i * 6 + k] = [x + Math.cos(b) * (k % 3 ? 0.48 : 0.2), 0.5 + (k % 2) * 0.12, z + Math.sin(b) * (k % 3 ? 0.48 : 0.2)]; } }
+    for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; dummy.position.set(Z.cx + Math.sin(a) * 3.2, 7.2, Z.cz + Math.cos(a) * 3.2); dummy.updateMatrix(); c1Den.setMatrixAt(i, dummy.matrix); }
+    c1BonDat.instanceMatrix.needsUpdate = c1Den.instanceMatrix.needsUpdate = true; c1Hoa.instanceColor.needsUpdate = true; }
+  let c1HoaK = 0;   // 0 hoa chưa nở … 1 nở hết (cảnh kết nở dần trong 2 giây)
+  function c1HoaVe(k) { c1HoaK = k; for (let j = 0; j < C1_BON * 6; j++) { const [x, y, z] = c1Hoa.userData[j], s = Math.max(0.0001, Math.min(1, k * 1.6 - (j % 6) * 0.1)); dummy.position.set(x, y * Math.min(1, s + 0.4), z); dummy.rotation.set(0, 0, 0); dummy.scale.setScalar(s); dummy.updateMatrix(); c1Hoa.setMatrixAt(j, dummy.matrix); } c1Hoa.instanceMatrix.needsUpdate = true; c1Hoa.visible = k > 0; }
+  const c1LM = pet.clone(); c1LM.scale.setScalar(0.9); c1LM.visible = false; scene.add(c1LM);
+  const c1Sang = () => chapDone >= 1 || c1.ket;
+  function c1CanhVe() { c1HoaVe(c1Sang() ? 1 : 0); c1Den.visible = c1Sang(); c1LM.visible = chapDone >= 1 || !!c1.lmTheo; c1CoVe(); c1BangVe(); }
+  // Tiệm Hoa hồi màu ngay khi góp đủ (cơ chế REVIVE ch:1 cũ, nay chạy ở bước 21; bản lưu đã qua bước 21 thì hồi màu lúc mở trang)
+  const c1ThMo = () => chapDone >= 1 || chStep > 19;
+  function c1TiemHoa(moi) {
+    const r = REVIVE.find((q) => q.tiemHoa); if (!r) return; r.g.traverse(hoiMesh); c1BangVe();
+    if (!moi) return; phaoBan(r.g.position); sfx.buy(); emote(player, '✿'); player.happyT = 2.5; state.camYaw = Math.atan2(-(r.g.position.x - player.root.position.x), -(r.g.position.z - player.root.position.z));
+    setTimeout(() => note('Dự Án Tiệm Hoa xong! Tiệm Hoa hồi màu: hoa bày trước cửa, biển sáng lại, vào trong được rồi'), 900);
+  }
+  // cảnh kết (bước 25): bồn hoa quanh tháp nở, pháo hoa, tháp sáng đèn, camera nhìn về tháp; 5 giây sau Bé Bơ tặng quà (bước 26)
+  function c1Ket() {
+    c1.ket = 1; c1.lmTheo = 0; c1Luu(); const Z = ZONES['quang-truong'], bb = C1_NPC()['Bé Bơ'], pp = player.root.position;
+    c1KetT = 0.0001; c1Den.visible = true; for (let k = 0; k < 3; k++) setTimeout(() => phaoBan({ x: Z.cx + (k - 1) * 5, z: Z.cz - 2 }), 400 + k * 900);
+    state.camYaw = Math.atan2(-(Z.cx - pp.x), -(Z.cz - pp.z)); state.zoom = Math.max(state.zoom, 1.35);
+    if (bb) { bb.happyT = 6; bb.waveT = 2; bb.faceT = 6; emote(bb, '♥'); say(bb, 'Linh Mây về rồi! Canh chua thơm quá… Cảm ơn anh chị nhiều lắm!'); c1Log('Bé Bơ', 'Linh Mây về rồi! Canh chua thơm quá… Cảm ơn anh chị nhiều lắm!'); }
+    note('Bé Bơ cười tươi rói! Bồn hoa quanh Tháp Đồng Hồ nở rộ, tháp sáng đèn, pháo hoa bừng lên cả Quảng Trường');
+    setTimeout(() => { if (!chapDone && CH1[chStep] && CH1[chStep].id === 'trung') chEv('trung'); }, 5200);
+  }
+  let c1KetT = 0;
+  // ------ dẫn đường: đích của bước (mũi tên 3D + vòng sáng dưới đất + dấu bản đồ), cổng dẫn về phía đích sáng lên ------
+  function c1Dich() {
+    if (chapDone || state.photo) return null; const s = CH1[chStep]; if (!s) return null;
+    if (s.id === 'nho-co' && zone.id === 'dong-lua') return s.dich();
+    if (c1.canh > 0 && c1NauXong() && s.id !== 'dom-may' && s.id !== 'ket' && chStep >= 21) return { ...C1_W('hem', ...C1_BEP) };
+    if (s.dich) return s.dich();
+    if (s.tac && !s.tac.npc) return { ...s.tac.at(), y: 1.2 };
+    if (s.npc) { const c = C1_NPC()[s.npc], ch = C1_CHO[s.npc]; if (c && c.root.visible && (c.zid || ch[0]) === zone.id && ch[0] === zone.id) return { khu: zone.id, x: c.root.position.x, z: c.root.position.z, y: 3.5 }; return { ...C1_W(ch[0], ch[1], ch[2]), y: 3.5 }; }
+    return null;
+  }
+  // bước đi kế tiếp (cổng hoặc cửa) từ khu này tới khu đích: tìm theo chiều rộng qua cổng chưa khoá và cửa vào nhà
+  function c1Huong(den) {
+    if (!den || den === zone.id) return null; const tr = { [zone.id]: null }, q = [zone.id];
+    const ke = (Z) => [...Z.gates.filter((g) => ZONES[g.to] && !gateLock(g)).map((g) => [g.to, { x: g.fx, z: g.fz }]), ...Object.entries(Z.doors || {}).filter(([id]) => ZONES[id]).map(([id, d]) => [id, { x: d.x, z: d.z }])];
+    while (q.length) { const id = q.shift(); if (id === den) break; for (const [to, p] of ke(ZONES[id])) if (!(to in tr)) { tr[to] = [id, p]; q.push(to); } }
+    if (!(den in tr)) return null; let id = den; while (tr[id] && tr[id][0] !== zone.id) id = tr[id][0]; return tr[id] ? tr[id][1] : null;
+  }
+  // mục tiêu mũi tên trong khu đang đứng: đích nếu cùng khu, không thì cổng/cửa dẫn về phía đích (cổng đó sáng lên)
+  const c1Tmp = new THREE.Vector3();
+  function c1MucTieu() {
+    const d = c1Dich(); c1Cong.visible = false; if (!d) return null;
+    if (d.khu === zone.id) return c1Tmp.set(d.x, d.y || 1.2, d.z);
+    const h = c1Huong(d.khu); if (!h) return null;
+    c1Cong.visible = true; c1Cong.position.set(h.x, 0, h.z); return c1Tmp.set(h.x, 1.6, h.z);
+  }
+  const c1Cong = new THREE.Group(); c1Cong.visible = false; scene.add(c1Cong);
+  { const m = new THREE.MeshBasicMaterial({ color: col('#FFD45A'), transparent: true, opacity: 0.32, depthWrite: false, blending: THREE.AdditiveBlending });
+    c1Cong.add(new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.5, 3.4, 20, 1, true), m)); c1Cong.children[0].position.y = 1.7;
+    c1Cong.add(new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 28).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: col('#FFE08A'), transparent: true, opacity: 0.8, depthWrite: false }))); c1Cong.children[1].position.y = 0.12; }
+  // dấu bản đồ: ngôi sao vàng ở đích (hoặc ở cổng dẫn về phía đích)
+  function c1MapDau(x, P, k) {
+    const d = c1Dich(); if (!d) return; const h = d.khu === zone.id ? d : c1Huong(d.khu); if (!h) return; const [px, py] = P(h.x, h.z);
+    x.save(); x.translate(px, py); x.fillStyle = '#FFD45A'; x.strokeStyle = '#5B3A26'; x.lineWidth = 1.6 * k; x.beginPath();
+    for (let i = 0; i < 10; i++) { const r = (i % 2 ? 4 : 9) * k, a = i / 10 * Math.PI * 2 - Math.PI / 2; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.closePath(); x.fill(); x.stroke(); x.restore();
+  }
+  // ------ thẻ việc đang làm (thẻ #tut cũ) và bảng Nhiệm vụ ------
+  const c1NpcO = (s) => { if (!s || !s.npc) return ''; const ch = C1_CHO[s.npc]; return ch && ch[0] !== zone.id ? `${s.npc} đang ở ${ZONES[ch[0]].name}` : ''; };
+  const c1VVHtml = () => C1_VV.map(([id, t, g]) => { const n = Math.min(g, c1.vv[id] || 0); return `<li class="${n >= g ? 'ok' : ''}"><span>${t} (${n}/${g})</span><span class="rw">${n >= g ? '✓ Xong' : '+20 Xu'}</span><span class="bar-p"><i style="width:${Math.round(n / g * 100)}%"></i></span></li>`; }).join('');
+  function c1Ve() {
+    const el = $('#tut'); if (!el) return; const s = !chapDone && CH1[chStep];
+    el.hidden = !s; if (!s) return; el.classList.toggle('gon', !!c1.an); $('#tutSkip').textContent = c1.an ? 'Mở' : 'Thu gọn';
+    $('#tutStep').textContent = `Chương 1 · Hồi ${s.hoi} · Bước ${chStep + 1}/${CH1.length}`;
+    $('#tutText').textContent = s.text + (s.n > 1 ? ` (${Math.min(c1.n, s.n)}/${s.n})` : '') + (s.id === 'viec-vat' ? ` (${C1_VV.filter(([id, , g]) => (c1.vv[id] || 0) >= g).length}/2)` : '') + (s.id === 'nau' || (c1.canh > 0 && chStep < 23) ? (c1.canh > 0 ? (c1NauXong() ? ' · canh chín rồi, ra bếp múc!' : ` · canh còn ${Math.ceil((c1.canh - Date.now()) / 1000)} giây`) : '') : '');
+    const goi = [c1NpcO(s), ...(s.goiY || [])].filter(Boolean).slice(0, 2); $('#tutGoi').textContent = goi.join(' · '); $('#tutGoi').hidden = !goi.length;
+    $('#tutGo').hidden = !s.nut; if (s.nut) $('#tutGo').textContent = s.nut;
+    $('#tutBar').style.width = `${Math.round(chStep / CH1.length * 100)}%`;
+    hintGone = true; $('#hint').classList.add('gone');
+  }
+  // bảng Nhiệm vụ trong Chương 1: chỉ việc đang làm + tối đa 2 gợi ý (các hệ khác ẩn tới khi xong chương; state.c1Mo hiện hết khi thử)
+  const c1Gon = () => !chapDone && !state.c1Mo;
+  function c1QuestHtml() {
+    const s = CH1[chStep]; if (!s) return '';
+    const goi = [c1NpcO(s), ...(s.goiY || [])].filter(Boolean).slice(0, 2);
+    return `<b>Chương 1 · Cư Dân Mới</b> · Hồi ${s.hoi} (${chStep + 1}/${CH1.length})<br>${escHtml(s.text)}${s.n > 1 ? ` (${Math.min(c1.n, s.n)}/${s.n})` : ''}${goi.map((g) => `<br><span class="muted">· ${escHtml(g)}</span>`).join('')}`;
+  }
+  function c1TaoHinh() { if (chapDone || chStep !== 0) return; c1.taoMo = 1; wardTab = 'kd'; toggleWard(true); }
+  // mỗi khung (gọi trong chTick): kiểm điều kiện, NPC đứng chờ, trời mưa chiều nay rồi tạnh (bước 23–24), Linh Mây bay theo, hoa nở
+  let c1Acc = 0;
+  function c1Tick(dt) {
+    if (c1KetT > 0) { c1KetT += dt; c1HoaVe(Math.min(1, c1KetT / 2)); if (c1KetT >= 2) c1KetT = 0; }
+    const bb = C1_NPC()['Bé Bơ'];
+    if (c1LM.visible) { const t = state.t, theo = c1.lmTheo && !chapDone ? player : bb; if (theo) { const q = theo.root.position; c1LM.position.set(q.x + Math.cos(t * 1.3) * 0.9, (theo === bb ? 1.9 : 2.4) + Math.sin(t * 2.1) * 0.15, q.z + Math.sin(t * 1.3) * 0.9); c1LM.rotation.y = -t * 1.3; } }
+    if (chapDone) return; const s = CH1[chStep]; if (!s) return;
+    if (s.npc === 'Bé Bơ' && bb && zone.id === 'quang-truong') { const Z = ZONES['quang-truong'], [, x, z] = C1_CHO['Bé Bơ']; bb.target = null; bb.wait = 2; if (Math.hypot(bb.root.position.x - Z.cx - x, bb.root.position.z - Z.cz - z) > 0.3) bb.root.position.set(Z.cx + x, 0.12, Z.cz + z); }
+    c1Acc += dt; if (c1Acc < 0.4) return; c1Acc = 0;
+    if (s.ok) c1Xet();
+    if (c1.mua && (chStep === 21 || chStep === 22) && !state.c1TroiTay) {
+      if (state.hour >= 15.5 && state.hour < 18.5 && !state.rain) { setWx('rain', 'Mưa rào'); c1.mua = 2; c1Luu(); note('Trời đổ mưa đúng như Cô Mưa nói… tối tạnh là có cầu vồng'); }
+      else if (c1.mua === 2 && c1Toi() && state.rain) { setWx('sun', 'Nắng'); state.cvTill = Date.now() + 180000; c1.mua = 1; c1Luu(); note('Mưa tạnh rồi, cầu vồng hiện trên Đồng Lúa! Ra chòi canh tìm Linh Mây'); }
+    }
+    if (s.id === 'nau' || c1.canh > 0) c1Ve();
+  }
+  setTimeout(() => { c1CanhVe(); if (c1ThMo()) c1TiemHoa(false); }, 0);
+  // ------------------------------------------------------------------
   // 3D-23 Chương 1 · Cư Dân Mới (mục 9.2): hành trình tìm Linh Mây của Bé Bơ qua các cổng; xong thì Tiệm Hoa và nhà sàn
   // Chú Bảy hồi sinh, đảo vỡ dạt gần lại. Tiến độ lưu trong trình duyệt ('ch1' = bước, 'chap' = số chương đã xong).
   // ------------------------------------------------------------------
-  const CH1 = [
-    { ev: 'greet:Bé Bơ', text: 'Bé Bơ đang khóc ở Quảng Trường: lại hỏi chuyện em' },
-    { ev: 'greet:Chị Mận', text: 'Qua cổng Bắc tới Đồng Lúa Gió: hỏi Chị Mận có thấy Linh Mây không' },
-    { ev: 'plant', text: 'Vào nông trại riêng (cổng rào giữa đồng), gieo hạt Chị Mận cho' },
-    { ev: 'greet:Chú Bảy', text: 'Qua Sân Chơi tới Bến Sông Trăng: chào Chú Bảy, chú dạy câu' },
-    { ev: 'fish', text: 'Câu một con cá ở Bến Sông' },
-    { ev: 'buy', text: 'Tới Chợ Đêm: mua một gói hạt ở sạp Chú Tư' },
-    { ev: 'cook', text: 'Về Phòng Trọ (Khu Nhà Mái Ngói hoặc nút Về nhà): nấu món đầu tiên ở bếp', act: { zone: 'phong-tro', at: [3, -2.6], label: 'Nấu món đầu tiên' } },
-    { ev: 'choi-canh', text: 'Dấu vết cuối: lên chòi canh giữa ruộng Đồng Lúa tìm Linh Mây', act: { zone: 'dong-lua', at: [-5, -5.4], label: 'Tìm Linh Mây ở chòi canh' } },
-  ];
-  const CH_SAY = ['Linh Mây của em bay mất rồi… Anh chị giúp em tìm nha!', 'Chị thấy một đốm mây bay về phía nông trại đó. Cầm mấy hạt này gieo thử, mây hay sà xuống chỗ đất mới!', 'Có một vệt sáng bay qua Sân Chơi về phía sông…',
-    'Linh Mây thích nước lắm. Chú chỉ con câu nè, biết đâu nó ghé!', 'Cá nói nó thấy mây bay về phía chợ đêm!', 'Chú Tư nghe Linh Mây đói, ghé nhà ai đang nấu ăn đó con.', 'Mùi thơm quá… có vệt mây ngoài cửa sổ bay về phía Đồng Lúa!', ''];
+  // Chương 1 · Cư Dân Mới: dữ liệu 25 bước (CH1) và cơ chế ở mảnh 06-chuong-1 (Q364)
   // Chương 2 · Hẻm Nhỏ Thức Dậy (mục 9.2, L3; 3D-19): trước chương hẻm tối, quán Cô Sáu đóng (vẫn mua món ăn, bếp chung vẫn dùng);
   // giúp Cô Sáu mở lại quán và tổ chức Đêm Nhạc Hẻm đầu tiên. Tiến độ lưu 'ch2'
   const CH2 = [
@@ -4771,10 +5020,12 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   const CH5_SAY = ['Cáp treo đứng từ hồi Bão Xám, giờ thợ chạy lại rồi đó. Lên đèo hỏi Thầy Đồ, ổng ở chỗ cao nhất phố, thấy được Mắt Bão.', 'Bão Xám không phá nhà, nó mang nỗi cô đơn tới. Lên đài ngắm sao nhìn về Đông Nam là thấy mắt nó xoáy.',
     'Mắt Bão xoáy quanh Đảo Bão Xám! Thuyền ở cầu tàu Vịnh chạy ra đó rồi, hỏi Ông Từ giữ đảo.', 'Bão Xám sợ nhất tiếng cười, tiếng chào nhau. Làm một lễ hội thật lớn, mời cả phố tới là nó tan!', 'Ai cũng hứa tới! Giờ dựng cổng hội, treo cờ cho đảo rực rỡ lên.',
     'Cổng hội dựng xong! Khách tới đông, phải có mâm cỗ cho cả phố.', 'Mâm cỗ thơm lừng. Cả phố đang góp, mình góp nốt phần cuối là lễ hội mở màn!', ''];
-  const CHS = [CH1, CH2, CH3, CH4, CH5], CHS_SAY = [CH_SAY, CH2_SAY, CH3_SAY, CH4_SAY, CH5_SAY], CH_TEN = ['Chương 1 · Cư Dân Mới', 'Chương 2 · Hẻm Nhỏ Thức Dậy', 'Chương 3 · Cây Cầu Gió', 'Chương 4 · Rừng Đom Đóm', 'Chương 5 · Mắt Bão'];
+  const CHS = [CH1, CH2, CH3, CH4, CH5], CHS_SAY = [[], CH2_SAY, CH3_SAY, CH4_SAY, CH5_SAY], CH_TEN = ['Chương 1 · Cư Dân Mới', 'Chương 2 · Hẻm Nhỏ Thức Dậy', 'Chương 3 · Cây Cầu Gió', 'Chương 4 · Rừng Đom Đóm', 'Chương 5 · Mắt Bão'];
   let chapDone = store.get('chap', 0), chStep = store.get('ch' + (chapDone + 1), 0), chCryT = 3;
+  if (!chapDone && store.get('ch1v', 0) !== 2) { chStep = c1Doi(chStep, !store.get('moMan', 0) && !store.get('tut', 0)); store.set('ch1', chStep); store.set('ch1v', 2); }   // bản lưu Chương 1 cũ 8 bước → bản 25 bước (Q364)
   const chCur = () => (CHS[chapDone] ? CHS[chapDone][chStep] : null);
   function chEv(ev) {
+    if (!chapDone) { c1Ev(ev); return; }   // Chương 1 (Q364): đếm, việc tại chỗ, thưởng theo dữ liệu CH1
     const c = chCur(); if (!c || c.ev !== ev) return;
     if (c.act && c.act.can && c.act.can()) { say(player, c.act.can()); sfx.pop(); return; }
     if (ev === 'gop') { let n = 3; for (const k of Object.keys(CROPS)) while (n > 0 && bag.crops[k] > 0) { bag.crops[k]--; n--; } saveBag(); coSau.happyT = 2; }
@@ -4787,7 +5038,6 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     if (chapDone === 3 && chStep === 2) congRungVe(); if (chapDone === 3 && chStep === 3) mlBatDau();   // Q254: ngõ Bắc mở, khởi công sửa miếu
     if (chapDone === 4 && (chStep === 1 || chStep === 3)) congC5Ve(); if (chapDone === 4 && chStep === 4) lhBatDau();   // Q258: cáp treo, thuyền Đảo Bão mở; khởi công lễ hội
     if (ev === 'cook') { ngheXp('dau-bep', 10); xpCD(15); }
-    if (chapDone === 0 && chStep === 2) { const k = Object.keys(CROPS)[0]; bag.seeds[k] = (bag.seeds[k] || 0) + 2; saveBag(); emote(player, '+2'); }
     if (said) say(player, said);
     if (chStep >= CH.length) chapterDone(); else note(`${CH_TEN[chapDone]} · ${chStep + 1}/${CH.length}: ${CH[chStep].text}${chapDone === 2 ? ` · Cầu Gió ${cgPct()}%` : ''}${chapDone === 3 && chStep >= 3 ? ` · Miếu Linh Mây ${mlPct()}%` : ''}${chapDone === 4 && chStep >= 4 ? ` · Lễ Hội Xua Bão ${lhPct()}%` : ''}`);
     if (!questPanel.hidden) renderQuest();
@@ -4800,7 +5050,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     for (const [a, b] of [['#BDBDC6', '#FFE7C8'], ['#8E8E98', '#C4553F'], ['#9A9AA4', '#A8713F'], ['#8A8680', '#8A5A3A']]) if (m.material === mat(a)) m.material = mat(b);
   }
   function chapterRevive(n) {
-    for (const r of REVIVE) if (r.ch <= n) r.g.traverse(hoiMesh);
+    for (const r of REVIVE) if (r.ch <= n || (r.tiemHoa && c1ThMo())) r.g.traverse(hoiMesh);
     // đảo vỡ dạt lại gần (Q38): mỗi chương gần hơn 15%
     for (const isl of driftG.children) isl.position.copy(isl.userData.base).multiplyScalar(-0.15 * n);
     tranhVe(n);
@@ -4842,10 +5092,10 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const ao = aoChoangCheck(); note(`Xong ${CH_TEN[4]}: Lễ Hội Xua Bão mở màn, Mắt Bão tan, Đảo Bão Xám hồi màu, nhà đổ sơn lại, đêm nay cây cổ thụ nở hoa; cáp treo chạy, nhà Thầy Đồ trên Đỉnh Đèo sáng lại; thợ đảo sửa nốt lan can mép xám, thấy khi vào lại (+500 Xu, danh hiệu "Người Xua Bão Xám")${ao ? '; Bà Bồng tặng Áo Choàng Bà Bồng (Legendary, xem Tủ đồ)' : ' · đủ Bách Khoa Cá 100% thì Bà Bồng tặng Áo Choàng Bà Bồng'}`); return; }
     if (chapDone === 4) { addXu(300); bag.items.dendom = (bag.items.dendom || 0) + 1; saveBag(); mlVe(); phaoBan(ML.tam); kiemLam.happyT = 4; if (kiemLam.root.visible) say(kiemLam, 'Miếu sáng đèn rồi! Linh Mây lạc theo đom đóm về đủ cả, rừng vui hẳn lên.');   // Q254
       note(`Xong ${CH_TEN[3]}: Miếu Linh Mây hồi sinh, đom đóm bay quanh miếu, ba Linh Mây lạc tìm được đường về; cửa sau ngõ Bắc Khu Nhà và cổng tre Đồng Lúa mở sang Rừng, đêm đom đóm bay sang cả Đồng Lúa (+300 Xu, Đèn lồng đom đóm bày trong nhà, danh hiệu "Người Thắp Đèn Miếu")${capCD() >= CAP_KHU.rung ? '' : ` · Rừng mở khi bạn đạt Cấp Cư Dân ${CAP_KHU.rung}`} · ${CH_TEN[4]}: hỏi Chị Mận ở Đồng Lúa`); return; }
-    addXu(300); bag.items.longdengiay = (bag.items.longdengiay || 0) + 1; bag.items.ghenhua = (bag.items.ghenhua || 0) + 1; saveBag();   // thưởng theo GDD §14.3 ① (Q238): 300 Xu, 400 XP, Lồng đèn giấy; Trứng Linh Mây cho người chơi mới (Q243); Ghế nhựa đỏ (Q296)
+    addXu(300); c1LenCap(6); c1CanhVe();   // thưởng Chương 1 (Q364, kịch bản bước 26): 300 Xu, Trứng Linh Mây, cấp 6; Ghế nhựa đỏ, Đèn lồng giấy đã nhận ở bước 18
     const trung = lmTrung.st === 0; if (trung) lmTrungNhan();
-    note(`Xong Chương 1 · Cư Dân Mới: tìm được Linh Mây cho Bé Bơ, ${trung ? 'Bé Bơ tặng Trứng Linh Mây (nở sau 10 phút chơi), Linh Mây dẫn đường bay về với Bà Bồng' : 'nhận Linh Mây riêng'}; Tiệm Hoa và nhà sàn Chú Bảy hồi sinh (+300 Xu, Lồng đèn giấy bày trong nhà); thợ đảo bắt đầu sửa lan can mép xám (thấy khi vào lại)`);
-    const bb = walkers.find((w) => w.name === 'Bé Bơ'); if (bb) { bb.happyT = 4; say(bb, trung ? 'Linh Mây về rồi! Nó còn để lại một quả trứng ở chòi canh, em tặng anh chị nè. Ủ ấm 10 phút là nở!' : 'Linh Mây về rồi! Cảm ơn anh chị nhiều lắm!'); }
+    note(`Xong Chương 1 · Cư Dân Mới: ${trung ? 'Bé Bơ tặng Trứng Linh Mây (nở sau 10 phút chơi)' : 'Bé Bơ cảm ơn bạn'}, +300 Xu, Cấp Cư Dân 6; nhà sàn Chú Bảy hồi sinh, thợ đảo bắt đầu sửa lan can mép xám · Bé Bơ hẹn: "Mai Hẻm có Đêm Nhạc đó!" · Chương 2 · Hẻm Nhỏ Thức Dậy: hỏi Cô Sáu ở Hẻm`);
+    const bb = walkers.find((w) => w.name === 'Bé Bơ'); if (bb) { bb.happyT = 4; const t = trung ? 'Linh Mây để lại quả trứng này ở chòi canh, em tặng anh chị nè! Ủ ấm 10 phút là nở. Mai Hẻm có Đêm Nhạc, nhớ tới nha!' : 'Cảm ơn anh chị! Mai Hẻm có Đêm Nhạc, nhớ tới nha!'; say(bb, t); c1Log('Bé Bơ', t); }
   }
   // Cầu Gió (Chương 3, Q251; GDD §14.3 ④, mục 8.10): Dự Án Phố cần 100 phần. Hàng xóm NPC góp 10 phần mỗi ngày thật kể từ hôm hỏi Chú Bảy (ngày đầu tính luôn),
   // tối đa 70, nên phần cuối (≥ 30) luôn do bạn góp; vắng không mất gì, hàng xóm vẫn góp tiếp (GDD §21). Bạn góp ở chân cầu: cây tre 2 phần, tấm vải 2 phần,
@@ -5205,8 +5455,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   if (lmTrung.st === 2 && !lmTen && !store.get('lmTenNhac', false) && !/[?&]test\b/.test(location.search)) setTimeout(() => { store.set('lmTenNhac', true); if (!lmTen) note('Linh Mây của bạn chưa có tên · chạm vào Linh Mây hoặc mở Tủ đồ, thẻ Phụ kiện để đặt tên'); }, 9000);
   // mỗi khung hình: Bé Bơ khóc khi chương chưa bắt đầu
   function chTick(dt) {
+    c1Tick(dt);   // Chương 1 (Q364)
     if (chapDone === 1 && !chStep && zone.id === 'hem' && coSau.root.position.distanceTo(player.root.position) < 8) { chCryT -= dt; if (chCryT <= 0) { chCryT = 18; say(coSau, 'Quán đóng cửa lâu rồi… buồn ghê.'); } return; }
-    if (chapDone || chStep) return;
+    if (chapDone || (chStep !== 1 && chStep !== 13)) return;   // Bé Bơ khóc ở bước 2 (mất Linh Mây) và bước 15 (đói)
     const bb = walkers.find((w) => w.name === 'Bé Bơ'); if (!bb || zone.id !== 'quang-truong') return;
     chCryT -= dt; if (chCryT <= 0 && bb.root.position.distanceTo(player.root.position) < 9) { chCryT = 14; say(bb, 'Hu hu… Linh Mây của em đâu rồi…'); emote(bb, '💧'); }
   }
@@ -5508,8 +5759,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   let tiengTam = store.get('tiengTam', 0);   // tiếng tăm (karaoke, vẽ bậy)
   function renderQuest() {
     $('#questTabs').querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.qtab === questTab)));
-    $('#questList').hidden = questTab !== 'tasks'; $('#fishLogList').hidden = questTab !== 'fish'; $('#bagList').hidden = questTab !== 'bag';
-    $('#questTitle').textContent = { tasks: 'Nhiệm vụ hôm nay', fish: 'Sổ cá', bag: 'Túi đồ' }[questTab];
+    $('#questList').hidden = questTab !== 'tasks'; $('#fishLogList').hidden = questTab !== 'fish'; $('#bagList').hidden = questTab !== 'bag'; $('#logList').hidden = questTab !== 'log';
+    $('#questTitle').textContent = { tasks: c1Gon() ? 'Chương 1 · Cư Dân Mới' : 'Nhiệm vụ hôm nay', fish: 'Sổ cá', bag: 'Túi đồ', log: 'Nhật ký lời thoại' }[questTab];
+    if (questTab === 'log') { $('#logList').innerHTML = c1LogHtml(); $('#chapLine').hidden = true; $('#questNote').textContent = '20 câu gần nhất của cư dân, mới nhất ở trên.'; return; }   // Q364
     $('#questNote').textContent = { tasks: 'Làm mới mỗi ngày. Phần thưởng tự cộng vào Xu.', fish: 'Câu ở các điểm cá dọc sông Bến Sông Trăng, bán cho Chú Bảy ở chòi câu. Có loài chỉ xuất hiện theo giờ hoặc thời tiết.', bag: 'Hạt giống gieo ở nông trại riêng, nông sản bán cho Chị Mận hoặc ở sạp chợ.' }[questTab];
     if (gardenReady && questTab === 'bag') renderBag();
     if (fishReady) $('#fishLogList').innerHTML = FISH.map((fi) => {
@@ -5518,6 +5770,10 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     }).join('') + `<li><span></span><span>Bách Khoa Cá ${FISH.filter((f) => fishLog[f.id]).length}/${FISH.length} loài</span><span class="rw">${bkc.length ? bkc.join(' · ') : 'mốc 25% có danh hiệu'}</span></li>`;
     const cc = chCur(); $('#chapLine').hidden = questTab !== 'tasks';
     $('#chapLine').innerHTML = (cc ? `<b>${CH_TEN[chapDone]}</b> (${chStep + 1}/${CHS[chapDone].length})<br>${cc.text}` : '<b>Chương 1–5</b>: đã xong ✓ · Cầu Gió nối sang Vịnh San Hô · Miếu Linh Mây sáng đèn, đom đóm bay quanh · Lễ Hội Xua Bão: Mắt Bão tan, Đảo Bão Xám hồi màu, cáp treo lên Đỉnh Đèo chạy · chương sau: bản sau') + (cc && chapDone === 2 && chStep ? `<br>Cầu Gió ${cgPct()}%: hàng xóm góp ${cgHx()} phần (10 phần/ngày, tối đa ${CG_HX}), bạn ${cgBan()} phần · phần cuối chờ bạn · cả server góp: cần máy chủ (bản sau)` : '') + (cc && chapDone === 3 && chStep >= 3 ? `<br>Miếu Linh Mây ${mlPct()}%: hàng xóm góp ${mlHx()} phần (10 phần/ngày, tối đa ${ML_HX}), bạn ${mlBan()} phần · phần cuối chờ bạn · cả server góp: cần máy chủ (bản sau)` : '') + (cc && chapDone === 4 && chStep >= 4 ? `<br>Lễ Hội Xua Bão ${lhPct()}%: hàng xóm góp ${lhHx()} phần (10 phần/ngày, tối đa ${LH_HX}), bạn ${lhBan()} phần${cc.ev === 'lh-moi' ? ` · đã mời ${lh.moi.length}/${LH_MOI}${lh.moi.length ? ': ' + lh.moi.join(', ') : ''}` : ''} · phần cuối chờ bạn · cả server góp: cần máy chủ (bản sau)` : '') + `<br>Điểm Tai Tiếng: ${taiTieng}/100 · tiếng tăm ${tiengTam}<br>🌙 ${phaTrang().ten} (tuổi trăng ${Math.floor(phaTrang().tuoi) + 1})<br>Điểm Phong Cách: ${pc.diem} · bậc ${pcBac().ten}${pcBac().toi ? ` (bậc sau ở ${pcBac().toi})` : ''}` + (lmTrung.st === 1 ? `<br>🥚 Trứng Linh Mây: còn khoảng ${Math.max(1, Math.ceil((LM_NO_GIAY - lmTrung.s) / 60))} phút chơi nữa là nở` : '') + (lich28.n ? `<br>Lịch đăng nhập: ô ${lich28.n}/28 (ô 7, 14, 21, 28 có quà)` : '') + (thu.don ? `<br>📮 Đơn thư: giao cho ${thu.don.ten} ở ${ZONE_NAME[thu.don.zid]}` : '') + `<br>Sổ Tay · Hội Mèo Phố Mây: ${hoiMeo.size}/${MEO_HOI.length} con · bia đá Bà Bồng: ${biaDoc.size}/10 đoạn · khung ảnh: ${khungAnh.size}` + (chBao.on ? `<br>🌪 <b>Chống Bão</b> ${chBao.xong.size}/${BAO_VIEC.length}: ${BAO_VIEC.map((v) => `${chBao.xong.has(v.id) ? '✓' : '○'} ${v.ten} (${v.noi})`).join(' · ')}` : '');
+    if (c1Gon() && questTab === 'tasks') {   // Chương 1 (Q364): chỉ việc đang làm + gợi ý; việc vặt rút gọn ở bước 20; các hệ khác hiện khi xong chương
+      $('#chapLine').innerHTML = c1QuestHtml(); $('#questN').textContent = `${Math.min(chStep + 1, CH1.length)}/${CH1.length}`; questBtn.classList.remove('done');
+      $('#questList').innerHTML = CH1[chStep] && CH1[chStep].id === 'viec-vat' ? c1VVHtml() : ''; $('#questNote').textContent = 'Việc vặt hằng ngày, nhiệm vụ tuần, đơn hàng mở sau Chương 1.'; return;
+    }
     const nDone = TASKS.filter((t) => quest.done[t.id]).length;
     $('#questN').textContent = `${nDone}/${TASKS.length}`; questBtn.classList.toggle('done', nDone === TASKS.length);
     $('#questList').innerHTML = TASKS.map((t) => {
@@ -5554,6 +5810,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     don.xong.push(i); store.set('don', don); saveBag(); addXu(xu2); xpCD(40); sfx.buy(); emote(player, '📦'); note(`Giao đơn cho ${ai}: +${xu2} Xu, +40 XP Cư Dân`); renderQuest();
   }
   function bump(id) {
+    c1Bump(id);   // Chương 1 (Q364): Hạt Mây, thu hoạch, việc vặt rút gọn
     if (id === 'harvest') lmDiem('la');
     tuanDem(id);
     const t = TASKS.find((x) => x.id === id);
@@ -5876,6 +6133,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // mưa rào (cả giông) cá trê nhiều (22, lóc 8) và Cá Chép Đỏ lên cả ngày (8, buổi sáng vẫn 12)
   function muaRao() { return !!state.rain && !state.phun; }
   function pickFish() {
+    { const c = c1Ca(); if (c) { fishing.dau = false; fishing.hen = false; return FISH_BY()[c]; } }   // Chương 1 (Q364): rô, lóc, Cá Chép Đỏ đảm bảo ở bước 10; cá lóc ở bước 17
     fishing.hen = henCho() && zone.id === 'ben-song' && !fishing.cam && !fishing.ao; if (fishing.hen) return FISH.find((f) => f.id === 'chepvang');   // lời hẹn sáng mai (GDD §26, Q241): không tốn mồi
     // cá Rare đảm bảo ở lần câu đầu (GDD §26, Q243): Sổ cá còn trống thì lần cắn này chắc chắn là cá bậc Rare có ở chỗ này lúc này (không tốn mồi, vùng giật
     // rộng 1,5 lần, cá chạy thì lần sau vẫn vậy); chỗ này lúc này không có cá Rare nào (vd Đỉnh Đèo, trưa nắng ở sông) thì là Cá Chép Đỏ. Lời hẹn Q241 cần đã câu được cá nên không trùng
@@ -6106,7 +6364,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     if (pl.c || !(bag.seeds[k] > 0)) return;
     bag.seeds[k]--; pl.c = k; pl.w = 0; pl.tm = traiMua(k) ? 1 : 0; saveBag(); saveGarden(); sfx.sit(); if (pl.tm) note(`${CROPS[k].name} đang trái mùa: lớn lâu hơn ×1,5`);
     player.root.rotation.y = Math.atan2(pl.x - player.root.position.x, pl.z - player.root.position.z); lamViec('gieo');
-    emote(player, '✿'); tutorialEvent('plant'); chEv('plant'); ngheXp('nha-nong', 2);
+    emote(player, '✿'); chEv('plant'); chEv('plant:' + k); ngheXp('nha-nong', 2);
   }
   function waterPlot(pl) {
     if (plotStage(pl) !== 0) return;
@@ -6518,38 +6776,13 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // ------------------------------------------------------------------
   // Hướng dẫn lần đầu: thẻ việc cần làm + mũi tên 3D trên mục tiêu + mũi tên dưới chân chỉ hướng
   // ------------------------------------------------------------------
-  const TUT = [
-    { ev: 'move', text: () => (coarse ? 'Chạm xuống đất (hoặc giữ và kéo) để đi dạo quanh quảng trường.' : 'Dùng WASD / phím mũi tên hoặc bấm chuột xuống đất để đi dạo. Q E hoặc kéo chuột phải để xoay camera.') },
-    { ev: 'seed', text: () => 'Nhặt một Hạt Mây: đám mây nhỏ phát sáng lơ lửng trên sân. Mỗi hạt được 5 Xu.' },
-    { ev: 'plant', text: () => 'Gieo hạt ở nông trại riêng: qua cổng Bắc tới Đồng Lúa Gió, vào cổng rào giữa đồng, đứng cạnh luống trống và bấm Gieo hạt.' },
-    { ev: 'water', text: () => 'Tưới nước cho luống vừa gieo để cây bắt đầu lớn.' },
-    { ev: 'greet', text: () => 'Chạm vào một cư dân để đi tới chào bạn ấy.' },
-    { ev: 'market', text: () => 'Ghé sạp Chú Tư ở Chợ Đêm (qua cổng Nam Quảng Trường) để mua hạt giống.' },
-    { ev: 'board', text: () => 'Cuối cùng, mở Bảng tin (nút Nhiệm vụ) để nhận việc mỗi ngày.' },
-  ];
-  const TUT_REWARD = 30;
+  // Q364: hướng dẫn TUT gộp vào Chương 1 (mảnh 06-chuong-1): thẻ #tut nay là thẻ việc đang làm của chương; 'tut' chỉ còn đánh dấu người mới đã đi bước đầu
   const tut = { step: store.get('tut', 0) };
-  const tutEl = $('#tut');
-  function renderTut() {
-    const done = tut.step >= TUT.length;
-    tutEl.hidden = done;
-    if (done) return;
-    $('#tutStep').textContent = `Bắt đầu · ${tut.step + 1}/${TUT.length}`;
-    $('#tutText').textContent = TUT[tut.step].text();
-    $('#tutBar').style.width = `${Math.round(tut.step / TUT.length * 100)}%`;
-    hintGone = true; $('#hint').classList.add('gone');
-  }
-  function finishTut(skipped) {
-    tut.step = TUT.length; store.set('tut', tut.step); renderTut();
-    if (!skipped) { addXu(TUT_REWARD); note(`Hoàn thành hướng dẫn · +${TUT_REWARD} Xu. Chúc vui ở Phố Mây!`); sfx.buy(); petJoy(); player.happyT = 2; }
-  }
-  tutorialEvent = (ev) => {
-    if (tut.step >= TUT.length || TUT[tut.step].ev !== ev) return;
-    tut.step++; store.set('tut', tut.step);
-    if (tut.step >= TUT.length) { finishTut(false); return; }
-    sfx.pop(); emote(player, '✓'); renderTut();
-  };
-  $('#tutSkip').addEventListener('click', () => { finishTut(true); moManEnd(); canvas.focus({ preventScroll: true }); });
+  function renderTut() { c1Ve(); }
+  tutorialEvent = (ev) => { if (ev === 'move' && tut.step === 0) { tut.step = 1; store.set('tut', 1); } };
+  $('#tutSkip').addEventListener('click', () => { c1.an = !c1.an; c1Luu(); $('#tutSkip').textContent = c1.an ? 'Mở' : 'Thu gọn'; $('#tut').classList.toggle('gon', !!c1.an); if (moMan.t >= 0) moManEnd(); canvas.focus({ preventScroll: true }); });   // thu gọn thẻ, không bỏ chương
+  $('#tutGo').addEventListener('click', () => { c1TaoHinh(); });
+  $('#tutLog').addEventListener('click', () => { questTab = 'log'; toggleQuest(true); });
   // Mở màn (mục 9.2, 3D-23): lần đầu vào game, Xe Buýt Gió số 7 bay từ biển mây xuống trạm Quảng Trường thả người mới,
   // Bà Bồng chào, xe bay đi. Không khoá điều khiển; Bỏ qua thì xong luôn. Bài kiểm tra (?test) chỉ chạy khi gọi __test.moMan()
   const xe7 = new THREE.Group(); xe7.visible = false; scene.add(xe7);
@@ -6596,7 +6829,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     if (!mo && seller === bacLa && !marketPanel.hidden) toggleMarket(false);
     if (xlMay.visible) { xlMay.t += dt; const k = Math.min(1, xlMay.t / 1.4); xlMay.scale.setScalar(reduceMotion ? 1.2 : 0.7 + k * 0.8); xlMayMat.opacity = 0.85 * (1 - k); if (k >= 1 || !qt) xlMay.visible = false; }
   }
-  function moManEnd() { if (moMan.t < 0) return; moMan.t = -1; xe7.visible = false; store.set('moMan', 1); if (kdMoi && !/[?&]test\b/.test(location.search)) setTimeout(kdMo, 700); }   // người mới chọn bộ khởi đầu (Q259); bộ kiểm tra tự gọi kdMo, không để Tủ đồ mở chắn đường đi như bảng đặt tên Linh Mây
+  function moManEnd() { if (moMan.t < 0) return; moMan.t = -1; xe7.visible = false; store.set('moMan', 1); if (!/[?&]test\b/.test(location.search) && !chapDone && chStep === 0) setTimeout(c1TaoHinh, 700); }   // Chương 1 bước 1 (Q364): tạo nhân vật đầy đủ ở thẻ Khởi đầu   // người mới chọn bộ khởi đầu (Q259); bộ kiểm tra tự gọi kdMo, không để Tủ đồ mở chắn đường đi như bảng đặt tên Linh Mây
   function moManTick(dt) {
     if (moMan.t < 0) return;
     const t0 = moMan.t; moMan.t += dt; const t = moMan.t, b = moMan.b, k = (u) => u * u * (3 - 2 * u);
@@ -6629,26 +6862,8 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   const shape = new THREE.Shape(); shape.moveTo(0, 0.55); shape.lineTo(0.28, 0.12); shape.lineTo(0.1, 0.16); shape.lineTo(0.1, -0.2); shape.lineTo(-0.1, -0.2); shape.lineTo(-0.1, 0.16); shape.lineTo(-0.28, 0.12); shape.closePath();
   const footArrow = new THREE.Mesh(new THREE.ShapeGeometry(shape).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: col('#FFC857'), transparent: true, opacity: 0.85, depthWrite: false })); scene.add(footArrow);
   const tutTmp = new THREE.Vector3();
-  function tutTarget() {
-    const pp = player.root.position;
-    switch (TUT[tut.step] && TUT[tut.step].ev) {
-      case 'seed': { let best = null, bd = 1e9; for (const sd of seedP) if (sd.on) { const d = Math.hypot(sd.x - pp.x, sd.z - pp.z); if (d < bd) { bd = d; best = sd; } } return best ? tutTmp.set(best.x, 1.35, best.z) : null; }
-      case 'plant': case 'water': {
-        // nông trại ở cảnh khác: chỉ đường qua cổng Bắc Quảng Trường, rồi cổng rào Đồng Lúa
-        if (zone.id === 'quang-truong') { const g = zone.gates.find((q) => q.to === 'dong-lua'); return tutTmp.set(g.fx, 1.2, g.fz); }
-        if (zone.id === 'dong-lua') return tutTmp.set(zone.farm.x, 1.2, zone.farm.z);
-        if (zone.id !== 'nong-trai') return null;
-        const pl = TUT[tut.step].ev === 'plant' ? plots.find((q) => !q.c) || plots[0] : plots.find((q) => plotStage(q) === 0);
-        return pl ? tutTmp.set(pl.x, 0.9, pl.z) : null;
-      }
-      case 'greet': { let best = null, bd = 1e9; for (const w of walkers) { const d = w.root.position.distanceTo(pp); if (d < bd) { bd = d; best = w; } } return tutTmp.set(best.root.position.x, 3.5, best.root.position.z); }
-      case 'market': { if (zone.id === 'quang-truong') { const g = zone.gates.find((q) => q.to === 'cho-dem'); return tutTmp.set(g.fx, 1.2, g.fz); } return zone.id === 'cho-dem' ? tutTmp.set(MARKET_FRONT.x, 1.0, MARKET_FRONT.z) : null; }
-      case 'board': return tutTmp.set(BOARD.x - 1.2, 2.6, BOARD.z);
-      default: return null;
-    }
-  }
   function updateTut() {
-    const t = tut.step < TUT.length && !state.photo ? tutTarget() : null;
+    const t = c1MucTieu();   // Chương 1 (Q364): đích của bước đang làm, hoặc cổng dẫn về phía đích
     tutMarker.visible = tutRing.visible = footArrow.visible = !!t;
     if (!t) return;
     const pp = player.root.position;
@@ -7384,6 +7599,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     kc.on = false; kcG.visible = false; kcBots.forEach((b) => { b.root.visible = false; b.body.rotation.x = 0; }); $('#kcUI').hidden = true;
     const ve = veMini(win); veVui += ve; store.set('veVui', veVui); lmDiem('cv'); xpCD(win ? 80 : 50); addXu(win ? 20 : 12); if (win) { kcThang++; store.set('kcThang', kcThang); }
     sfx.buy(); emote(player, win ? '♥' : '+'); player.happyT = 2;
+    setTimeout(() => chEv('keo-co'), 1500);   // Chương 1 bước 14 (Q364)
     note(`${win ? 'Đội bạn thắng Kéo Co!' : 'Đội bạn thua sát nút, vẫn có thưởng.'} +${ve} Vé Vui (có ${veVui}), +${win ? 20 : 12} Xu · đã thắng ${kcThang} trận`);
   }
   function kcTick(dt) {
@@ -7566,7 +7782,8 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   const bddG = new THREE.Group(); bddG.visible = false; scene.add(bddG);
   { const m0 = new THREE.MeshBasicMaterial({ color: col('#D8FF6A') }), m1 = new THREE.MeshBasicMaterial({ color: col('#FFB21E') }), q = new THREE.MeshBasicMaterial({ color: col('#FFD860'), transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending });
     for (let i = 0; i < 13; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(i ? 0.11 : 0.17, 8, 6), i ? m0 : m1); if (!i) m.add(new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 8), q)); bddG.add(m); } }
-  const bddBai = () => { const Z = ZONES.rung, B = Z.K.sanChoi.find((q) => q.id === 'bai-dom-dom'); return { x: Z.cx + B.x, z: Z.cz + B.z, rx: B.rong / 2 - 1.6, rz: B.sau / 2 - 1.6 }; };
+  const bddBai = () => { if (bdd.may) { const Z = ZONES['dong-lua']; return { x: Z.cx - 5, z: Z.cz - 9.4, rx: 3.6, rz: 2.4 }; }   // Chương 1 bước 24 (Q364): bãi trước chòi canh Đồng Lúa
+    const Z = ZONES.rung, B = Z.K.sanChoi.find((q) => q.id === 'bai-dom-dom'); return { x: Z.cx + B.x, z: Z.cz + B.z, rx: B.rong / 2 - 1.6, rz: B.sau / 2 - 1.6 }; };
   function bddPos(d) {   // lượn quanh điểm neo, không ra khỏi bãi
     const B = bddBai(), t = bdd.t * (d.vang ? 1.4 : 1) * (reduceMotion ? 0.5 : 1) + d.k, r = d.vang ? 2.2 : 1.4, kep = (v, c, h) => Math.max(c - h - 1, Math.min(c + h + 1, v));
     return [kep(d.ax + Math.sin(t * 0.9) * r, B.x, B.rx), 0.9 + Math.sin(t * 1.7 + d.k) * 0.35, kep(d.az + Math.cos(t * 0.7 + d.k * 2) * r, B.z, B.rz)];
@@ -7580,12 +7797,17 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     $('#bddNote').textContent = (dem ? '' : 'Đom đóm chỉ ra ban đêm (19h–4h), tối quay lại nha. ') + `Kỷ lục của bạn: ${bdd.ky} điểm. Đấu với người chơi thật cần máy chủ (bản sau).`;
     bt.textContent = 'Bắt đầu'; bt.disabled = !dem; $('#bddPanel').hidden = false; (dem ? bt : $('#bddClose')).focus({ preventScroll: true });
   }
+  // Dỗ Linh Mây lạc (Chương 1 bước 24, Q364): Bắt Đom Đóm đổi hình, đom đóm thành đốm mây sáng trắng xanh, không có bot, 90 giây ở bãi trước chòi canh Đồng Lúa;
+  // bắt đủ C1_DOM đốm là Linh Mây lại gần (xong bước); rời Đồng Lúa hay hết giờ thì chơi lại
+  const bddMauMay = [new THREE.MeshBasicMaterial({ color: col('#EAF6FF') }), new THREE.MeshBasicMaterial({ color: col('#9FE3FF') })], bddMauGoc = bddG.children.map((m) => m.material);
+  function bddMay() { if (bdd.on || zone.id !== 'dong-lua') return; bdd.may = true; bddG.children.forEach((m, i) => { m.material = bddMauMay[i ? 0 : 1]; }); bddStart(); if (!bdd.on) bdd.may = false; else note(`Dỗ Linh Mây lạc: bắt ${C1_DOM} đốm mây sáng (Space / nút Bắt!) để Linh Mây tin bạn và lại gần`); }
   function bddStart() {
-    if (bdd.on || !domDem() || zone.id !== 'rung') return; if (state.sit) standUp(); target = null; route = []; state.talkTo = null; if (!kcBots.length) kcBots.push(...kcMkBots());
+    if (!bdd.may) bddG.children.forEach((m, i) => { m.material = bddMauGoc[i]; });
+    if (bdd.on || (!bdd.may && (!domDem() || zone.id !== 'rung'))) return; if (state.sit) standUp(); target = null; route = []; state.talkTo = null; if (!kcBots.length) kcBots.push(...kcMkBots());
     const B = bddBai(); Object.assign(bdd, { on: true, t: 0, diem: 0, bat: 0, vang: 0, vot: 0, hut: 0 }); bdd.dd = bddG.children.map((m, i) => { const d = { m, vang: !i }; bddDat(d); return d; });
-    bdd.bots = kcBots.slice(0, 3).map((c, i) => { c.root.visible = true; c.root.position.set(B.x + (i - 1) * 3, 0.12, B.z + B.rz); c.root.rotation.set(0, Math.PI, 0); c.body.rotation.x = 0; return { c, ten: BDD_BOT[i], toc: [2.3, 2.6, 2.9][i], diem: 0, muc: null, nghi: 0, cham: 0, phan: 0.7 }; });
+    bdd.bots = bdd.may ? [] : kcBots.slice(0, 3).map((c, i) => { c.root.visible = true; c.root.position.set(B.x + (i - 1) * 3, 0.12, B.z + B.rz); c.root.rotation.set(0, Math.PI, 0); c.body.rotation.x = 0; return { c, ten: BDD_BOT[i], toc: [2.3, 2.6, 2.9][i], diem: 0, muc: null, nghi: 0, cham: 0, phan: 0.7 }; });
     player.root.position.set(B.x, 0.12, B.z - B.rz); player.root.rotation.y = 0; bddG.visible = true; $('#bddPanel').hidden = true; $('#bddUI').hidden = false; sfx.pop(); canvas.focus({ preventScroll: true });
-    note(`Bắt Đom Đóm: đi tới gần rồi bấm Bắt! (Space). Đom đóm vàng 5 điểm${gioHoi() ? ' · Giờ Hội: Vé Vui ×2' : ''}`);
+    if (!bdd.may) note(`Bắt Đom Đóm: đi tới gần rồi bấm Bắt! (Space). Đom đóm vàng 5 điểm${gioHoi() ? ' · Giờ Hội: Vé Vui ×2' : ''}`);
   }
   function bddLay(d, b) {   // b: bot bắt; không có b là người chơi bắt
     d.on = false; d.cho = d.vang ? 6 : 3; const n = d.vang ? 5 : 1;
@@ -7598,6 +7820,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   }
   function bddXong() {
     bdd.on = false; bddG.visible = false; $('#bddUI').hidden = true; bdd.bots.forEach((b) => { b.c.root.visible = false; });
+    if (bdd.may) { bdd.may = false; const du = bdd.bat >= C1_DOM; if (du) { sfx.buy(); emote(player, '☁'); player.happyT = 2; note('Linh Mây lạc rúc vào tay bạn, đuôi mây khớp với mảnh đuôi Chú Bảy đưa! Mang về cho Bé Bơ thôi'); chEv('dom-may'); } else note(`Mới bắt ${bdd.bat}/${C1_DOM} đốm mây, Linh Mây còn sợ… thử lại ở chòi canh nha`); return; }
     const win = bdd.diem >= Math.max(...bdd.bots.map((b) => b.diem)), tinh = bdd.t >= 30, hang = 1 + bdd.bots.filter((b) => b.diem > bdd.diem).length;
     let th = 'Chơi chưa đủ 30 giây nên chưa tính trận, chưa có thưởng.';
     if (tinh) { const ve = veMini(win); veVui += ve; store.set('veVui', veVui); lmDiem('cv'); xpCD(win ? 80 : 50); addXu(win ? 20 : 12); sfx.buy(); emote(player, win ? '♥' : '+'); player.happyT = 2;
@@ -7623,6 +7846,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
         if (L < 1) { b.cham += dt; if (b.cham >= b.phan) { bddLay(d, b); b.muc = null; b.cham = 0; b.phan = 0.5 + Math.random() * 0.4; } } }
       animateChibi(b.c, dt, v, false);
     }
+    if (bdd.may) { $('#bddTip').textContent = bdd.hut > 0 ? 'Hụt rồi! Đến gần đốm mây hơn rồi bấm' : `Đốm mây ${bdd.bat}/${C1_DOM} · còn ${Math.max(0, Math.ceil(90 - bdd.t))} giây`; if (bdd.bat >= C1_DOM || bdd.t >= 90 || zone.id !== 'dong-lua') bddXong(); return; }
     $('#bddTip').textContent = bdd.hut > 0 ? 'Hụt rồi! Đến gần đom đóm hơn (khoảng 1,5 m) rồi bấm' : `Bạn ${bdd.diem} · bot ${bdd.bots.map((b) => b.diem).join('/')} · còn ${Math.max(0, Math.ceil(BDD_TG - bdd.t))} giây${bdd.dd[0].on ? ' · có con vàng!' : ''}`;
     if (bdd.t >= BDD_TG || zone.id !== 'rung') bddXong();
   }
@@ -9460,6 +9684,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     for (const b of zone.boards || []) if (Math.hypot(pp.x - b.x, pp.z - b.z) < 1.8) return [`Bảng nghề ${NGHE[b.nghe].ten}`, () => openNghe(b.nghe)];
     if (toDP.ten && toToi() && !state.sit && !(toDP.goc && toDP.goc.k === toNk())) { const b = toGan(pp); if (b) return [`Cắm cờ tổ · ${toDP.ten}`, () => toCam(b)]; }   // Q233: một góc mỗi đêm
     if (!state.sit && fishing.st === 'idle') for (const b of zone.seats || []) if (Math.hypot(pp.x - b.x, pp.z - b.z) < 1.0) return ['Ngồi bàn nhóm', () => { sitOn(b); note('Bàn nhóm 6 chỗ: bạn bè ngồi cùng bàn có emote chung cụng ly, hiện thành nhóm trên bản đồ (bản có máy chủ)'); }];
+    { const a1 = !state.sit && c1Act(pp); if (a1) return a1; }   // Chương 1 (Q364): bán rau, mua áo, nấu canh, Dự Án Tiệm Hoa, dỗ Linh Mây, trao quà
     const c = chCur(); if (c && c.act && zone.id === c.act.zone && !state.sit) { const Z = ZONES[c.act.zone]; if (Math.hypot(pp.x - Z.cx - c.act.at[0], pp.z - Z.cz - c.act.at[1]) < 2.2) return [c.act.label, () => chEv(c.ev)]; }
     if (zone.id === 'ben-song' && cgMo() && Math.hypot(pp.x - CG.chan.x, pp.z - CG.chan.z) < 2.2) return cgPct() >= 100 ? ['Đọc bảng khắc tên Cầu Gió', () => note(`Cầu Gió · người góp nhiều nhất: ${cgTen().map(([n, v]) => `${n} ${v} phần`).join(', ')} · bảng top 100 tên cả server cần máy chủ (bản sau)`)]
       : ['Xem tiến độ Cầu Gió', () => note(`Cầu Gió ${cgPct()}%: hàng xóm góp ${cgHx()} phần (10 phần mỗi ngày, tối đa ${CG_HX}), bạn góp ${cgBan()} phần · ${c ? c.text : ''}`)];   // Q251
@@ -9483,7 +9708,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     if (zone.id === 'quang-truong') { const v = VAT['tu-kinh-nha-dep']; if (Math.hypot(pp.x - v.x, pp.z - v.z) < 2.2) return ['Ghé thăm Nhà Đẹp Tuần', ndtTham]; }   // tủ kính Nhà Đẹp Tuần (Q236)
     if (zone.id === 'nong-trai') { const pl = nearestPlot(); return pl ? plotAction(pl) : null; }
     // cửa vào cảnh riêng (Phòng Trọ Số 0)
-    for (const e of zone.entries || []) if (Math.hypot(pp.x - e.x, pp.z - e.z) < 1.6) return e.nang && nhaCap < e.nang ? (nhaCap < e.nang - 1 ? [`${NHA_CAP[e.nang].ten} · cần lên ${NHA_CAP[e.nang - 1].ten} trước`, () => note(`Nâng cấp lần lượt: ${NHA_CAP.slice(1).map((c) => `${c.ten} ${c.gia.toLocaleString('vi-VN')} Xu`).join(' → ')}`)] : [`Nâng cấp lên ${NHA_CAP[e.nang].ten} · ${NHA_CAP[e.nang].gia.toLocaleString('vi-VN')} Xu`, () => nangCap(e.nang)]) : e.ch && chapDone < e.ch ? ['Nhà xám · cửa đóng ván', () => note('Nhà xám chờ hồi sinh: xong Chương 1 thì vào được')] : [e.label, () => travel(e.to, zone.id)];
+    for (const e of zone.entries || []) if (Math.hypot(pp.x - e.x, pp.z - e.z) < 1.6) return e.nang && nhaCap < e.nang ? (nhaCap < e.nang - 1 ? [`${NHA_CAP[e.nang].ten} · cần lên ${NHA_CAP[e.nang - 1].ten} trước`, () => note(`Nâng cấp lần lượt: ${NHA_CAP.slice(1).map((c) => `${c.ten} ${c.gia.toLocaleString('vi-VN')} Xu`).join(' → ')}`)] : [`Nâng cấp lên ${NHA_CAP[e.nang].ten} · ${NHA_CAP[e.nang].gia.toLocaleString('vi-VN')} Xu`, () => nangCap(e.nang)]) : e.ch && chapDone < e.ch && !(e.to === 'trong-tiem-hoa' && c1ThMo()) ? ['Nhà xám · cửa đóng ván', () => note(e.to === 'trong-tiem-hoa' ? 'Tiệm Hoa xám: góp vào Dự Án Tiệm Hoa (bảng trước tiệm) thì hồi màu, vào được' : 'Nhà xám chờ hồi sinh: xong Chương 1 thì vào được')] : [e.label, () => travel(e.to, zone.id)];
     if (zone.id === 'nha-chu-bay') {
       const v = zone.K.vat.find((q) => q.id === 'be-ca'), t = v.diaDanh.toi; if (Math.hypot(pp.x - zone.cx - t[0], pp.z - zone.cz - t[1]) < 1.4) return ['Ngắm bể cá', () => { const n = FISH.filter((f) => fishLog[f.id]).length; note(`Bể cá nhà Chú Bảy: ${n}/${FISH.length} loài bạn đã câu · câu thêm loài mới, chú thả vô bể cho`); }];
       const vg = zone.K.vat.find((q) => q.id === 'vong').diaDanh.toi; if (Math.hypot(pp.x - zone.cx - vg[0], pp.z - zone.cz - vg[1]) < 1.4) return ['Nằm võng', () => { player.happyT = 2; emote(player, '💤'); note('Nằm võng nghe sóng sông, mát rượi…'); }];
@@ -9872,7 +10097,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // NPC đang có việc cho mình: người nhận thư, người cần gặp ở bước Chương 1, Tí Tốc Độ khi còn đơn thư
   function npcViec() {
     const out = []; if (thu.don) out.push(thu.don.c);
-    const st = chCur(); if (st && st.ev.startsWith('greet:')) { const n = st.ev.slice(6), c = [...walkers, ...SCHED, chuBa, anhLua, coSau, chiMan, chuBay, mcLinh, kiemLam].find((a) => a.name === n); if (c) out.push(c); }
+    const st = chCur(); if (st && st.ev && st.ev.startsWith('greet:')) { const n = st.ev.slice(6), c = [...walkers, ...SCHED, chuBa, anhLua, coSau, chiMan, chuBay, mcLinh, kiemLam].find((a) => a.name === n); if (c) out.push(c); }
     if (!thu.don && ngheMo('dua-thu') && thu.n < 10) out.push(tiToc);
     return out;
   }
@@ -10088,6 +10313,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     for (const w of hereNpcs(zone.id === 'quang-truong' ? [...walkers, vendor, merchant] : zone.id === 'dong-lua' ? [chiMan] : zone.id === 'san-choi' ? [mcLinh] : zone.id === 'ben-song' ? [chuBay, chiGhe] : zone.id === 'cho-dem' ? [merchant, ...sapNpcs] : zone.id === 'hem' ? [coSau] : zone.id === 'khu-nha' ? [chuBa, anhLua] : [])) { const [px, py] = P(w.root.position.x, w.root.position.z); x.fillStyle = '#4F8FC0'; x.strokeStyle = '#FFFFFF'; x.lineWidth = 1.2 * dpr; x.beginPath(); x.arc(px, py, (full ? 3.2 : 2.4) * dpr, 0, Math.PI * 2); x.fill(); x.stroke(); }
     // đích đến
     if (dest) { const [px, py] = P(dest.x, dest.z), k = dpr * (full ? 1.2 : 0.9); x.strokeStyle = '#5B3A26'; x.lineWidth = 1.5 * k; x.beginPath(); x.moveTo(px, py); x.lineTo(px, py - 12 * k); x.stroke(); x.fillStyle = '#FF6B5A'; x.beginPath(); x.moveTo(px, py - 12 * k); x.lineTo(px + 8 * k, py - 9 * k); x.lineTo(px, py - 6 * k); x.fill(); }
+    c1MapDau(x, P, dpr * (full ? 1.2 : 0.9));   // Chương 1 (Q364): dấu việc đang làm
     // người chơi: mũi tên theo hướng mặt
     const pp = player.root.position, [px, py] = P(pp.x, pp.z), ry = player.root.rotation.y, ang = Math.atan2(Math.cos(ry), Math.sin(ry)) + rot, k = dpr * (full ? 1.25 : 1);
     x.save(); x.translate(px, py); x.rotate(ang);
@@ -10141,7 +10367,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // trời lúc mở trang theo dự báo hôm nay (bài kiểm tra giữ nắng cố định)
   if (!/[?&]test\b/.test(location.search)) setWx(wxNgay(0)[1], wxNgay(0)[0]);
   if (/[?&]test\b/.test(location.search)) {
-    window.__test = { get q358() { return { VIEN_MIN, vienDay, grass: () => grass, grassF, GRASS_LOD, water: () => water, faceGeo, XA, hulls, scene, camera, renderer, actors, player, applyQuality, state }; }, get q359() { return { vaoKhu: enterZone, mapRKhu, MAP_R, tranhR, WALK_R, tocDoNguoi, latQT, KHU, MODEL_GOI, CHO_MODEL, lapCho, napGoi, goiCua, khuCua, tinhGoc }; }, get q343() { return { MODEL_GOI, docModel, dungModel, VIEN_MODEL, hulls, scene, ZONES, ngoiMat, windowMat0 }; }, get q356() { return { NEN_QT, vetDenQT, ISLE_R, LOOP_R, LOOP_HALF, PLAZA_R, ROAD_W, KHU, inIsle, obstacles, noGrass, plazaMat, groundTex, GREY_EDGE }; }, get q340() { return { FISH, muaRao, state, player, viLuu: () => viLuu(), vi }; }, get q339() { return { pickFish: () => pickFish(), doi, doiCau, FISH, fishing, he, state }; }, get q338() { return { auraFx, AURA_VAT, auraTick, hmTick, hmFx, outfit, WARDROBE, outfitGoc, state }; }, get q337() { return { hatSang, hatTick, hatSong, HS_N, HAT_KIEU, hat, hatM, setRM: (v) => { reduceMotion = v; }, get rm() { return reduceMotion; } }; }, get q335() { return { khach, KHACH, KHACH_GIO, khachMo, khachTick, actors, ongNam, say: (a, t) => say(a, t) }; }, get q334() { return { LUNG, kinhCu, outfit, owned, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), BO, boDang, tuDo, tuMac: (i) => tuMac(i), rebuildPlayer: () => rebuildPlayer() }; }, get q333() { return { SHIP_CAN, shipDa, nvNghe, WARDROBE, makeChibi, owned, remoteLook: (p) => remoteLook(p), giaoThu: () => giaoThu(), thu }; }, get q332() { return { outfit, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), outfitGoc }; }, get q331() { return { DT_COC, DT_XOAY, DT_XUONG, DT_KET, dtXuongZ, dtVatCan, dtGoiLM, cocM, xoayM, xuongM }; }, get q330() { return { thuMoi, thuMoiMo, thuMoiTiep, thuMoiBoQua, moMan }; }, get q329() { return { toDoi, TO_DOI, toDP, owned, outfit, playerOpts: () => playerOpts(), myPresence: () => myPresence(), toCoDung, toCo, makeChibi, remoteLook: (p) => remoteLook(p) }; }, get q328() { return { toDP, nvh, nvhCap, nvhHx, nvhCon, nvhGop, nvhKiem, NVH_GIA, toVe: (m) => toVe(m), danhHieuCo: () => danhHieuCo(), toCoDung, toCo }; }, get q327() { return { ongNam, chuBay, toggleMarket: (o, w) => toggleMarket(o, w), banCaNPC, caMua, seller: () => seller }; }, get q326() { return { kc, kcDoi, KC_DL, KC_DL_MAX, kcStart: () => kcStart(), kcHit: () => kcHit(), kcTick: (t) => kcTick(t), kcEnd: (w) => kcEnd(w), kcBots }; }, get q325() { return { MON, tenNL, coNL, monMo, duNL, truNL, xpMon, renderBep: () => renderBep() }; }, get q324() { return { hv, HS, hvLuoi, hvGiong, hvStart, hvDoan, hvTick, hvHetVong, HV_VONG, HV_GIO, hs, hsStart: () => hsStart() }; }, get q323() { return { STICKER, veSticker, dangSticker, guiSticker, player, hudRedraw: () => hudRedraw(), say: (a, t) => say(a, t), resetT: () => { stickerT = 0; } }; }, get q321() { return { heSoNgay, todayK, giaTuan, veGiaTuan, ngayKhoa, chiMan, merchant, toggleMarket: (o, w) => toggleMarket(o, w) }; }, get q322() { return { EMO_DOI, DOI_T, doi, doiTick, doiTha, emoDoi, dtnNpc, dtnH, DTN, doThan }; }, get q320() { return { tr, TT_TRON, ttTronStart, ttNap, ttRung, ttTronTick, ttTronXong, ttChonDich, ttLuMe, ttVai, kcBots }; }, get q318() { return { dtThuong, dtXep, DUA_THUONG, DUA_HET, DT_DEM, DT_VANG, DT_SAU, dtMotVe, veHeSo }; }, get q316() { return { hopM, HOP, dt_, BUA, BUA_TL, buaRut, dtBatKip, dtDung, dtTrung, dtAll, vitM, caDan, domM, dtThung, dtDen, dtCv, lbM, lbX0, dtDong, lbDx, LB, dtFx, dtStart, dtTick: (t) => dtTick(t), dtBua: () => dtBua(), dtEnd: () => dtEnd(), state }; }, get q314() { return { VI_W, VI_H, VI_MAU, viLay, viHop, viMo, viTo, viLuu, vi, inAoMat, outfit, owned, makeChibi, playerOpts: () => playerOpts(), remoteLook: (p) => remoteLook(p), WARDROBE, nhaViec: (pp) => nhaViec(pp) }; }, get q310() { return { meoMai, meoGan: (pp) => meoGan(pp), MAU_NGHE, playerOpts: () => playerOpts(), nghe, makeChibi, meoDaoTick, MEO_HOI, ZONES, rebuildPlayer: () => rebuildPlayer() }; }, get q308() { return { hmMac, hmTick, hmFx, hmVong, outfit, ngayKhoa, today, homQua }; }, get q307() { return { KV, kvCan, kvTrao, kvXong, KV_H, doThan, dtnBoc: (a) => dtnBoc(a), bag, saveBag }; }, get q306() { return { khuay, khuayBat, khuayBam, khuayTick, khuayXong, khuayKim, KHUAY_CAN, KHUAY_LAN, bep }; }, get q305() { return { DTN, dtnCong: (t, n) => dtnCong(t, n), doThan, bag, saveBag, DO_BAY, doMesh: (id) => doMesh(id), DO_NHOM }; }, get q303() { return { xemTV, DO_BAY, doMesh: (id) => doMesh(id), XUONG, lamDo: (id) => lamDo(id), bag, saveBag, nghe, MUA_LA: () => null }; }, get q300() { return { WARD_TABS: () => WARD_TABS, kdMo: () => kdMo(), toggleWard: (o) => toggleWard(o), MON, monMo, dtnH, dtnCong: (t, n) => dtnCong(t, n), doThan, BI_H, matNha, showNha: () => showNha(), get nhaCap() { return nhaCap; }, set nhaCap(v) { nhaCap = v; } }; }, get q297() { return { TASK_POOL, bump: (id) => bump(id), quest, TASKS: () => TASKS.map((t) => t.id), veMini, DTN, dtnTang: (t, q) => dtnTang(t, q), doThan, busPhi, busCho, busToi, busDi, BUS_PHI, BUS_CHU_KY, renderBus: () => renderBus(), bag, saveBag }; }, get q294() { return { nguGiuong, NANG_NGU, cdan, cfMoi, coSau, greet: (w) => greet(w), bag, saveBag, xpCD: (n) => xpCD(n), capCD }; }, get q293() { return { msb, msbBan, msbThue, msbGiao, msbNhan, msbAction, msbG, msbGia, MSB_NHIP, MSB_MAX, MSB_THUE, nghe, bag, saveBag }; }, get q292() { return { bc, bcGoi, BC_BUOC, noiBC, tet, tetNgay, bag, saveBag, BUFF_AN, anDuoc, pickAction: () => pickAction() }; }, get q289() { return { goDan, DAN_NOT, XUONG, DO_BAY, doMesh: (id) => doMesh(id), lamDo: (id) => lamDo(id), emoDoi, EMO_DOI, doEmote: (k) => doEmote(k), danhHieuCo: () => danhHieuCo(), doThan, dtnNpc, DTN, makeChibi, playerOpts: () => playerOpts(), nghe, rebuildPlayer: () => rebuildPlayer(), player }; }, get q286() { return { phaTrang, moonBong, moon, qbm, qbmRut, qbmCan, qbmTrao, qbmNam, DTN, dtnBoc: (a) => dtnBoc(a), doThan, nsHqua, heSoNS, nsKy, nsBang, priceOf: (k) => priceOf(k), homQua, CROPS, setSeller: (q) => { const c = seller; seller = q; return c; }, chiMan, renderQuest: () => renderQuest() }; }, get q283() { return { BAC_NGHE, bacNghe, danhHieu, ngheLv, ngheXp, nghe, renderNghe: () => renderNghe(), giongBao, kcStart, pickAction: () => pickAction(), AOLEN_LAN, treoThong, thong, owned, makeChibi, remoteLook: (p) => remoteLook(p), WARDROBE }; }, get q282() { return { hiemTui, renderBag: () => renderBag(), bag, saveBag, HIEM_DO }; }, get q281() { return { diemGio, chaoGioThu, chaoGio, CHG_DIEM, CHG_MAX, CHG_GIO, chgCach, get gioMo() { return gioMo; }, set gioMo(v) { gioMo = v; } }; }, get q277() { return { MON, BUFF_AN, DON_POOL, giaoDon: (i) => giaoDon(i), don: () => don, haiNam, tre, harvest, plots, CROPS, cauVong, saoP: () => saoP, duNL, truNL, coNL, NL_TUI, tenHang }; }, get q274() { return { XP_CA, bacCa, xpMon, MON, FISH_ALL: FISH, hoangHon, doiCon, DOI_NGAY, DOI_HOI, nghe, renderNghe: () => renderNghe(), cdan, capCD, landFish, fishing, bep, bag, saveBag }; }, get q273() { return { makeChibi, WARDROBE, outfit, owned, kinhCu, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), addXu, get xu() { return xu; }, htCo }; }, get q272() { return { hs, HS, hsStart, hsGo, hsChon, hsTick, hsGoiY, boDau, get veVui() { return veVui; } }; }, get q271() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), toggleWard: (o) => toggleWard(o) }; }, get q269() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), owned, addXu, get xu() { return xu; }, htCo }; }, get q267() { return { makeChibi, WARDROBE, outfit, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts() }; }, get q266() { return { faceSet, WARDROBE, outfit, player, rebuildPlayer: () => rebuildPlayer() }; }, get q265() { return { faceSet, faceTex, outfit, outfitGoc, myPresence, playerOpts: () => playerOpts(), rebuildPlayer: () => rebuildPlayer(), player, WARDROBE, toggleWard: (o) => toggleWard(o) }; }, get q264() { return { WARDROBE, HT_GIAM, HT_SO, htPool, htTuan, htCo, giaMua, sdTuan, tryItem, renderWard, toggleWard: (o) => toggleWard(o), owned, outfit, addXu, get xu() { return xu; } }; }, get q262() { return { WARDROBE, pc, PC_BAC, pcBac, pcCong, pcMienPhi, sanDien, sd, sdChuDe, ttChao, ttNgay, chuDe, dungChuDe, outfit, renderQuest }; }, get q260() { return { lopDo, khuDo, oBay, vuongBay, viTriDo, nhaGan, nhaViec, nhaBayViec, NHA_KHU, BAN_CAO, THAM_O, TRAN_CAO, dungDo, quatTick }; }, get q261() { return { HOA_ONG, ONG_R, ongTo, ongGan, ongGanO, ongVong, ongBay, ongHoaTick, aoSenNT, aoSenHai, aoSenG, plotInfo, saveGarden, DR_KHU, DR_MAX, drNgay, doRoi, drRai, drNhat, drBo, doRoiTick, lmTrung, pet, get reduceMotion() { return reduceMotion; }, set reduceMotion(v) { reduceMotion = v; } }; }, get q259() { return { BO_KD, kdMoi, WARDROBE, outfitGoc, kdDang, macKD, kdMo, QUAN, KHUNG_TEN, BONG_BONG, DC_TEX, dcG, dcTick, drawTag, drawBubble, toggleWard, renderWard, get wardTab() { return wardTab; }, set chapDone(v) { chapDone = v; }, get chapDone() { return chapDone; } }; }, get q256() { return { BO_NT, BO_DIEM, boDuL, diemAC, diemDo, boCo, ntMo, ntVe, xoayDo, catDo, DO_NHOM, NDT_NHA, get doChon() { return doChon; }, set doChon(v) { doChon = v; }, get tgNgay() { return tgNgay; }, set tgNgay(v) { tgNgay = v; }, buff, coBuff }; }, get q257() { return { pull, nem, lucLuc, lucCo, kimBoi, chiaRungGia, dangRungGia, LUC_TU_NEM, bacCa, fishMax }; }, get q255() { return { bdd, bddMo, bddStart, bddBat, bddTick, bddXong, bddG, bddBai }; }, q258: { lh, LH, lhHx, lhBan, lhPct, lhVe, lhVao, lhGop, lhMoi, lhTick, CH5, C5, congC5Ve, deoMo, baoMo, aoChoangCheck, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, q254: { ml, ML, mlHx, mlBan, mlPct, mlVe, mlVao, mlGop, mlTick, CH4, CR, congRungVe, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, get q253() { return { svSkin, coHai, LAYER_BONG, hulls }; }, get q250() { return { treoThong, thong, cayThong, muaCauTuyet, lacCau, CAU_GIA, CAU_NGAY, hnNt, muaHoaiNiemDo, DO_NGUON, quatTick, hnMo }; }, get q252() { return { NV_NGHE, lamDo, phaNhuom, giaoThu, openNghe, lmDatTen, lmTenMo, lmCham, lmTagDat, lmTag, pet, get lmTen() { return lmTen; }, set lmTen(v) { lmTen = v; lmTagVe(); } }; }, q249: { htDecor, dcG, dcTick, dcDat, ttMa, ttMaSang, ttDen, ttDenM, ttMaM, HT_DO, remotes }, q251: { cg, CG, cgHx, cgBan, cgPct, cgVe, cgVao, cgGop, chEv, CH3, gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; }, haiDang: ZONES.vinh.haiDang, chapterRevive }, get q248() { return { nd, ndStart, ndBam, ndXong, ndTick, ndAction, ndBac, ndKhach, ndDiem, ong, ONG_CHUYEN, buff, veMini, ndDem, ndTap, NGHE, ongLao, sanKhau, demNhac, ngheLv }; }, q245: { heBoi, heTam, heVinh, coDua, heTick, lanNgam, muaDua, muaMatNa, mnKe, MAT_NA_GIAY, ruocTick, remoteLook, myPresence, he, trungThu }, get q244() { return { hoaTTick, hoaTSap, hoaTNpc, hoaTAction, get hoaTOn() { return hoaTOn; }, CH_NPC, phaoBan, doEmote, emoPhao, xinChu, tryItem, amCung, DO_BAY, tetNgay, renderWard, bayDo, catDo, hnDo: () => hnDo(), toggleWard: (o) => toggleWard(o) }; }, lamViec, LAM, KHUON, remoteLook, myPresence, outfitGoc, WARDROBE_MAT: () => WARDROBE.filter((q) => ['khuon', 'may', 'mieng', 'ruoi'].includes(q.key)), get q243() { return { lmTrung, lmTrungG, lmVo, lmTrungNhan, lmTrungTick, pet, pickFish, fishing, fishLog, bacCa, LM_NO_GIAY, get lmNoT() { return lmNoT; } }; }, get q247() { return { ti, TI, tiCho, tiChang, tiTick, tiCong, meoRam, meoDan, meoRamTick, ramKy, nuaDem, TRANG_TRON, moQuaRam, noiMeo, meoDem, meo, meoQua, meoVet, mtDai, MEO_NHA }; }, get q241() { return { hen, henCho, henTick, hopThu, HOP_DO, thuDen, moHopThu, thuGan, thuCo, THU_NPC }; }, otCau, otChim, cauOT, OT_KHU, OT_NGAM, THAT_TICH, otDot, otTick, DTN, doThan, dtnQua, dtnBoc, dtnCong, dtnH, toMtDem, datGop, datCan, datVe, datDA, datHx, datTin, datSao, datKiem, toMt, toMtMuc, toMtBot, toMtTin, animateChibi, batchChibi, WARDROBE_TOC: () => WARDROBE.find((q) => q.key === 'style'), renderWard: () => renderWard(), cpNpc, cpSap, cpNg, cpKhach, cpSt, cpMo, cpTick, cpAction, cpBay, cpDon, cpHang, cpSo, cpXY, CP_GIA, get cpOn() { return cpOn; }, xeLa, xlA, xlP, xlMay, xeLaTick, vc, vcO, vcGieo, vcTuoi, vcThu, vcHangXom, vcViec, coHai, VC_NHIP, camUoc, cuBuoc, cuLoc, cuMo, cuVe, cuG, CU_NPC, ndtVe, ndtTham, ndtG, get ndt() { return ndt; }, dongKhu, toDP, toLap, toCam, toGan, toTick, toCo, toNk, toCoLen, toVe, TO_MOC, ctvNpc, ongCo, coXoi, chuBanhMi, xeOm, ganhXoi, coBan, ctvSt, ctvTick, ctvAction, pickAction, get raoN() { return raoN; }, chBao, BAO_VIEC, baoBat, baoTat, baoGan, baoLam, baoTick, beBo, WX_BAO, SV, SV_LOAI, SV_CHO, svTick, veTranh, tranhVe, tranhGan, ngamTranh, khungTen, chupKhung, khungTick, khungAnh, pickAction0, renderQuest, NHAC, nhacBand, sfx, BIA, biaDoc, biaGan, docBia, BIA_TRUYEN, MEO_HOI, hoiMeo, meoGan, vuotMeo, meoHom, setItCD, setChuTo, setOpt, huongBip, huongTick, setHuong: (h) => { huongDich = h; }, get huongDich() { return huongDich; }, camera, get reduceMotion() { return reduceMotion; }, phoMoi, phaoBan, phaoTick, get phaoFx() { return phaoFx; }, toggleBus: (o) => toggleBus(o), get nvNghe() { return nvNghe; }, nvDem: (k) => nvDem(k), nhanNvNghe: (id) => nhanNvNghe(id), NV_NGHE: () => NV_NGHE, CAP_DAT, nangCap: (c) => nangCap(c), get nhaCapSet() { return null; }, set nhaCapSet(v) { nhaCap = v; }, MOI_CAU, diemCan, startFishing: (sp) => startFishing(sp), traiMua, tCay, plant, noiChuong, maxNuoi: (k) => maxNuoi(k), NANG_CHUONG, tocDoNguoi, duNL: (m) => duNL(m), truNL: (m) => truNL(m), get buff() { return buff; }, moKhe, KHE_MO, danhHieuCo: () => danhHieuCo(), DI_SAN, diSanMua, muaDiSan, quyPho, gopQuy, QUY_GOP, QUY_MOC, WARDROBE_LM: () => WARDROBE.find((q) => q.key === 'linhmay'), lmLong, muaCan, get canBac() { return canBac; }, set canBac(v) { canBac = v; }, CAN_BAC, rodStick, dauGia, raGia, dgKet, dgTran: (t) => dgTran(t), tuanNay, DG_KHOI, banNS, nsMua, nsConLai, nsDem, banCaNPC, caMua, DIEU_NHAY, bacCa, doEmote: (k) => doEmote(k), faceSet, FACES, WARDROBE_MV: () => WARDROBE.find((q) => q.key === 'matve'), WARDROBE_DA: () => WARDROBE.find((q) => q.key === 'da'), makeChibi, playerOpts: () => playerOpts(), locVang, grade, giayPQ, rebuildPlayer: () => rebuildPlayer(), setSeller: (q) => { const c = seller; seller = q; return c; }, setWx, lanternMats, banMon: () => banMon(), NHIET_DOI, veMini, muaTuoi, pickFish: () => pickFish(), get moiDung() { return moiDung; }, muaHoaiNiem: (k, v) => muaHoaiNiem(k, v), hnMo: () => hnMo(), detVaiMay, lamDo: (id) => lamDo(id), banDo: (id) => banDo(id), phaNhuomCham, nhuomAoCham, mayAoDai, aoDaiDu: () => aoDaiDu(), datBeLeg, caEpic: () => caEpic(), doMesh: (id) => doMesh(id), get DO_BAY() { return DO_BAY; }, aoSenNT, aoSenGieo, aoSenHai, aoSenChin, phaNhuomSen, nhuomAoSen, thaRong, thaRongTick, donHom: () => donHom(), giaoDon: (i) => giaoDon(i), get don() { return don; }, DON_POOL, tuanDem: (id) => tuanDem(id), get tuan() { return tuan; }, doiViec: (id) => doiViec(id), TASKS: () => TASKS.map((t) => t.id), get quest() { return quest; }, tuLuu: (i) => tuLuu(i), tuMac: (i) => tuMac(i), get tuDo() { return tuDo; }, get BO() { return BO; }, boDang: () => boDang(), get boFx() { return boFx; }, vuotVe, ccb, ccbChao, ccbCau, ccbSua, canK: () => canK(), sn, snKe, snHom, phaNhuom, nhuomAo, xayLua, giaTrung: (k) => giaTrung(k), nuoi, NUOI, muaNuoi, thuSp, dungChuong, hatMo, harvest, CROPS, tt, ttStart, ttSoi, ttTick, ttG, ns, nsStart, nsNhay, nsTick, nsAt, nsG, oaq, oaqDi, oaqStart, oaqChoi, oaqMay, at: (id) => at(id), lmTh, lmDiem, LM_NHANH, pet, cloudMat, lmMau, matOf: (h) => mat(h), lmh, lmHoang, voVeLM, ongTu, bao, baoVe, nhatVoSo, gopVoSo, hoaCo, BAO_CAN, thayDoDeo, deo, nguoiTuyet, ghePos, nhanLau, boat, tuanTra, kiemLam, dom, domP, domXY, tre, chatTre, batDom, endFishing: () => endFishing(), coCuuHo, lanNgay, get xemTruoc() { return xemTruoc; }, gateLock: (g) => gateLock(g), ngheMo, cdan, capCD, xpCD, xpCan, llMo, setCap: (L) => { let x = 0; for (let i = 1; i < L; i++) x += xpCan(i); cdan.xp = x; cdan.nang = 0; capHud(); }, aoSen, cauTrom, cauTromTick, trungThu, ruoc, sapNpcs, he, dieu, dieuM, tet, tetNgay, thayDo, tuyet, thong, cayThong, snowMesh, keoNgay, hoaTrang, ongTam, dienDien, ddHai, get owned() { return owned; }, nuocNoi, sd, sdChuDe, sdMo, sanDien, sangNgay, wxNgay, duBao, greet, chuDe, dungChuDe, ttNgay, outfit, cauVong, cauVongM, FISH_W: () => Object.fromEntries(FISH.map((f) => [f.id, f.w()])), giai, landFish, FISH_ALL: FISH, bacLa, xeLaKhung, linhTuoi, hoiCho, priceOf: (k) => priceOf(k), lich28, lichDangNhap, bkc, bkcCheck, fishLog, setSaoP: (v) => { saoP = v; }, buNhinO, setGiantP: (v) => { giantP = v; }, plots, loTre, WATER_R, get uocMo() { return uocMo; }, scene, bh, bhLam, moDoCu, ngheXp, lichXong: () => SCHED.forEach((c) => c.walk && lichXong(c)), get nhaCap() { return nhaCap; }, nuoi, vit, dtBua, hopM, dtFx, beCaG, demNhac, sanKhau, notNhac, anMon, buff, coBuff: (k) => coBuff(k), ongTam, cuDan, cuDanHits, setMapTab: (t) => setMapTab(t), amCung, nhaDo, nhaMesh, saveBag, quanMo, get denDau() { return denDau; }, meo, meoDem, hoaDang, hdNoi, dt_, dtCheo, hs, hsChon, kc, kcHit, get veVui() { return veVui; }, ga, addXu, plotCount: () => plots.length, buyDat, get datMo() { return datMo; }, live, liveProp, get liveDay() { return liveDay; }, priceK: () => liveK(), bep, MON, moMan: () => { moManStart(); return moMan; }, xe7, greyArc: () => [GREY_EDGE.map((r) => Math.round(r / DEG)), SUA], xuong, tramViec, timThay, npcViec, drawMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; drawMap(c, true); return c; }, pickRac, get racDen() { return racDen; }, dog, oi, get oiNight() { return oiNight; }, cauTrom, thu, tiToc, lc, graffiti, rac, get tiengTam() { return tiengTam; }, danPhong, rong, get taiTieng() { return taiTieng; }, get visited() { return visited; }, ong, ongLao, oiTrees, torch, bag, get haiTromOn() { return haiTromOn; }, nghe, NGHE, enterZone: (id) => enterZone(id, null, 'home'), applyQuality, greyCount: (n = 1) => REVIVE.filter((r) => r.ch <= n).reduce((n, r) => { r.g.traverse((m) => { if (m.isMesh && m.material === mat('#BDBDC6')) n++; }); return n; }, 0), marketFront: MARKET_FRONT, player, walkers, vendor, coSau, LICH_NPC, chEv, REVIVE, driftG, get chStep() { return chStep; }, get chapDone() { return chapDone; }, merchant, chiMan, mcLinh, chuBay, plots, fishing, bag, camera, state, renderer, obstacles, goTo, mapHits, LANDMARKS, GATES, segClear, U, ZONES, get zone() { return zone; }, get xu() { return xu; }, get camYawS() { return camYawS; },
+    window.__test = { get q364() { return { greet, bump, plant, waterPlot, harvest, lmTrung, walkers, chiMan, chuBay, coSau, vendor, outfit, owned, MARKET_FRONT, BOARD, c1ThMo, CH1, c1, C1_DOM, C1_CO, C1_BEP, C1_CHOI, C1_TH, C1_CHO, chEv, c1Xet, c1Act, c1Dich, c1MucTieu, c1Huong, c1Cong, c1Ca, c1Doi, c1Ve, c1Gon, c1TaoHinh, c1Ket, c1CoM, c1Hoa, c1Den, c1LM, c1Bang, c1LenCap, khoaLy, gateLock, bdd, bddMay, bddBat, bddXong, plots, plotStage, seedP, nhaDo, CROPS, FISH_BY, pickFish, lichSpot, lichTick, renderQuest, toggleQuest, toggleWard, kcEnd, REVIVE, mat, get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; }, get capCD() { return capCD(); }, get veVui() { return veVui; }, get questTab() { return questTab; }, set questTab(v) { questTab = v; }, get wardTab() { return wardTab; } }; }, get q358() { return { VIEN_MIN, vienDay, grass: () => grass, grassF, GRASS_LOD, water: () => water, faceGeo, XA, hulls, scene, camera, renderer, actors, player, applyQuality, state }; }, get q359() { return { vaoKhu: enterZone, mapRKhu, MAP_R, tranhR, WALK_R, tocDoNguoi, latQT, KHU, MODEL_GOI, CHO_MODEL, lapCho, napGoi, goiCua, khuCua, tinhGoc }; }, get q343() { return { MODEL_GOI, docModel, dungModel, VIEN_MODEL, hulls, scene, ZONES, ngoiMat, windowMat0 }; }, get q356() { return { NEN_QT, vetDenQT, ISLE_R, LOOP_R, LOOP_HALF, PLAZA_R, ROAD_W, KHU, inIsle, obstacles, noGrass, plazaMat, groundTex, GREY_EDGE }; }, get q340() { return { FISH, muaRao, state, player, viLuu: () => viLuu(), vi }; }, get q339() { return { pickFish: () => pickFish(), doi, doiCau, FISH, fishing, he, state }; }, get q338() { return { auraFx, AURA_VAT, auraTick, hmTick, hmFx, outfit, WARDROBE, outfitGoc, state }; }, get q337() { return { hatSang, hatTick, hatSong, HS_N, HAT_KIEU, hat, hatM, setRM: (v) => { reduceMotion = v; }, get rm() { return reduceMotion; } }; }, get q335() { return { khach, KHACH, KHACH_GIO, khachMo, khachTick, actors, ongNam, say: (a, t) => say(a, t) }; }, get q334() { return { LUNG, kinhCu, outfit, owned, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), BO, boDang, tuDo, tuMac: (i) => tuMac(i), rebuildPlayer: () => rebuildPlayer() }; }, get q333() { return { SHIP_CAN, shipDa, nvNghe, WARDROBE, makeChibi, owned, remoteLook: (p) => remoteLook(p), giaoThu: () => giaoThu(), thu }; }, get q332() { return { outfit, WARDROBE, makeChibi, playerOpts: () => playerOpts(), myPresence: () => myPresence(), remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), outfitGoc }; }, get q331() { return { DT_COC, DT_XOAY, DT_XUONG, DT_KET, dtXuongZ, dtVatCan, dtGoiLM, cocM, xoayM, xuongM }; }, get q330() { return { thuMoi, thuMoiMo, thuMoiTiep, thuMoiBoQua, moMan }; }, get q329() { return { toDoi, TO_DOI, toDP, owned, outfit, playerOpts: () => playerOpts(), myPresence: () => myPresence(), toCoDung, toCo, makeChibi, remoteLook: (p) => remoteLook(p) }; }, get q328() { return { toDP, nvh, nvhCap, nvhHx, nvhCon, nvhGop, nvhKiem, NVH_GIA, toVe: (m) => toVe(m), danhHieuCo: () => danhHieuCo(), toCoDung, toCo }; }, get q327() { return { ongNam, chuBay, toggleMarket: (o, w) => toggleMarket(o, w), banCaNPC, caMua, seller: () => seller }; }, get q326() { return { kc, kcDoi, KC_DL, KC_DL_MAX, kcStart: () => kcStart(), kcHit: () => kcHit(), kcTick: (t) => kcTick(t), kcEnd: (w) => kcEnd(w), kcBots }; }, get q325() { return { MON, tenNL, coNL, monMo, duNL, truNL, xpMon, renderBep: () => renderBep() }; }, get q324() { return { hv, HS, hvLuoi, hvGiong, hvStart, hvDoan, hvTick, hvHetVong, HV_VONG, HV_GIO, hs, hsStart: () => hsStart() }; }, get q323() { return { STICKER, veSticker, dangSticker, guiSticker, player, hudRedraw: () => hudRedraw(), say: (a, t) => say(a, t), resetT: () => { stickerT = 0; } }; }, get q321() { return { heSoNgay, todayK, giaTuan, veGiaTuan, ngayKhoa, chiMan, merchant, toggleMarket: (o, w) => toggleMarket(o, w) }; }, get q322() { return { EMO_DOI, DOI_T, doi, doiTick, doiTha, emoDoi, dtnNpc, dtnH, DTN, doThan }; }, get q320() { return { tr, TT_TRON, ttTronStart, ttNap, ttRung, ttTronTick, ttTronXong, ttChonDich, ttLuMe, ttVai, kcBots }; }, get q318() { return { dtThuong, dtXep, DUA_THUONG, DUA_HET, DT_DEM, DT_VANG, DT_SAU, dtMotVe, veHeSo }; }, get q316() { return { hopM, HOP, dt_, BUA, BUA_TL, buaRut, dtBatKip, dtDung, dtTrung, dtAll, vitM, caDan, domM, dtThung, dtDen, dtCv, lbM, lbX0, dtDong, lbDx, LB, dtFx, dtStart, dtTick: (t) => dtTick(t), dtBua: () => dtBua(), dtEnd: () => dtEnd(), state }; }, get q314() { return { VI_W, VI_H, VI_MAU, viLay, viHop, viMo, viTo, viLuu, vi, inAoMat, outfit, owned, makeChibi, playerOpts: () => playerOpts(), remoteLook: (p) => remoteLook(p), WARDROBE, nhaViec: (pp) => nhaViec(pp) }; }, get q310() { return { meoMai, meoGan: (pp) => meoGan(pp), MAU_NGHE, playerOpts: () => playerOpts(), nghe, makeChibi, meoDaoTick, MEO_HOI, ZONES, rebuildPlayer: () => rebuildPlayer() }; }, get q308() { return { hmMac, hmTick, hmFx, hmVong, outfit, ngayKhoa, today, homQua }; }, get q307() { return { KV, kvCan, kvTrao, kvXong, KV_H, doThan, dtnBoc: (a) => dtnBoc(a), bag, saveBag }; }, get q306() { return { khuay, khuayBat, khuayBam, khuayTick, khuayXong, khuayKim, KHUAY_CAN, KHUAY_LAN, bep }; }, get q305() { return { DTN, dtnCong: (t, n) => dtnCong(t, n), doThan, bag, saveBag, DO_BAY, doMesh: (id) => doMesh(id), DO_NHOM }; }, get q303() { return { xemTV, DO_BAY, doMesh: (id) => doMesh(id), XUONG, lamDo: (id) => lamDo(id), bag, saveBag, nghe, MUA_LA: () => null }; }, get q300() { return { WARD_TABS: () => WARD_TABS, kdMo: () => kdMo(), toggleWard: (o) => toggleWard(o), MON, monMo, dtnH, dtnCong: (t, n) => dtnCong(t, n), doThan, BI_H, matNha, showNha: () => showNha(), get nhaCap() { return nhaCap; }, set nhaCap(v) { nhaCap = v; } }; }, get q297() { return { TASK_POOL, bump: (id) => bump(id), quest, TASKS: () => TASKS.map((t) => t.id), veMini, DTN, dtnTang: (t, q) => dtnTang(t, q), doThan, busPhi, busCho, busToi, busDi, BUS_PHI, BUS_CHU_KY, renderBus: () => renderBus(), bag, saveBag }; }, get q294() { return { nguGiuong, NANG_NGU, cdan, cfMoi, coSau, greet: (w) => greet(w), bag, saveBag, xpCD: (n) => xpCD(n), capCD }; }, get q293() { return { msb, msbBan, msbThue, msbGiao, msbNhan, msbAction, msbG, msbGia, MSB_NHIP, MSB_MAX, MSB_THUE, nghe, bag, saveBag }; }, get q292() { return { bc, bcGoi, BC_BUOC, noiBC, tet, tetNgay, bag, saveBag, BUFF_AN, anDuoc, pickAction: () => pickAction() }; }, get q289() { return { goDan, DAN_NOT, XUONG, DO_BAY, doMesh: (id) => doMesh(id), lamDo: (id) => lamDo(id), emoDoi, EMO_DOI, doEmote: (k) => doEmote(k), danhHieuCo: () => danhHieuCo(), doThan, dtnNpc, DTN, makeChibi, playerOpts: () => playerOpts(), nghe, rebuildPlayer: () => rebuildPlayer(), player }; }, get q286() { return { phaTrang, moonBong, moon, qbm, qbmRut, qbmCan, qbmTrao, qbmNam, DTN, dtnBoc: (a) => dtnBoc(a), doThan, nsHqua, heSoNS, nsKy, nsBang, priceOf: (k) => priceOf(k), homQua, CROPS, setSeller: (q) => { const c = seller; seller = q; return c; }, chiMan, renderQuest: () => renderQuest() }; }, get q283() { return { BAC_NGHE, bacNghe, danhHieu, ngheLv, ngheXp, nghe, renderNghe: () => renderNghe(), giongBao, kcStart, pickAction: () => pickAction(), AOLEN_LAN, treoThong, thong, owned, makeChibi, remoteLook: (p) => remoteLook(p), WARDROBE }; }, get q282() { return { hiemTui, renderBag: () => renderBag(), bag, saveBag, HIEM_DO }; }, get q281() { return { diemGio, chaoGioThu, chaoGio, CHG_DIEM, CHG_MAX, CHG_GIO, chgCach, get gioMo() { return gioMo; }, set gioMo(v) { gioMo = v; } }; }, get q277() { return { MON, BUFF_AN, DON_POOL, giaoDon: (i) => giaoDon(i), don: () => don, haiNam, tre, harvest, plots, CROPS, cauVong, saoP: () => saoP, duNL, truNL, coNL, NL_TUI, tenHang }; }, get q274() { return { XP_CA, bacCa, xpMon, MON, FISH_ALL: FISH, hoangHon, doiCon, DOI_NGAY, DOI_HOI, nghe, renderNghe: () => renderNghe(), cdan, capCD, landFish, fishing, bep, bag, saveBag }; }, get q273() { return { makeChibi, WARDROBE, outfit, owned, kinhCu, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), addXu, get xu() { return xu; }, htCo }; }, get q272() { return { hs, HS, hsStart, hsGo, hsChon, hsTick, hsGoiY, boDau, get veVui() { return veVui; } }; }, get q271() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), toggleWard: (o) => toggleWard(o) }; }, get q269() { return { makeChibi, WARDROBE, outfit, outfitGoc, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts(), tryItem, toggleWard: (o) => toggleWard(o), owned, addXu, get xu() { return xu; }, htCo }; }, get q267() { return { makeChibi, WARDROBE, outfit, myPresence, remoteLook: (p) => remoteLook(p), rebuildPlayer: () => rebuildPlayer(), player, playerOpts: () => playerOpts() }; }, get q266() { return { faceSet, WARDROBE, outfit, player, rebuildPlayer: () => rebuildPlayer() }; }, get q265() { return { faceSet, faceTex, outfit, outfitGoc, myPresence, playerOpts: () => playerOpts(), rebuildPlayer: () => rebuildPlayer(), player, WARDROBE, toggleWard: (o) => toggleWard(o) }; }, get q264() { return { WARDROBE, HT_GIAM, HT_SO, htPool, htTuan, htCo, giaMua, sdTuan, tryItem, renderWard, toggleWard: (o) => toggleWard(o), owned, outfit, addXu, get xu() { return xu; } }; }, get q262() { return { WARDROBE, pc, PC_BAC, pcBac, pcCong, pcMienPhi, sanDien, sd, sdChuDe, ttChao, ttNgay, chuDe, dungChuDe, outfit, renderQuest }; }, get q260() { return { lopDo, khuDo, oBay, vuongBay, viTriDo, nhaGan, nhaViec, nhaBayViec, NHA_KHU, BAN_CAO, THAM_O, TRAN_CAO, dungDo, quatTick }; }, get q261() { return { HOA_ONG, ONG_R, ongTo, ongGan, ongGanO, ongVong, ongBay, ongHoaTick, aoSenNT, aoSenHai, aoSenG, plotInfo, saveGarden, DR_KHU, DR_MAX, drNgay, doRoi, drRai, drNhat, drBo, doRoiTick, lmTrung, pet, get reduceMotion() { return reduceMotion; }, set reduceMotion(v) { reduceMotion = v; } }; }, get q259() { return { BO_KD, kdMoi, WARDROBE, outfitGoc, kdDang, macKD, kdMo, QUAN, KHUNG_TEN, BONG_BONG, DC_TEX, dcG, dcTick, drawTag, drawBubble, toggleWard, renderWard, get wardTab() { return wardTab; }, set chapDone(v) { chapDone = v; }, get chapDone() { return chapDone; } }; }, get q256() { return { BO_NT, BO_DIEM, boDuL, diemAC, diemDo, boCo, ntMo, ntVe, xoayDo, catDo, DO_NHOM, NDT_NHA, get doChon() { return doChon; }, set doChon(v) { doChon = v; }, get tgNgay() { return tgNgay; }, set tgNgay(v) { tgNgay = v; }, buff, coBuff }; }, get q257() { return { pull, nem, lucLuc, lucCo, kimBoi, chiaRungGia, dangRungGia, LUC_TU_NEM, bacCa, fishMax }; }, get q255() { return { bdd, bddMo, bddStart, bddBat, bddTick, bddXong, bddG, bddBai }; }, q258: { lh, LH, lhHx, lhBan, lhPct, lhVe, lhVao, lhGop, lhMoi, lhTick, CH5, C5, congC5Ve, deoMo, baoMo, aoChoangCheck, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, q254: { ml, ML, mlHx, mlBan, mlPct, mlVe, mlVao, mlGop, mlTick, CH4, CR, congRungVe, chEv, chapterDone: () => chapterDone(), gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; } }, get q253() { return { svSkin, coHai, LAYER_BONG, hulls }; }, get q250() { return { treoThong, thong, cayThong, muaCauTuyet, lacCau, CAU_GIA, CAU_NGAY, hnNt, muaHoaiNiemDo, DO_NGUON, quatTick, hnMo }; }, get q252() { return { NV_NGHE, lamDo, phaNhuom, giaoThu, openNghe, lmDatTen, lmTenMo, lmCham, lmTagDat, lmTag, pet, get lmTen() { return lmTen; }, set lmTen(v) { lmTen = v; lmTagVe(); } }; }, q249: { htDecor, dcG, dcTick, dcDat, ttMa, ttMaSang, ttDen, ttDenM, ttMaM, HT_DO, remotes }, q251: { cg, CG, cgHx, cgBan, cgPct, cgVe, cgVao, cgGop, chEv, CH3, gateLock: (g) => gateLock(g), get chap() { return [chapDone, chStep]; }, setChap: (d, st) => { chapDone = d; chStep = st; }, haiDang: ZONES.vinh.haiDang, chapterRevive }, get q248() { return { nd, ndStart, ndBam, ndXong, ndTick, ndAction, ndBac, ndKhach, ndDiem, ong, ONG_CHUYEN, buff, veMini, ndDem, ndTap, NGHE, ongLao, sanKhau, demNhac, ngheLv }; }, q245: { heBoi, heTam, heVinh, coDua, heTick, lanNgam, muaDua, muaMatNa, mnKe, MAT_NA_GIAY, ruocTick, remoteLook, myPresence, he, trungThu }, get q244() { return { hoaTTick, hoaTSap, hoaTNpc, hoaTAction, get hoaTOn() { return hoaTOn; }, CH_NPC, phaoBan, doEmote, emoPhao, xinChu, tryItem, amCung, DO_BAY, tetNgay, renderWard, bayDo, catDo, hnDo: () => hnDo(), toggleWard: (o) => toggleWard(o) }; }, lamViec, LAM, KHUON, remoteLook, myPresence, outfitGoc, WARDROBE_MAT: () => WARDROBE.filter((q) => ['khuon', 'may', 'mieng', 'ruoi'].includes(q.key)), get q243() { return { lmTrung, lmTrungG, lmVo, lmTrungNhan, lmTrungTick, pet, pickFish, fishing, fishLog, bacCa, LM_NO_GIAY, get lmNoT() { return lmNoT; } }; }, get q247() { return { ti, TI, tiCho, tiChang, tiTick, tiCong, meoRam, meoDan, meoRamTick, ramKy, nuaDem, TRANG_TRON, moQuaRam, noiMeo, meoDem, meo, meoQua, meoVet, mtDai, MEO_NHA }; }, get q241() { return { hen, henCho, henTick, hopThu, HOP_DO, thuDen, moHopThu, thuGan, thuCo, THU_NPC }; }, otCau, otChim, cauOT, OT_KHU, OT_NGAM, THAT_TICH, otDot, otTick, DTN, doThan, dtnQua, dtnBoc, dtnCong, dtnH, toMtDem, datGop, datCan, datVe, datDA, datHx, datTin, datSao, datKiem, toMt, toMtMuc, toMtBot, toMtTin, animateChibi, batchChibi, WARDROBE_TOC: () => WARDROBE.find((q) => q.key === 'style'), renderWard: () => renderWard(), cpNpc, cpSap, cpNg, cpKhach, cpSt, cpMo, cpTick, cpAction, cpBay, cpDon, cpHang, cpSo, cpXY, CP_GIA, get cpOn() { return cpOn; }, xeLa, xlA, xlP, xlMay, xeLaTick, vc, vcO, vcGieo, vcTuoi, vcThu, vcHangXom, vcViec, coHai, VC_NHIP, camUoc, cuBuoc, cuLoc, cuMo, cuVe, cuG, CU_NPC, ndtVe, ndtTham, ndtG, get ndt() { return ndt; }, dongKhu, toDP, toLap, toCam, toGan, toTick, toCo, toNk, toCoLen, toVe, TO_MOC, ctvNpc, ongCo, coXoi, chuBanhMi, xeOm, ganhXoi, coBan, ctvSt, ctvTick, ctvAction, pickAction, get raoN() { return raoN; }, chBao, BAO_VIEC, baoBat, baoTat, baoGan, baoLam, baoTick, beBo, WX_BAO, SV, SV_LOAI, SV_CHO, svTick, veTranh, tranhVe, tranhGan, ngamTranh, khungTen, chupKhung, khungTick, khungAnh, pickAction0, renderQuest, NHAC, nhacBand, sfx, BIA, biaDoc, biaGan, docBia, BIA_TRUYEN, MEO_HOI, hoiMeo, meoGan, vuotMeo, meoHom, setItCD, setChuTo, setOpt, huongBip, huongTick, setHuong: (h) => { huongDich = h; }, get huongDich() { return huongDich; }, camera, get reduceMotion() { return reduceMotion; }, phoMoi, phaoBan, phaoTick, get phaoFx() { return phaoFx; }, toggleBus: (o) => toggleBus(o), get nvNghe() { return nvNghe; }, nvDem: (k) => nvDem(k), nhanNvNghe: (id) => nhanNvNghe(id), NV_NGHE: () => NV_NGHE, CAP_DAT, nangCap: (c) => nangCap(c), get nhaCapSet() { return null; }, set nhaCapSet(v) { nhaCap = v; }, MOI_CAU, diemCan, startFishing: (sp) => startFishing(sp), traiMua, tCay, plant, noiChuong, maxNuoi: (k) => maxNuoi(k), NANG_CHUONG, tocDoNguoi, duNL: (m) => duNL(m), truNL: (m) => truNL(m), get buff() { return buff; }, moKhe, KHE_MO, danhHieuCo: () => danhHieuCo(), DI_SAN, diSanMua, muaDiSan, quyPho, gopQuy, QUY_GOP, QUY_MOC, WARDROBE_LM: () => WARDROBE.find((q) => q.key === 'linhmay'), lmLong, muaCan, get canBac() { return canBac; }, set canBac(v) { canBac = v; }, CAN_BAC, rodStick, dauGia, raGia, dgKet, dgTran: (t) => dgTran(t), tuanNay, DG_KHOI, banNS, nsMua, nsConLai, nsDem, banCaNPC, caMua, DIEU_NHAY, bacCa, doEmote: (k) => doEmote(k), faceSet, FACES, WARDROBE_MV: () => WARDROBE.find((q) => q.key === 'matve'), WARDROBE_DA: () => WARDROBE.find((q) => q.key === 'da'), makeChibi, playerOpts: () => playerOpts(), locVang, grade, giayPQ, rebuildPlayer: () => rebuildPlayer(), setSeller: (q) => { const c = seller; seller = q; return c; }, setWx, lanternMats, banMon: () => banMon(), NHIET_DOI, veMini, muaTuoi, pickFish: () => pickFish(), get moiDung() { return moiDung; }, muaHoaiNiem: (k, v) => muaHoaiNiem(k, v), hnMo: () => hnMo(), detVaiMay, lamDo: (id) => lamDo(id), banDo: (id) => banDo(id), phaNhuomCham, nhuomAoCham, mayAoDai, aoDaiDu: () => aoDaiDu(), datBeLeg, caEpic: () => caEpic(), doMesh: (id) => doMesh(id), get DO_BAY() { return DO_BAY; }, aoSenNT, aoSenGieo, aoSenHai, aoSenChin, phaNhuomSen, nhuomAoSen, thaRong, thaRongTick, donHom: () => donHom(), giaoDon: (i) => giaoDon(i), get don() { return don; }, DON_POOL, tuanDem: (id) => tuanDem(id), get tuan() { return tuan; }, doiViec: (id) => doiViec(id), TASKS: () => TASKS.map((t) => t.id), get quest() { return quest; }, tuLuu: (i) => tuLuu(i), tuMac: (i) => tuMac(i), get tuDo() { return tuDo; }, get BO() { return BO; }, boDang: () => boDang(), get boFx() { return boFx; }, vuotVe, ccb, ccbChao, ccbCau, ccbSua, canK: () => canK(), sn, snKe, snHom, phaNhuom, nhuomAo, xayLua, giaTrung: (k) => giaTrung(k), nuoi, NUOI, muaNuoi, thuSp, dungChuong, hatMo, harvest, CROPS, tt, ttStart, ttSoi, ttTick, ttG, ns, nsStart, nsNhay, nsTick, nsAt, nsG, oaq, oaqDi, oaqStart, oaqChoi, oaqMay, at: (id) => at(id), lmTh, lmDiem, LM_NHANH, pet, cloudMat, lmMau, matOf: (h) => mat(h), lmh, lmHoang, voVeLM, ongTu, bao, baoVe, nhatVoSo, gopVoSo, hoaCo, BAO_CAN, thayDoDeo, deo, nguoiTuyet, ghePos, nhanLau, boat, tuanTra, kiemLam, dom, domP, domXY, tre, chatTre, batDom, endFishing: () => endFishing(), coCuuHo, lanNgay, get xemTruoc() { return xemTruoc; }, gateLock: (g) => gateLock(g), ngheMo, cdan, capCD, xpCD, xpCan, llMo, setCap: (L) => { let x = 0; for (let i = 1; i < L; i++) x += xpCan(i); cdan.xp = x; cdan.nang = 0; capHud(); }, aoSen, cauTrom, cauTromTick, trungThu, ruoc, sapNpcs, he, dieu, dieuM, tet, tetNgay, thayDo, tuyet, thong, cayThong, snowMesh, keoNgay, hoaTrang, ongTam, dienDien, ddHai, get owned() { return owned; }, nuocNoi, sd, sdChuDe, sdMo, sanDien, sangNgay, wxNgay, duBao, greet, chuDe, dungChuDe, ttNgay, outfit, cauVong, cauVongM, FISH_W: () => Object.fromEntries(FISH.map((f) => [f.id, f.w()])), giai, landFish, FISH_ALL: FISH, bacLa, xeLaKhung, linhTuoi, hoiCho, priceOf: (k) => priceOf(k), lich28, lichDangNhap, bkc, bkcCheck, fishLog, setSaoP: (v) => { saoP = v; }, buNhinO, setGiantP: (v) => { giantP = v; }, plots, loTre, WATER_R, get uocMo() { return uocMo; }, scene, bh, bhLam, moDoCu, ngheXp, lichXong: () => SCHED.forEach((c) => c.walk && lichXong(c)), get nhaCap() { return nhaCap; }, nuoi, vit, dtBua, hopM, dtFx, beCaG, demNhac, sanKhau, notNhac, anMon, buff, coBuff: (k) => coBuff(k), ongTam, cuDan, cuDanHits, setMapTab: (t) => setMapTab(t), amCung, nhaDo, nhaMesh, saveBag, quanMo, get denDau() { return denDau; }, meo, meoDem, hoaDang, hdNoi, dt_, dtCheo, hs, hsChon, kc, kcHit, get veVui() { return veVui; }, ga, addXu, plotCount: () => plots.length, buyDat, get datMo() { return datMo; }, live, liveProp, get liveDay() { return liveDay; }, priceK: () => liveK(), bep, MON, moMan: () => { moManStart(); return moMan; }, xe7, greyArc: () => [GREY_EDGE.map((r) => Math.round(r / DEG)), SUA], xuong, tramViec, timThay, npcViec, drawMap: () => { const c = document.createElement('canvas'); c.width = c.height = 400; drawMap(c, true); return c; }, pickRac, get racDen() { return racDen; }, dog, oi, get oiNight() { return oiNight; }, cauTrom, thu, tiToc, lc, graffiti, rac, get tiengTam() { return tiengTam; }, danPhong, rong, get taiTieng() { return taiTieng; }, get visited() { return visited; }, ong, ongLao, oiTrees, torch, bag, get haiTromOn() { return haiTromOn; }, nghe, NGHE, enterZone: (id) => enterZone(id, null, 'home'), applyQuality, greyCount: (n = 1) => REVIVE.filter((r) => r.ch <= n).reduce((n, r) => { r.g.traverse((m) => { if (m.isMesh && m.material === mat('#BDBDC6')) n++; }); return n; }, 0), marketFront: MARKET_FRONT, player, walkers, vendor, coSau, LICH_NPC, chEv, REVIVE, driftG, get chStep() { return chStep; }, get chapDone() { return chapDone; }, merchant, chiMan, mcLinh, chuBay, plots, fishing, bag, camera, state, renderer, obstacles, goTo, mapHits, LANDMARKS, GATES, segClear, U, ZONES, get zone() { return zone; }, get xu() { return xu; }, get camYawS() { return camYawS; },
       get route() { return route; }, get target() { return target; }, get dest() { return dest; } };
   }
   function mapTick(dt) {
@@ -10230,6 +10456,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   ];
   // 3 bộ khởi đầu (GDD §5 "Trang phục khởi đầu: 3 bộ chọn sẵn", Q259): người mới chọn sau mở màn, sau đó đổi lại lúc nào cũng được ở thẻ Khởi đầu.
   // Mọi món trong bộ đều miễn phí; bộ chỉ thay mũ, áo, quần/váy, phụ kiện, giày (giữ tóc, gương mặt). Tên, món từng bộ: tự quyết
+  const KD_AO = [['#FF6B5A', 'Đỏ'], ['#4F8FC0', 'Xanh dương'], ['#72C46C', 'Xanh lá'], ['#C9A2F0', 'Tím'], ['#FFC857', 'Vàng'], ['#F4F6FA', 'Trắng']];
   const BO_KD = [
     { id: 'dongque', ten: 'Đồng Quê', ta: 'nón lá, áo xanh lá, quần lửng kaki, túi đeo', ao: '#72C46C', do: { hat: 'non', quan: 'lung', acc: 'bag', giay: 'thuong' } },
     { id: 'hoctro', ten: 'Học Trò', ta: 'áo trắng, quần dài xanh than, túi đeo', ao: '#F4F6FA', do: { hat: 'none', quan: 'dai', acc: 'bag', giay: 'thuong' } },
@@ -10327,7 +10554,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   function tuLuu(i) { tuDo[i] = { ...outfit, shirt: state.shirt }; lsSet('tuDo', tuDo); sfx.pop(); note(`Đã lưu bộ phối ${i + 1}`); }
   function tuMac(i) { const b = tuDo[i]; if (!b) return; const { shirt, ...o } = b; kinhCu(Object.assign(outfit, o)); state.shirt = shirt || state.shirt; lsSet('outfit', outfit); rebuildPlayer(); sfx.pop(); note(`Mặc bộ phối ${i + 1}`); }
   // chia thẻ để bảng ngắn, không phải cuộn trên điện thoại
-  const WARD_TABS = [{ id: 'kd', name: 'Khởi đầu', secs: ['style', 'hair', 'mauMat'] }, { id: 'hat', name: 'Mũ', secs: ['hat'] }, { id: 'style', name: 'Kiểu tóc', secs: ['dang', 'style', 'da'] }, { id: 'mat', name: 'Gương mặt', secs: ['khuon', 'kieuMat', 'may', 'mieng', 'mauMat', 'matve', 'ruoi'] }, { id: 'hair', name: 'Màu tóc', secs: ['hair'] },
+  const WARD_TABS = [{ id: 'kd', name: 'Khởi đầu', secs: ['style', 'hair', 'mauMat', 'kieuMat', 'da', 'quan'] }, { id: 'hat', name: 'Mũ', secs: ['hat'] }, { id: 'style', name: 'Kiểu tóc', secs: ['dang', 'style', 'da'] }, { id: 'mat', name: 'Gương mặt', secs: ['khuon', 'kieuMat', 'may', 'mieng', 'mauMat', 'matve', 'ruoi'] }, { id: 'hair', name: 'Màu tóc', secs: ['hair'] },
     { id: 'quan', name: 'Quần/váy', secs: ['inAo', 'quan'] }, { id: 'acc', name: 'Phụ kiện', secs: ['acc', 'lung', 'kinh', 'tayCam', 'giay', 'linhmay'] }, { id: 'dauan', name: 'Dấu ấn', secs: ['dauChan', 'bongBong', 'khungTen', 'aura'] }];   // Q259: Khởi đầu, Quần/váy, Dấu ấn
   let wardTab = 'hat';
   function renderWard() {
@@ -10339,7 +10566,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       : '<span class="pr">Mở ở Thợ May cấp 9: nhuộm 2 vùng màu (thân và tay áo)</span>'}</div></div><div class="ward-sec"><h3>Thuốc nhuộm hoa</h3><div class="ward-items"><button type="button" data-nhuom="hong" aria-pressed="${state.shirt === HONG_HG}"><span class="dot" style="background:${HONG_HG}"></span>Nhuộm áo hồng hoa giấy <span class="pr">${bag.items.nhuomhong || 0} lọ</span></button><button type="button" data-nhuom="sen" aria-pressed="${state.shirt === TRANG_HONG}"><span class="dot" style="background:${TRANG_HONG}"></span>Nhuộm áo trắng hồng hoa sen <span class="pr">${bag.items.nhuomsen || 0} lọ</span></button><button type="button" data-nhuom="cham" aria-pressed="${state.shirt === XANH_CHAM}"><span class="dot" style="background:${XANH_CHAM}"></span>Nhuộm áo xanh chàm <span class="pr">${bag.items.nhuomcham || 0} lọ</span></button></div></div>` : '';
     const tu = `<div class="ward-sec"><h3>Tủ Đồ · 5 bộ phối</h3><div class="ward-items">${tuDo.map((b, i) => `<button type="button" data-tumac="${i}" ${b ? '' : 'disabled'}>${b ? `<span class="dot" style="background:${b.shirt || '#ccc'}"></span>` : ''}Bộ ${i + 1}</button>`).join('')}${tuDo.map((b, i) => `<button type="button" data-tuluu="${i}"><span class="pr">Lưu ô ${i + 1}</span></button>`).join('')}</div></div>`;
     const hn = `<div class="ward-sec"><h3>Tủ Hoài Niệm</h3><div class="ward-items">${hnMo() ? hnDo().map(({ k, it }) => `<button type="button" data-hn="${k}:${it.v}" ${owned.has(k + ':' + it.v) ? 'disabled' : ''}>${it.name} <span class="pr">${owned.has(k + ':' + it.v) ? 'đã có' : HN_GIA + ' Xu · ' + it.nguon}</span></button>`).join('') + hnNt().map((d) => `<button type="button" data-hnd="${d.id}" ${d.co ? 'disabled' : ''}>${d.ten} <span class="pr">${d.co ? 'đã có' : d.gia.toLocaleString('vi-VN') + ' Xu · nội thất · ' + d.nguon}${bag.items[d.id] ? ' · túi có ' + bag.items[d.id] : ''}</span></button>`).join('') : '<span class="pr">Mở sau 1 năm chơi: đồ sự kiện đã qua (đồ mặc và nội thất) quay lại, mua bằng Xu</span>'}</div></div>`;
-    const kdS = wardTab === 'kd' ? `<div class="ward-sec"><h3>Bộ khởi đầu · miễn phí</h3><div class="ward-items">${BO_KD.map((b) => `<button type="button" data-kd="${b.id}" aria-pressed="${kdDang() === b}"><span class="dot" style="background:${b.ao}"></span>${b.ten} <span class="pr">${b.ta}</span></button>`).join('')}</div></div>` : '';   // Q259
+    const kdS = wardTab === 'kd' ? `<div class="ward-sec"><h3>Bộ khởi đầu · miễn phí</h3><div class="ward-items">${BO_KD.map((b) => `<button type="button" data-kd="${b.id}" aria-pressed="${kdDang() === b}"><span class="dot" style="background:${b.ao}"></span>${b.ten} <span class="pr">${b.ta}</span></button>`).join('')}</div></div><div class="ward-sec"><h3>Màu áo · miễn phí</h3><div class="ward-items">${KD_AO.map(([c, n]) => `<button type="button" data-kdao="${c}" aria-pressed="${state.shirt === c}"><span class="dot" style="background:${c}"></span>${n}</button>`).join('')}</div></div>` : '';   // màu áo khi tạo nhân vật (Q364)   // Q259
     const lmS = wardTab === 'acc' && lmTrung.st === 2 ? `<div class="ward-sec"><h3>Tên Linh Mây</h3><div class="ward-items"><button type="button" data-lmten="1">${lmTen ? `☁ ${escHtml(lmTen)} · đổi tên` : 'Đặt tên Linh Mây'} <span class="pr">miễn phí</span></button></div></div>` : '';   // Q252
     // Hàng tuần Lụa Mây Atelier (Q264): 4 món cơ bản giảm 25%, hiện ở mọi thẻ; chạm để mua/mặc như nút thường
     const ht = `<div class="ward-sec"><h3>Hàng tuần Lụa Mây Atelier · giảm 25%, đổi sáng thứ Hai</h3><div class="ward-items">${htTuan().map(({ k, it }) => `<button type="button" data-k="${k}" data-v="${it.v}" data-ht="1" aria-pressed="${outfit[k] === it.v}">${it.dot ? `<span class="dot" style="background:${it.dot}"></span>` : ''}${it.name}${owned.has(k + ':' + it.v) ? ' <span class="pr">đã có</span>' : ` <span class="pr"><s>${it.price}</s> ${giaMua(k, it)} Xu</span>`}</button>`).join('')}</div></div>`;
@@ -10392,6 +10619,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     { const nb = e.target.closest('button[data-nhuom]'); if (nb) { if (nb.dataset.nhuom === 'sen') nhuomAoSen(); else if (nb.dataset.nhuom === 'cham') nhuomAoCham(); else nhuomAo(); renderWard(); return; } }
     { const h = e.target.closest('button[data-hnd]'); if (h) { muaHoaiNiemDo(h.dataset.hnd); renderWard(); return; } }   // nội thất sự kiện (Q250)
     { const h = e.target.closest('button[data-hn]'); if (h) { const [k, v] = h.dataset.hn.split(':'); muaHoaiNiem(k, v); renderWard(); return; } }
+    { const b = e.target.closest('button[data-kdao]'); if (b) { state.shirt = b.dataset.kdao; rebuildPlayer(); sfx.pop(); renderWard(); return; } }   // Q364
     { const b = e.target.closest('button[data-kd]'); if (b) { macKD(b.dataset.kd); renderWard(); const again = $(`#wardBody button[data-kd="${b.dataset.kd}"]`); if (again) again.focus(); return; } }   // bộ khởi đầu (Q259)
     { const b = e.target.closest('button[data-tumac], button[data-tuluu]'); if (b) { if (b.dataset.tumac != null) tuMac(+b.dataset.tumac); else tuLuu(+b.dataset.tuluu); renderWard(); return; } }
     const ty = e.target.closest('button[data-tay]'); if (ty) { outfit.tay = ty.dataset.tay; store.set('outfit', outfit); rebuildPlayer(); renderWard(); sfx.pop(); return; }
@@ -10403,6 +10631,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     state.dressing = show;
     if (show) { toggleQuest(false); renderWard(); if (state.sit) standUp(); state.zoomBefore = state.zoom; state.zoom = 0.45; player.root.rotation.y = 0; target = null; }
     else if (state.zoomBefore) { state.zoom = state.zoomBefore; state.zoomBefore = 0; }
+    if (!show && c1.taoMo) { c1.taoMo = 0; store.set('c1', c1); if (store.get('boKD', null) === null) store.set('boKD', 'tu'); chEv('tao-hinh'); }   // Chương 1 bước 1 (Q364): đóng Tủ đồ là xong tạo hình
   }
   wardBtn.addEventListener('click', () => toggleWard());
   $('#wardClose').addEventListener('click', () => { toggleWard(false); wardBtn.focus(); });
@@ -10934,7 +11163,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const m = dungModel(g.userData.model, g.userData.cho); if (!m) continue;
       const ks = [...m.children]; for (const c of ks) g.add(c); g.userData.lap = ks.length;
       if (g.userData.sau) g.userData.sau(g, ks);   // nơi gọi cần xử lý thêm khối (vd nhà đổ Đảo Bão gắn thẳng khối vào nhóm)
-      for (const r of REVIVE) { let o = g; while (o && o !== r.g) o = o.parent; if (o && r.ch <= chapDone) for (const k of ks) k.traverse(hoiMesh); }
+      for (const r of REVIVE) { let o = g; while (o && o !== r.g) o = o.parent; if (o && (r.ch <= chapDone || (r.tiemHoa && c1ThMo()))) for (const k of ks) k.traverse(hoiMesh); }
       let top = g; while (top.parent && top.parent !== scene) top = top.parent;
       if (tinhGoc && tinhGoc.has(top) && top.parent) for (const k of ks) k.traverse((q) => { if (q.isMesh && q.visible) moi.push(q); });
     }
@@ -11174,6 +11403,8 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     if (g.lock && /^(Chương [345]|Sự kiện)$/.test(g.lock) && xemTruoc.on) return capCD() >= (CAP_KHU[g.to] || 1) ? null : `Cấp Cư Dân ${CAP_KHU[g.to]}`;
     return g.lock;
   };
+  // khu chưa tới lượt khoá có lời giải thích (kịch bản Chương 1, nguyên tắc 6; Q364)
+  const khoaLy = (g, lk) => (/^Cấp Cư Dân/.test(lk) ? `cần ${lk} (lên cấp bằng mọi việc: trồng, câu, nấu, chơi minigame)` : { vinh: 'Cây Cầu Gió chưa nối sang Vịnh San Hô Mây — mở ở Chương 3', rung: 'Rừng Đom Đóm còn tối, cổng tre chưa mở — mở ở Chương 4', 'dinh-deo': 'cáp treo lên Đỉnh Đèo Sương đứng từ hồi Bão Xám — mở ở Chương 5', 'dao-bao': 'thuyền ra Đảo Bão Xám chưa chạy — mở ở Chương 5' }[g.to] || (lk === 'Dự Án Phố' ? 'cầu tre đang sửa (Dự Án Phố) — đi đường vòng qua Quảng Trường' : `đang khoá, mở theo ${lk}`));
   function gateTick(p) {
     if (travelling) return;
     for (const g of zone.gates) {
@@ -11182,7 +11413,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       if (g.near || d > 1.3) continue;
       g.near = true; const lk = gateLock(g);
       if (!lk) travel(g.to, zone.id);
-      else note(lk === 'chưa dựng' ? `Cổng ${g.name}: khu này chưa dựng` : `Cổng ${g.name}: đang khoá, mở theo ${lk}`);
+      else note(lk === 'chưa dựng' ? `Cổng ${g.name}: khu này chưa dựng` : `Cổng ${g.name}: ${khoaLy(g, lk)}`);
     }
   }
   // Bảng "Phố có gì mới" (mục 8.19, Q223): tin cho người quay lại, hiện đầu bảng Xe Buýt Gió ở trạm Quảng Trường.
@@ -11224,7 +11455,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     }
     const pp = player.root.position;
     if (!chapDone) return;
-    REVIVE.forEach((r, i) => { const p = r.g.position; if (r.ch <= chapDone && !phaoDa.has(i) && Math.hypot(pp.x - p.x, pp.z - p.z) < 9) { phaoDa.add(i); store.set('phaoHoa', [...phaoDa]); phaoBan(p); } });
+    REVIVE.forEach((r, i) => { const p = r.g.position; if (r.ch <= chapDone && !r.tiemHoa && !phaoDa.has(i) && Math.hypot(pp.x - p.x, pp.z - p.z) < 9) { phaoDa.add(i); store.set('phaoHoa', [...phaoDa]); phaoBan(p); } });
   }
   function renderBus() {
     const news = zone.id === 'quang-truong'; $('#busNews').hidden = !news;
