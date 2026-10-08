@@ -41,7 +41,7 @@ export function taoThuVien(root, M) {
   const tr = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: true }); tr.setSize(160, 160); tr.outputEncoding = THREE.sRGBEncoding;
   const ts = new THREE.Scene(); ts.add(new THREE.HemisphereLight('#fff', '#9a8a70', 0.9)); const sun = new THREE.DirectionalLight('#fff4e0', 0.8); sun.position.set(5, 10, 7); ts.add(sun);
   const tc = new THREE.PerspectiveCamera(35, 1, 0.05, 500);
-  const the = M.model.map((m) => { const img = el('img', { alt: m.id }); const t = el('button', { class: 'the', 'data-id': m.id, onclick: () => mo(m.id) }, img, el('span', {}, m.id), el('small', {}, `${fmt(m.w)}×${fmt(m.d)}×${fmt(m.h)}`)); luoi.append(t); return [m, img]; });
+  const the = M.model.map((m) => { const img = el('img', { alt: m.id }); const t = el('button', { class: 'the', 'data-id': m.id, onclick: () => mo(m.id) }, img, el('span', {}, m.id), el('small', {}, `${fmt(m.w)}×${fmt(m.d)}×${fmt(m.h)}`), m.nhom === 'ai' ? el('small', { class: 'nhan-ai', title: 'Sinh bằng Lò Model AI' }, `AI · ${m.loai}`) : null); luoi.append(t); return [m, img]; });
   tim.addEventListener('input', () => luoi.querySelectorAll('.the').forEach((t) => { t.hidden = !t.dataset.id.includes(tim.value.trim()); }));
   (async () => { for (const [m, img] of the) { const o = await taiGLB(m.id); if (!o) continue; ts.add(o); const R = Math.max(m.w, m.d, m.h) || 1, cx = (m.min[0] + m.max[0]) / 2, cz = (m.min[2] + m.max[2]) / 2; tc.position.set(cx + R * 1.1, m.h * 0.6 + R * 0.7, cz + R * 1.5); tc.lookAt(cx, m.h * 0.4, cz); tr.render(ts, tc); img.src = tr.domElement.toDataURL(); ts.remove(o); } root.dataset.thuNho = 'xong'; })();
   return { mo };

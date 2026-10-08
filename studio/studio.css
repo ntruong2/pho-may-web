@@ -66,3 +66,6 @@ details { margin: 4px 0; } summary { cursor: pointer; font-size: 13px; }
 .huy.xanh { background: #E8892A; }
 .ds-khac { list-style: none; padding: 0; margin: 0; font: 12px/1.4 ui-monospace, monospace; } .ds-khac li { padding: 3px 4px; border-bottom: 1px solid var(--vien); overflow-wrap: anywhere; } .ds-khac .them { color: #2E8B4A; } .ds-khac .bot { color: var(--do); } .ds-khac .doi { color: #B5631A; }
 .trai label.hang { flex-wrap: nowrap; align-items: flex-start; }
+/* Q368: liên kết Lò Model AI, nhãn model AI trong thư viện */
+.lo-ai { margin-left: auto; text-decoration: none; color: inherit; border: 1px solid var(--vien); border-radius: 8px; padding: 4px 10px; }
+.nhan-ai { color: #C4553F; font-weight: 600; }

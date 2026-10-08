@@ -1,5 +1,5 @@
 {
- "dung": "2026-10-08T15:07:30.051Z",
+ "dung": "2026-10-08T16:25:31.741Z",
  "nguon": "src/du-lieu.html",
  "lech": [],
  "khu": [
@@ -2008,6 +2008,35 @@
     "ong-khoi",
     "tre-dam",
     "tre-xanh"
+   ]
+  },
+  {
+   "id": "ai/cua-go-den-treo",
+   "nhom": "ai",
+   "loai": "dist",
+   "tieuDe": "Cửa gỗ có đèn treo",
+   "kb": 39,
+   "min": [
+    -0.75,
+    0,
+    -0.14
+   ],
+   "max": [
+    0.75,
+    2.45,
+    0.3
+   ],
+   "w": 1.5,
+   "h": 2.44,
+   "d": 0.44,
+   "matTren": 2.44,
+   "matDT": 0.32,
+   "vatLieu": [
+    "go-khung",
+    "cua-go",
+    "vang-dong",
+    "kinh-cua",
+    "long-den"
    ]
   }
  ]

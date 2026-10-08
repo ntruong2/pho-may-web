@@ -1,0 +1,80 @@
+:root { --nen: #FFF8EC; --the: #FFFFFF; --chu: #3B2A20; --nhat: #8A7464; --vien: #E6D8C2; --chinh: #E0735A; --chinh-2: #C4553F; --do: #D23A2A; --vang: #B7791F; --xanh: #3F8F5A; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--nen); color: var(--chu); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; flex-direction: column; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { background: var(--the); border: 1px solid var(--vien); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+button:hover { border-color: var(--chinh); }
+button.chinh { background: var(--chinh); color: #fff; border-color: var(--chinh-2); font-weight: 600; }
+button:disabled { opacity: .5; cursor: default; }
+input, select, textarea { background: #fff; border: 1px solid var(--vien); border-radius: 6px; padding: 4px 6px; }
+textarea { width: 100%; resize: vertical; }
+.dau { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fff; border-bottom: 1px solid var(--vien); flex-wrap: wrap; }
+.logo { font-size: 16px; margin-right: 8px; }
+.gian { flex: 1; }
+.nho-nut { text-decoration: none; color: inherit; border: 1px solid var(--vien); border-radius: 8px; padding: 5px 10px; background: #fff; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab { display: flex; align-items: center; gap: 6px; border-radius: 8px 8px 0 0; border-bottom: 3px solid transparent; }
+.tab.chon { border-bottom-color: var(--chinh); background: #FFF1E6; }
+.tab .x { border: 0; padding: 0 4px; background: none; color: var(--nhat); }
+.tab .chay { width: 8px; height: 8px; border-radius: 50%; background: var(--vang); animation: nhay 1s infinite; }
+@keyframes nhay { 50% { opacity: .2; } }
+.the-nho { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #F3E6D3; }
+.the-nho.thu { background: #FFE9B8; }
+.khung { flex: 1; display: grid; grid-template-columns: 300px 1fr 280px; min-height: 0; }
+.trai, .phai { overflow: auto; padding: 12px; background: #FFFDF8; }
+.trai { border-right: 1px solid var(--vien); }
+.phai { border-left: 1px solid var(--vien); }
+.giua { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 8px; gap: 6px; }
+.cv-boc { position: relative; flex: 1; min-height: 280px; border-radius: 10px; overflow: hidden; border: 1px solid var(--vien); }
+#cv { width: 100%; height: 100%; display: block; }
+[hidden] { display: none !important; }
+.trong { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--nhat); pointer-events: none; }
+.thanh { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.thanh label { display: flex; gap: 4px; align-items: center; font-size: 13px; }
+.thanh .nhan { font-size: 12px; color: var(--nhat); }
+.thanh button.dang { background: #FFE3D6; border-color: var(--chinh); }
+.co { font-size: 13px; }
+.co .do { color: var(--do); font-weight: 600; }
+.co .vang { color: var(--vang); }
+.co ul { margin: 4px 0; padding-left: 18px; }
+.tien-do { background: #fff; border: 1px solid var(--vien); border-radius: 8px; padding: 8px; font-size: 12px; max-height: 180px; overflow: auto; }
+.tien-do pre { white-space: pre-wrap; margin: 4px 0; color: var(--nhat); font: 12px/1.4 ui-monospace, monospace; }
+.tien-do .loi { color: var(--do); font-weight: 600; }
+.tien-do .tb { color: var(--vang); }
+h2 { font-size: 16px; margin: 0 0 8px; }
+h3 { font-size: 14px; margin: 14px 0 6px; }
+.nhom { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.nhom > span { font-weight: 600; font-size: 13px; }
+.hang { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.hai { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chk { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; }
+.nho { font-size: 12px; color: var(--nhat); }
+.chon-loai { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.chon-loai button.chon, .co-san button.chon, .che-do-form button.chon { background: #FFE3D6; border-color: var(--chinh); font-weight: 600; }
+.che-do-form { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 10px; }
+.co-san { display: flex; gap: 4px; }
+.so3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.so3 input { width: 100%; }
+.pb { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--vien); border-radius: 8px; margin-bottom: 6px; background: #fff; }
+.pb.chon { border-color: var(--chinh); box-shadow: 0 0 0 2px #FFE3D6; }
+.pb img { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; background: #F4EEE2; }
+.pb b { font-size: 13px; }
+.pb .p { font-size: 12px; color: var(--chu); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pb .diff { font-size: 11px; color: var(--xanh); }
+.pb .hang button { padding: 2px 8px; font-size: 12px; }
+dialog { border: 1px solid var(--vien); border-radius: 12px; max-width: 560px; width: calc(100% - 32px); background: var(--nen); color: var(--chu); }
+.cai { display: flex; flex-direction: column; gap: 8px; }
+.cai label:not(.chk) { display: flex; flex-direction: column; gap: 2px; font-weight: 600; font-size: 13px; }
+.canh { background: #FFF1D6; border: 1px solid #F0C878; padding: 8px; border-radius: 8px; font-size: 12px; margin: 0; }
+.cuoi { margin-top: 8px; }
+@media (max-width: 900px) {
+  .khung { grid-template-columns: 1fr; overflow: auto; }
+  .trai, .phai { border: 0; }
+  .cv-boc { min-height: 50vh; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --nen: #221C18; --the: #2E2620; --chu: #F1E6D8; --nhat: #B7A594; --vien: #4A3E34; }
+  :root:not([data-theme="light"]) .dau, :root:not([data-theme="light"]) .trai, :root:not([data-theme="light"]) .phai, :root:not([data-theme="light"]) .pb, :root:not([data-theme="light"]) .tien-do, :root:not([data-theme="light"]) .nho-nut, :root:not([data-theme="light"]) input, :root:not([data-theme="light"]) select, :root:not([data-theme="light"]) textarea, :root:not([data-theme="light"]) button:not(.chinh) { background: var(--the); }
+  :root:not([data-theme="light"]) .tab.chon, :root:not([data-theme="light"]) .the-nho { background: #3A2E26; }
+}
