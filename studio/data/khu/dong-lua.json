@@ -1,0 +1,87 @@
+{
+  "id": "dong-lua",
+  "ten": "Đồng Lúa Gió",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với quang-truong.json. Khu kiểu đồng quê: không có sân và đại lộ; đường là các lối 'loi' (đường gấp khúc, rộng 'rong'). 'tam' là sân phơi thóc giữa khu, dùng làm tâm khi đo ngân sách đi bộ. 'ruong' là các hàng ruộng bậc thang (chỉ là mặt đất, đi qua được). Vật không có 'r' hay 'khoi' thì không chặn đường (đồi, sân hội chợ).",
+  "xuatHien": [-1.8, 30],
+  "tocDoDi": 3.4,
+  "dao": {
+    "r": 40,
+    "song": [[0.6, 2, 1.3], [0.4, 3, 0.2], [0.3, 5, 2.4]],
+    "banCong": [135, 225, 315],
+    "mepXam": [],
+    "lanCan": "tre"
+  },
+  "tam": { "x": 0, "z": 0, "r": 3.2 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Quảng Trường", "toi": "quang-truong", "bien": ["Quảng Trường"] },
+    { "id": "W", "goc": 180, "ten": "Rừng Đom Đóm", "toi": "rung", "khoa": "Chương 4", "kieu": "cong-tre" },
+    { "id": "N", "goc": -90, "ten": "Đỉnh Đèo Sương", "toi": "dinh-deo", "khoa": "Chương 5", "kieu": "cap-treo" },
+    { "id": "SE", "goc": 45, "ten": "Sân Chơi Cầu Vồng", "toi": "san-choi", "khoa": "Dự Án Phố", "kieu": "cau-tre" }
+  ],
+  "loi": [
+    { "id": "duong-nam", "kieu": "da", "rong": 2.4, "diem": [[0, 40.6], [0, 3.2]] },
+    { "id": "loi-bac", "kieu": "dat", "rong": 1.6, "diem": [[0, -3.2], [-1.5, -13], [1.5, -25], [0, -40.6]] },
+    { "id": "loi-tay", "kieu": "dat", "rong": 1.8, "diem": [[-3.2, 0], [-16, 1.2], [-40.6, 0]] },
+    { "id": "loi-dong", "kieu": "dat", "rong": 1.6, "diem": [[3.2, 0], [11, -3], [17.5, -9.5]] },
+    { "id": "loi-dong-nam", "kieu": "dat", "rong": 1.6, "diem": [[0, 21], [14, 25], [29, 29]] },
+    { "id": "loi-nong-trai", "kieu": "da", "rong": 1.6, "diem": [[3.2, 1.2], [7.2, 2.6]] },
+    { "id": "tat-man-nong-trai", "kieu": "dat", "rong": 1.6, "diem": [[-1.8, 21.2], [7.6, 14.2], [8.6, 9.4], [7.4, 4.6]], "ghiChu": "Q365: lối tắt sạp Chị Mận ↔ trạm xe ↔ cổng Nông trại" },
+    { "id": "tat-cong-nam-man", "kieu": "dat", "rong": 1.6, "diem": [[0, 24.6], [-1.6, 22.6]], "ghiChu": "Q365: từ đường cổng Nam rẽ thẳng vào sạp Chị Mận" },
+    { "id": "tat-nong-trai-cau-tre", "kieu": "dat", "rong": 1.6, "diem": [[7.4, 4.6], [17.5, 15.5], [27.6, 27.6]], "ghiChu": "Q365: cổng Nông trại thẳng ra cầu tre (cổng SE)" }
+  ],
+  "ruong": {
+    "mau": ["#B8D86A", "#CFE07A", "#E8D56A", "#D6C65A"],
+    "hang": [
+      { "z": -13.5, "sau": 3.4, "doan": [[-33, -3.4], [3.4, 15.5]] },
+      { "z": -18, "sau": 3.4, "doan": [[-33, -3.6], [3.6, 15.5]] },
+      { "z": -22.5, "sau": 3.4, "doan": [[-31, -2.6], [4.6, 30]] },
+      { "z": -27, "sau": 3.4, "doan": [[-27, -2.2], [3.2, 27]] }
+    ]
+  },
+  "vat": [
+    { "id": "ban-nhom", "loai": "ban-nhom", "x": -13, "z": -8.5, "r": 1.6, "ghiChu": "bàn nhóm 6 người cạnh điểm hẹn chòi canh (mục 8.7)" },
+    { "id": "sap-chi-man", "loai": "sap-thu-mua", "x": -4.6, "z": 22, "quay": 90, "khoi": [[-1.1, 0, 1.0], [1.1, 0, 1.0]], "chinh": true,
+      "diaDanh": { "ten": "Sạp Chị Mận", "mau": "#FFC857", "toi": [-2.6, 22] } },
+    { "id": "nha-chi-man", "loai": "nha", "x": -10.5, "z": 31, "quay": 90, "khoi": [[-1.3, 0, 1.45], [1.3, 0, 1.45]] },
+    { "id": "coi-xay-gao", "loai": "coi-xay-gao", "x": -10.5, "z": 24.5, "r": 0.9 },
+    { "id": "tram-xe-buyt", "loai": "tram-xe-buyt", "x": 4.0, "z": 12.4, "quay": 90, "khoi": [[-1.5, 0, 1.0], [0, 0, 1.0], [1.5, 0, 1.0]],
+      "diaDanh": { "ten": "Trạm Xe Buýt Gió", "mau": "#4F8FC0", "toi": [6.0, 12.4], "duoi": true } },
+    { "id": "kho-thoc", "loai": "kho-thoc", "x": 12, "z": 31, "quay": 180, "xam": true, "khoi": [[-1.4, 0, 1.7], [1.4, 0, 1.7]],
+      "diaDanh": { "ten": "Kho thóc", "mau": "#A9A9B3", "toi": [12, 27.4], "duoi": true } },
+    { "id": "san-hoi-cho", "loai": "san-hoi-cho", "x": 12, "z": 15, "rong": 11, "sau": 6,
+      "diaDanh": { "ten": "Sân Hội Chợ", "mau": "#C9A87A", "toi": [12, 15], "duoi": true } },
+    { "id": "cong-nong-trai", "loai": "cong-rao", "toi": "nong-trai", "x": 9, "z": 2.8, "quay": -90, "khoi": [[-1.1, 0, 0.3], [0, 0, 0.6], [1.1, 0, 0.3]],
+      "diaDanh": { "ten": "Cổng nông trại", "mau": "#2E7D4F", "toi": [7.6, 2.6] } },
+    { "id": "choi-canh", "loai": "choi-canh", "x": -7.5, "z": -5.4, "r": 1.9,
+      "diaDanh": { "ten": "Chòi canh", "mau": "#B07A4E", "toi": [-5.0, -5.4] } },
+    { "id": "bang-nghe", "loai": "bang-nghe", "nghe": "nha-nong", "chu": "Bảng nghề Nhà Nông", "x": -4.6, "z": -8.2, "quay": 90, "r": 0.4 },
+    { "id": "coi-xay-gio", "loai": "coi-xay-gio", "x": 21, "z": -13, "r": 1.5,
+      "diaDanh": { "ten": "Cối xay gió", "mau": "#E0A020", "toi": [18.6, -10.6] } },
+    { "id": "ao-vit", "loai": "ao", "x": 27, "z": 4, "ban": 3.4, "r": 3.6,
+      "diaDanh": { "ten": "Ao vịt", "mau": "#4F8FC0", "toi": [22.6, 4], "duoi": true } },
+    { "id": "ga-cap-treo", "loai": "ga-cap-treo", "x": 6.5, "z": -32.5, "quay": -90, "khoi": [[-1.6, 0, 1.5], [1.6, 0, 1.5]],
+      "diaDanh": { "ten": "Ga cáp treo", "mau": "#8E3426", "toi": [3.6, -32.5] } },
+    { "id": "bu-nhin", "loai": "bu-nhin", "x": 10, "z": -20.2, "r": 0.5 },
+    { "id": "doi-tha-dieu", "loai": "doi", "x": -23, "z": -7, "rx": 7, "rz": 4.5,
+      "diaDanh": { "ten": "Đồi thả diều", "mau": "#5FA852", "toi": [-23, -5] } },
+    { "id": "ghe-doi-1", "loai": "ghe", "x": -19.5, "z": -4.6, "quay": 180, "r": 1.0 },
+    { "id": "ghe-doi-2", "loai": "ghe", "x": -26.5, "z": -9.5, "quay": 160, "r": 1.0 }
+  ],
+  "cay": {
+    "lum": [[-24, 15, 3], [-28, 26, 2], [22, 12, 1], [26, 20, 2], [-15, 12, 1], [27, -24, 2], [-17, 33, 1], [20, -30, 2]],
+    "rai": { "da": 6, "hoa": 8, "nam": 3, "bui": 10, "rom": 4 }
+  },
+  "npc": [
+    { "ten": "Chị Mận", "o": "sap-chi-man", "x": -6.1, "z": 22, "gio": [5, 19], "ghiChu": "thu mua nông sản, bán hạt giống; trưa livestream ở chòi canh (3D-21)" }
+  ],
+  "meo": {"ten":"Mèo Rơm","mau":"#E8C46A","x":2.6,"z":36,"ghiChu":"Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần"},
+  "biaDa": {"so":2,"x":-2.6,"z":25,"ghiChu":"Bia đá kể chuyện Bà Bồng (Q227), đoạn 2/10; chữ khắc trong trang"},
+  "vuonChung": {"x":5,"z":8,"cot":3,"hang":2,"o":1.2,"ghiChu":"Vườn chung (Q235, mục 8.19 Góc chung): 6 ô rào thấp, ai cũng gieo, tưới, thu được; thu hoạch góp Dự Án Phố; hàng xóm NPC chăm khi vắng người"},
+  "diemHen": [{ "ten": "Chòi canh giữa ruộng (ngồi đôi ngắm diều)", "x": -7.5, "z": -8.2 }],
+  "gocAnh": [
+    { "ten": "Ruộng bậc thang lúc hoàng hôn", "x": -6, "z": -30.5 },
+    { "ten": "Cối xay gió và diều", "x": 15, "z": -6 },
+    { "ten": "Nhìn xuống từ ga cáp treo", "x": 3, "z": -36 }
+  ],
+  "biMat": [{ "ten": "Bù nhìn đội nón lạ: chạm 7 ngày liền", "x": 10, "z": -21.8 }]
+}

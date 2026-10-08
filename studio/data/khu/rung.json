@@ -1,0 +1,519 @@
+{
+  "id": "rung",
+  "ten": "Rừng Đom Đóm",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với ben-song.json. Khu vừa (bán kính 30), khoá tới Chương 4 (cổng tre từ Đồng Lúa, cửa sau Khu Nhà). 'suoi' là con suối gấp khúc có bề rộng (nước, không đi được trừ trên cầu khỉ 'go'). 'sanChoi' là các bãi phẳng (bãi đom đóm, bãi nấm, bãi măng, rừng cấm). Không có đèn đường.",
+  "xuatHien": [
+    22,
+    -1.6
+  ],
+  "tocDoDi": 3.4,
+  "dao": {
+    "r": 30,
+    "song": [
+      [
+        0.5,
+        3,
+        0.4
+      ],
+      [
+        0.3,
+        5,
+        1.6
+      ]
+    ],
+    "banCong": [],
+    "mepXam": [],
+    "lanCan": "tre"
+  },
+  "suoi": {
+    "rong": 2.4,
+    "diem": [
+      [
+        -34,
+        -7.4
+      ],
+      [
+        -18,
+        -1
+      ],
+      [
+        -12,
+        2
+      ],
+      [
+        -10,
+        10
+      ],
+      [
+        -14,
+        20
+      ],
+      [
+        -21,
+        27
+      ],
+      [
+        -26,
+        33
+      ]
+    ]
+  },
+  "tam": [
+    {
+      "x": 1,
+      "z": 0,
+      "r": 1.5
+    }
+  ],
+  "cong": [
+    {
+      "id": "E",
+      "goc": 0,
+      "ten": "Đồng Lúa Gió",
+      "toi": "dong-lua",
+      "kieu": "cong-tre"
+    },
+    {
+      "id": "S",
+      "goc": 96,
+      "huong": 90,
+      "ten": "Khu Nhà Mái Ngói",
+      "toi": "khu-nha"
+    }
+  ],
+  "loi": [
+    {
+      "id": "loi-chinh",
+      "kieu": "dat",
+      "rong": 1.6,
+      "diem": [
+        [
+          30.4,
+          0
+        ],
+        [
+          18,
+          -2
+        ],
+        [
+          8,
+          -5
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          -2,
+          14
+        ],
+        [
+          -3.1,
+          29.4
+        ]
+      ]
+    },
+    {
+      "id": "loi-mieu",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          8,
+          -5
+        ],
+        [
+          6,
+          -12
+        ],
+        [
+          4.5,
+          -15.4
+        ]
+      ]
+    },
+    {
+      "id": "loi-tre",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          1,
+          0
+        ],
+        [
+          -8,
+          -4
+        ],
+        [
+          -17.6,
+          -9.6
+        ]
+      ]
+    },
+    {
+      "id": "loi-mang-dong",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          -0.9,
+          7
+        ],
+        [
+          -7.6,
+          7.2
+        ]
+      ]
+    },
+    {
+      "id": "cau-khi",
+      "kieu": "go",
+      "rong": 1.2,
+      "diem": [
+        [
+          -7.6,
+          7.2
+        ],
+        [
+          -13.6,
+          7.6
+        ]
+      ]
+    },
+    {
+      "id": "loi-mang-tay",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          -13.6,
+          7.6
+        ],
+        [
+          -21,
+          6.6
+        ]
+      ]
+    }
+  ],
+  "sanChoi": [
+    {
+      "id": "bai-dom-dom",
+      "ten": "Bãi đom đóm",
+      "x": 12,
+      "z": 11,
+      "rong": 14,
+      "sau": 12,
+      "mau": "#9FCB80"
+    },
+    {
+      "id": "bai-nam",
+      "ten": "Bãi nấm",
+      "x": 17,
+      "z": -13.5,
+      "rong": 6,
+      "sau": 4.5,
+      "mau": "#B9DA96"
+    },
+    {
+      "id": "bai-mang",
+      "ten": "Bãi măng",
+      "x": -23,
+      "z": 10,
+      "rong": 5,
+      "sau": 5,
+      "mau": "#B9DA96"
+    },
+    {
+      "id": "rung-cam",
+      "ten": "Rừng cấm",
+      "x": 12,
+      "z": -22,
+      "rong": 6,
+      "sau": 5,
+      "mau": "#C9D9A6"
+    }
+  ],
+  "diemCa": [
+    {
+      "x": -10.7,
+      "z": 6,
+      "dung": [
+        -8.8,
+        5.6
+      ]
+    },
+    {
+      "x": -10.2,
+      "z": 9,
+      "dung": [
+        -8.2,
+        9.4
+      ]
+    },
+    {
+      "x": -11.2,
+      "z": 13,
+      "dung": [
+        -9.2,
+        13.6
+      ]
+    },
+    {
+      "x": -12.8,
+      "z": 17,
+      "dung": [
+        -10.8,
+        17.6
+      ]
+    },
+    {
+      "x": -15.5,
+      "z": 21.4,
+      "dung": [
+        -13.8,
+        22.6
+      ]
+    },
+    {
+      "x": -14.6,
+      "z": 0.8,
+      "dung": [
+        -14.2,
+        -1.2
+      ]
+    },
+    {
+      "x": -22,
+      "z": -2.6,
+      "dung": [
+        -21.6,
+        -4.6
+      ]
+    },
+    {
+      "x": -27,
+      "z": -4.6,
+      "dung": [
+        -26.6,
+        -6.6
+      ]
+    }
+  ],
+  "vat": [
+    {
+      "id": "bang-dom-dom",
+      "loai": "moc",
+      "x": 12,
+      "z": 4.6,
+      "chinh": true,
+      "diaDanh": {
+        "ten": "Bãi đom đóm",
+        "mau": "#E0A020",
+        "toi": [
+          12,
+          5.6
+        ]
+      },
+      "hd": "Bãi đom đóm: ban đêm bắt đom đóm (minigame Bắt Đom Đóm)."
+    },
+    {
+      "id": "mieu-linh-may",
+      "loai": "mieu-linh-may",
+      "x": 4.5,
+      "z": -18.6,
+      "quay": 0,
+      "xam": true,
+      "khoi": [
+        [
+          -1.4,
+          0,
+          1.6
+        ],
+        [
+          1.4,
+          0,
+          1.6
+        ]
+      ],
+      "diaDanh": {
+        "ten": "Miếu Linh Mây",
+        "mau": "#A9A9B3",
+        "toi": [
+          4.5,
+          -15.6
+        ]
+      },
+      "hd": "Miếu Linh Mây: nhà xám, mở lại sau Chương 4."
+    },
+    {
+      "id": "bui-tre",
+      "loai": "bui-tre",
+      "x": -19,
+      "z": -14,
+      "r": 2.6,
+      "diaDanh": {
+        "ten": "Bụi tre đại thụ",
+        "mau": "#5F8A2E",
+        "toi": [
+          -16.6,
+          -10.6
+        ]
+      },
+      "hd": "Bụi tre đại thụ cao 16 m, cột mốc của Rừng."
+    },
+    {
+      "id": "tang-da",
+      "loai": "tang-da",
+      "x": -6.4,
+      "z": 12.4,
+      "r": 1.6,
+      "diaDanh": {
+        "ten": "Tảng đá bên suối",
+        "mau": "#6E6E78",
+        "toi": [
+          -4.2,
+          14.6
+        ]
+      },
+      "hd": "Tảng đá bên suối: chỗ ngồi xem, vùng yên tĩnh."
+    },
+    {
+      "id": "ban-nhom",
+      "loai": "ban-nhom",
+      "x": 4.6,
+      "z": 19,
+      "r": 1.6,
+      "ghiChu": "bàn nhóm 6 người gần bãi đom đóm (mục 8.7)"
+    },
+    {
+      "id": "bang-rung-cam",
+      "loai": "bang",
+      "x": 8.4,
+      "z": -18.6,
+      "quay": 0,
+      "chu": "Rừng cấm · kiểm lâm",
+      "r": 0.4
+    }
+  ],
+  "cay": {
+    "lum": [
+      [
+        22,
+        -12,
+        2
+      ],
+      [
+        -4,
+        -24,
+        2
+      ],
+      [
+        -26,
+        -12,
+        1
+      ],
+      [
+        24,
+        10,
+        1
+      ],
+      [
+        4,
+        25,
+        1
+      ],
+      [
+        20,
+        20,
+        2
+      ],
+      [
+        -10,
+        -16,
+        1
+      ],
+      [
+        14,
+        -6.5,
+        1
+      ],
+      [
+        -26,
+        18,
+        1
+      ],
+      [
+        -18,
+        10,
+        1
+      ],
+      [
+        26,
+        -2,
+        0
+      ]
+    ],
+    "rai": {
+      "da": 6,
+      "hoa": 0,
+      "nam": 8,
+      "bui": 10,
+      "rom": 0
+    }
+  },
+  "npc": [
+    {
+      "ten": "Kiểm Lâm Linh Mây",
+      "x": 15.6,
+      "z": -18.6,
+      "gio": [
+        6,
+        20
+      ],
+      "ghiChu": "đi tuần rừng cấm, bắt chặt tre trộm"
+    }
+  ],
+  "yenTinh": [
+    {
+      "ten": "Tảng đá bên suối",
+      "x": -4.2,
+      "z": 14.6,
+      "r": 4
+    }
+  ],
+  "meo": {"ten":"Mèo Đốm Rừng","mau":"#A8713F","x":7.5,"z":-15.6,"ghiChu":"Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần"},
+  "biaDa": {"so":9,"x":15,"z":5.6,"ghiChu":"Bia đá kể chuyện Bà Bồng (Q227), đoạn 9/10; chữ khắc trong trang"},
+  "diemHen": [
+    {
+      "ten": "Tảng đá bên suối",
+      "x": -4.6,
+      "z": 16
+    }
+  ],
+  "gocAnh": [
+    {
+      "ten": "Bãi đom đóm đêm",
+      "x": 14,
+      "z": 17.6
+    },
+    {
+      "ten": "Cầu khỉ qua suối",
+      "x": -6.2,
+      "z": 5.4
+    },
+    {
+      "ten": "Miếu Linh Mây",
+      "x": 1.4,
+      "z": -14
+    }
+  ],
+  "biMat": [
+    {
+      "ten": "Linh Mây hoang trong sương",
+      "x": -24,
+      "z": 3
+    }
+  ]
+}

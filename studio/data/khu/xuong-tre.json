@@ -1,0 +1,31 @@
+{
+  "id": "xuong-tre",
+  "ten": "Xưởng Tre",
+  "ghiChu": "Trong Xưởng Tre (Khu Nhà Mái Ngói), cảnh trong nhà chung cho mọi người, vào bằng cửa xưởng. Cùng quy ước với phong-tro.json ('dao.vuong', 'dao.trong'). Chỗ làm nghề Thợ Mộc (mục 8.16): 4 bàn mộc ('ban-moc', đứng ở 'dung' trước bàn), bãi tre ('bai-tre') lấy nguyên liệu, kệ trưng ('ke-trung') gửi bán đồ vừa đóng cho Chú Ba Mộc.",
+  "xuatHien": [0, 4],
+  "tocDoDi": 3.4,
+  "camera": { "zoomMax": 0.85 },
+  "dao": { "r": 6, "vuong": true, "trong": true, "song": [], "banCong": [], "mepXam": [] },
+  "tam": { "x": 0, "z": 3.6, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Khu Nhà Mái Ngói", "toi": "khu-nha", "kieu": "cua", "bien": ["Ra phố"] }
+  ],
+  "loi": [
+    { "id": "tham-cua", "kieu": "tham", "rong": 1.4, "diem": [[0, 3.6], [0, 6.2]] }
+  ],
+  "vat": [
+    { "id": "ban-moc-1", "loai": "ban-moc", "x": -3.8, "z": -3.6, "quay": 0, "khoi": [[-0.5, 0, 0.6], [0.5, 0, 0.6]], "dung": [-3.8, -2.4] },
+    { "id": "ban-moc-2", "loai": "ban-moc", "x": -0.6, "z": -3.6, "quay": 0, "khoi": [[-0.5, 0, 0.6], [0.5, 0, 0.6]], "dung": [-0.6, -2.4] },
+    { "id": "ban-moc-3", "loai": "ban-moc", "x": -3.8, "z": 0, "quay": 0, "khoi": [[-0.5, 0, 0.6], [0.5, 0, 0.6]], "dung": [-3.8, 1.2] },
+    { "id": "ban-moc-4", "loai": "ban-moc", "x": -0.6, "z": 0, "quay": 0, "khoi": [[-0.5, 0, 0.6], [0.5, 0, 0.6]], "dung": [-0.6, 1.2] },
+    { "id": "bai-tre", "loai": "bai-tre", "x": 3.8, "z": -4, "quay": 0, "khoi": [[-0.7, 0, 0.8], [0.7, 0, 0.8]],
+      "diaDanh": { "ten": "Bãi tre", "mau": "#7FB84E", "toi": [3.8, -2.6] } },
+    { "id": "ke-trung", "loai": "ke-trung", "x": 4.9, "z": 1.4, "quay": -90, "khoi": [[-0.7, 0, 0.5], [0.7, 0, 0.5]],
+      "diaDanh": { "ten": "Kệ trưng đồ", "mau": "#B07A4E", "toi": [3.7, 1.4] } }
+  ],
+  "cay": { "lum": [], "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [{ "ten": "Mùn cưa bay trong nắng chiều", "x": 1.6, "z": -1.4 }],
+  "biMat": []
+}

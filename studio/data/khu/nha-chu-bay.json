@@ -1,0 +1,29 @@
+{
+  "id": "nha-chu-bay",
+  "ten": "Nhà Chú Bảy",
+  "ghiChu": "Trong nhà sàn Chú Bảy ở Bến Sông Trăng, mở sau Chương 1 khi nhà xám hồi sinh (mục 9.2). Cảnh trong nhà chung, cùng quy ước với xuong-tre.json. 'vong' là võng, 'gia-can' giá cần câu, 'be-ca' bể cá trưng các loài người chơi đã câu (Sổ cá), 'ban-cafe' bàn trà.",
+  "xuatHien": [0, 3.4],
+  "tocDoDi": 3.4,
+  "camera": { "zoomMax": 0.8 },
+  "dao": { "r": 5, "vuong": true, "trong": true, "song": [], "banCong": [], "mepXam": [] },
+  "tam": { "x": 0, "z": 3, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Bến Sông Trăng", "toi": "ben-song", "kieu": "cua", "bien": ["Ra bến"] }
+  ],
+  "loi": [
+    { "id": "tham-cua", "kieu": "tham", "rong": 1.4, "diem": [[0, 3], [0, 5.2]] }
+  ],
+  "vat": [
+    { "id": "vong", "loai": "vong", "x": -2.6, "z": -3.4, "quay": 0, "khoi": [[-0.9, 0, 0.5], [0, 0, 0.5], [0.9, 0, 0.5]],
+      "diaDanh": { "ten": "Võng", "mau": "#C9A27A", "toi": [-2.6, -2.2] } },
+    { "id": "gia-can", "loai": "gia-can", "x": 3.9, "z": -3.6, "quay": 0, "khoi": [[-0.6, 0, 0.45], [0.6, 0, 0.45]] },
+    { "id": "be-ca", "loai": "be-ca", "x": 3.9, "z": 0.6, "quay": -90, "khoi": [[-0.7, 0, 0.5], [0.7, 0, 0.5]],
+      "diaDanh": { "ten": "Bể cá", "mau": "#4F8FC0", "toi": [2.6, 0.6] } },
+    { "id": "ban-tra", "loai": "ban-cafe", "x": -2.4, "z": 1.2, "r": 1.0 }
+  ],
+  "cay": { "lum": [], "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [{ "ten": "Bể cá đầy loài đã câu", "x": 2.2, "z": 1.8 }],
+  "biMat": []
+}

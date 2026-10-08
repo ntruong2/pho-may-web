@@ -1,0 +1,167 @@
+{
+  "id": "trong-tiem-hoa",
+  "ten": "Tiệm Hoa",
+  "ghiChu": "Q360: trong Tiệm Hoa (ki-ốt lớn Quảng Trường, mở khi xong Chương 1 như ki-ốt hồi sinh; trước đó cửa đóng ván). Vào bằng cửa ở diaDanh.toi của vật 'tiem-hoa'. Cảnh trong nhà chung, cùng quy ước với xuong-tre.json. Ba luống hoa bày bán, quầy gói hoa, bàn nhỏ, lu nước tưới; chưa có việc riêng.",
+  "xuatHien": [
+    0,
+    3.4
+  ],
+  "tocDoDi": 3.4,
+  "camera": {
+    "zoomMax": 0.85
+  },
+  "dao": {
+    "r": 5,
+    "vuong": true,
+    "trong": true,
+    "song": [],
+    "banCong": [],
+    "mepXam": []
+  },
+  "tam": {
+    "x": 0,
+    "z": 2.8,
+    "r": 0.8
+  },
+  "cong": [
+    {
+      "id": "S",
+      "goc": 90,
+      "ten": "Quảng Trường Đồng Hồ Mây",
+      "toi": "quang-truong",
+      "kieu": "cua",
+      "bien": [
+        "Ra quảng trường"
+      ]
+    }
+  ],
+  "loi": [
+    {
+      "id": "tham-cua",
+      "kieu": "tham",
+      "rong": 1.4,
+      "diem": [
+        [
+          0,
+          2.8
+        ],
+        [
+          0,
+          5.2
+        ]
+      ]
+    }
+  ],
+  "vat": [
+    {
+      "id": "luong-hoa-1",
+      "loai": "luong-hoa",
+      "x": -1.8,
+      "z": -4.0,
+      "quay": 0,
+      "rong": 2.6,
+      "khoi": [
+        [
+          -0.8,
+          0,
+          0.75
+        ],
+        [
+          0.8,
+          0,
+          0.75
+        ]
+      ]
+    },
+    {
+      "id": "luong-hoa-2",
+      "loai": "luong-hoa",
+      "x": 1.8,
+      "z": -4.0,
+      "quay": 0,
+      "rong": 2.6,
+      "khoi": [
+        [
+          -0.8,
+          0,
+          0.75
+        ],
+        [
+          0.8,
+          0,
+          0.75
+        ]
+      ]
+    },
+    {
+      "id": "luong-hoa-3",
+      "loai": "luong-hoa",
+      "x": -4.0,
+      "z": 0.2,
+      "quay": 90,
+      "rong": 2.6,
+      "khoi": [
+        [
+          -0.8,
+          0,
+          0.75
+        ],
+        [
+          0.8,
+          0,
+          0.75
+        ]
+      ]
+    },
+    {
+      "id": "quay-goi",
+      "loai": "quay",
+      "x": 3.6,
+      "z": -0.6,
+      "quay": -90,
+      "r": 0.9,
+      "diaDanh": {
+        "ten": "Quầy gói hoa",
+        "mau": "#FF9FC6",
+        "toi": [
+          2.4,
+          -0.6
+        ]
+      }
+    },
+    {
+      "id": "ban-nho",
+      "loai": "ban-cafe",
+      "x": 2.4,
+      "z": 2.4,
+      "r": 0.6
+    },
+    {
+      "id": "lu-tuoi",
+      "loai": "lu",
+      "x": -4.0,
+      "z": 3.2,
+      "r": 0.6
+    }
+  ],
+  "cay": {
+    "lum": [],
+    "rai": {
+      "da": 0,
+      "hoa": 0,
+      "nam": 0,
+      "bui": 0,
+      "rom": 0
+    }
+  },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [
+    {
+      "ten": "Luống hoa trong nắng chiều",
+      "x": 0,
+      "z": -1.8
+    }
+  ],
+  "biMat": []
+}

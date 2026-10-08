@@ -1,0 +1,32 @@
+{
+  "id": "lau-nha",
+  "ten": "Tầng 2 Nhà Phố Ống",
+  "ghiChu": "Tầng 2 của Nhà Phố Ống (GDD §11.1: nâng cấp từ Phòng Trọ Số 0, 8.000 Xu, 2 tầng + ban công). Cảnh riêng từng người, cùng quy ước với phong-tro.json; lên bằng cầu thang trong Phòng Trọ sau khi nâng cấp, cổng duy nhất là cầu thang xuống ('kieu': 'cua'). 'ban-cong-nha' là ban công hoa giấy sát tường Bắc. 'luoiO' là lưới ô bày đồ [cột, hàng, cỡ ô] như tầng trệt (Q260).",
+  "rieng": true,
+  "xuatHien": [0, 3],
+  "tocDoDi": 3.4,
+  "camera": { "zoomMax": 0.8 },
+  "dao": { "r": 5, "vuong": true, "trong": true, "song": [], "banCong": [], "mepXam": [] },
+  "tam": { "x": 0, "z": 1.6, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Phòng Trọ Số 0", "toi": "phong-tro", "kieu": "cua", "bien": ["Xuống tầng trệt"] }
+  ],
+  "loi": [
+    { "id": "tham-cua", "kieu": "tham", "rong": 1.4, "diem": [[0, 1.6], [0, 5.2]] }
+  ],
+  "vat": [
+    { "id": "ban-cong", "loai": "ban-cong-nha", "x": 0, "z": -4.5, "rong": 6, "khoi": [[-2.4, 0, 0.45], [-0.8, 0, 0.45], [0.8, 0, 0.45], [2.4, 0, 0.45]],
+      "diaDanh": { "ten": "Ban công hoa giấy", "mau": "#FF9FC6", "toi": [0, -3.3] }, "hd": "Ban công hoa giấy nhìn xuống phố Khu Nhà Mái Ngói." },
+    { "id": "giuong-lau", "loai": "giuong", "x": -3.4, "z": -1.4, "quay": 0, "khoi": [[0, -0.6, 0.9], [0, 0.6, 0.9]] },
+    { "id": "tu-do-lau", "loai": "tu-do", "x": 4, "z": -1, "quay": -90, "r": 0.7 },
+    { "id": "cau-thang-lau", "loai": "cau-thang", "x": -2.6, "z": 4.75, "toi": "san-thuong", "chu": "Cầu thang", "nhan": "Lên sân thượng", "nang": 3,
+      "diaDanh": { "ten": "Cầu thang (Biệt Thự Mây)", "mau": "#8A5A33", "toi": [-2.6, 3.6] } },
+    { "id": "ban-tra-lau", "loai": "ban-cafe", "x": 2.8, "z": 2.4, "r": 1.0 }
+  ],
+  "trangTri": { "luoiO": [8, 8, 1.2] },
+  "cay": { "lum": [], "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [],
+  "biMat": []
+}

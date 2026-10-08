@@ -1,0 +1,44 @@
+{
+  "id": "nong-trai",
+  "ten": "Nông trại riêng",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với quang-truong.json. Cảnh riêng từng người (mục 7): vùng đi được hình vuông 32 × 32 ('dao.vuong': mép là hình vuông nửa cạnh 'dao.r'), không có NPC, góc ảnh, điểm hẹn, bí mật ('rieng'). 'luoi-dat' là lưới đất 'cot' × 'hang' ô cỡ 'o', ô (i, j) có toạ độ x = x0 + i·o, z = z0 + j·o; 'moSan' là các ô đã cuốc lúc đầu [i0, i1, j0, j1]. Cổng duy nhất là lối ra về cổng rào Đồng Lúa Gió.",
+  "rieng": true,
+  "xuatHien": [0, 12],
+  "tocDoDi": 3.4,
+  "dao": { "r": 16, "vuong": true, "song": [], "banCong": [], "mepXam": [], "lanCan": "go" },
+  "tam": { "x": 0, "z": 4.4, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Đồng Lúa Gió", "toi": "dong-lua", "bien": ["Đồng Lúa Gió"] }
+  ],
+  "loi": [
+    { "id": "loi-vao", "kieu": "dat", "rong": 1.6, "diem": [[0, 16.6], [0, 4.4]] },
+    { "id": "loi-ngang", "kieu": "dat", "rong": 1.2, "diem": [[-7.4, 4.4], [7.4, 4.4]] }
+  ],
+  "vat": [
+    { "id": "luoi-dat", "loai": "luoi-dat", "x": 0, "z": -1.2, "x0": -5.4, "z0": -3.0, "o": 1.2, "cot": 10, "hang": 6, "moSan": [3, 6, 3, 5], "chinh": true,
+      "diaDanh": { "ten": "Luống đất", "mau": "#A0703E", "toi": [0, 4.4] } },
+    { "id": "chuong-ga", "loai": "chuong-ga", "x": -10, "z": 9.5, "quay": 0, "khoi": [[-1, 0, 1.4], [1, 0, 1.4]],
+      "diaDanh": { "ten": "Chuồng gà", "mau": "#E0A020", "toi": [-10, 12] } },
+    { "id": "ao-vit", "loai": "ao", "x": 10, "z": 10, "ban": 2.4, "r": 2.6,
+      "diaDanh": { "ten": "Ao vịt", "mau": "#4F8FC0", "toi": [7, 10], "duoi": true } },
+    { "id": "rao-bo", "loai": "rao-trong", "x": -10, "z": -10.5, "rong": 5.5, "sau": 4.5, "chu": "Chuồng bò", "khoi": [[-1.4, 0, 2.2], [1.4, 0, 2.2]] },
+    { "id": "rao-doi-co", "loai": "rao-trong", "x": 10, "z": -10.5, "rong": 7, "sau": 5.5, "chu": "Đồi cỏ", "khoi": [[-2, 0, 2.6], [2, 0, 2.6]] },
+    { "id": "bu-nhin", "loai": "bu-nhin", "x": 7.4, "z": -4.8, "r": 0.5 },
+    { "id": "bang-mo-dat", "loai": "bang", "x": 6.6, "z": 2.6, "quay": -90, "chu": "Mở rộng đất", "r": 0.4 },
+    { "id": "bang-hai-trom", "loai": "bang", "x": -2.8, "z": 13.6, "quay": 0, "chu": "Cho bạn bè hái trộm: tắt", "r": 0.4 },
+    { "id": "nong-tam", "loai": "nong-tam", "x": -10, "z": 2.4, "r": 1.1,
+      "diaDanh": { "ten": "Nong tằm", "mau": "#C9A86A", "toi": [-8.4, 4.4] } },
+    { "id": "to-ong", "loai": "to-ong", "x": 10.2, "z": 2.4, "r": 1.0,
+      "diaDanh": { "ten": "Tổ ong", "mau": "#E0A020", "toi": [8.6, 4.4] } },
+    { "id": "chuong-ga-may", "loai": "chuong-ga-may", "x": -13.4, "z": 8.6, "r": 1.0,
+      "diaDanh": { "ten": "Chuồng Gà Lông Mây", "mau": "#C9A2F0", "toi": [-13.4, 11.2] } }
+  ],
+  "cay": {
+    "lum": [[-13.5, 1, 1], [13.5, 1.5, 1], [-4, -14, 1], [4.5, -14, 1], [13.5, 14, 1], [-13.5, 14.5, 1]],
+    "rai": { "da": 3, "hoa": 5, "nam": 0, "bui": 6, "rom": 2 }
+  },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [],
+  "biMat": []
+}

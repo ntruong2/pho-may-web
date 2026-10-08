@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phố Mây Studio</title>
+<link rel="stylesheet" href="studio.css">
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+<header class="dau">
+  <b class="logo">☁ Phố Mây Studio</b>
+  <nav class="tabs">
+    <button data-tab="map" class="chon">Dựng map</button>
+    <button data-tab="thu-vien">Thư viện model</button>
+    <button data-tab="huong-dan">Hướng dẫn</button>
+  </nav>
+</header>
+<main>
+  <div id="map" class="trang map"></div>
+  <div id="thu-vien" class="trang thu-vien" hidden></div>
+  <div id="huong-dan" class="trang huong-dan" hidden>
+    <article>
+      <h2>Phố Mây Studio là gì</h2>
+      <p>Công cụ trên trình duyệt để sửa bản đồ khu và xem model của game Phố Mây. Không cần cài gì. Mọi thay đổi chỉ nằm trong trình duyệt của bạn (tự lưu nháp theo từng khu); muốn đưa vào game thì <b>tải tệp xuống và gửi cho Claude</b> để ghép.</p>
+      <h3>Dựng map</h3>
+      <ul>
+        <li>Chọn khu ở ô trên cùng (khu trong nhà có 🏠). Kéo nền để cuộn, cuộn chuột hay chụm hai ngón để phóng.</li>
+        <li><b>↖ Chọn</b>: bấm vật để sửa thuộc tính ở cột phải, kéo để dời (bắt lưới 0,5 m, phím mũi tên dời 0,5 m), kéo chấm tròn xanh để xoay (bước 15°, giữ Shift để xoay tự do).</li>
+        <li><b>＋ Đặt vật</b>: chọn model ở cột trái rồi bấm lên bản đồ. <b>〰 Vẽ lối</b>: bấm từng điểm, bấm đúp hay Enter để xong. Chọn một lối để kéo đỉnh, bấm lên đoạn để chèn đỉnh, Alt+bấm để xoá đỉnh.</li>
+        <li>Ô vuông xanh ở mép đảo: kéo để đổi bán kính (hay bán trục với đảo bầu dục). Cổng kéo trượt theo mép đảo.</li>
+        <li>Ctrl+Z / Ctrl+Y hoàn tác, Ctrl+D nhân bản, Delete xoá.</li>
+        <li><b>⬇ JSON khu</b> tải tệp <code>&lt;khu&gt;.json</code> cùng dạng <code>data/khu</code>; <b>⬇ Tóm tắt thay đổi</b> tải danh sách thay đổi để gửi kèm; <b>⬇ PNG</b> lưu ảnh bản đồ đang xem.</li>
+      </ul>
+      <h3>Kiểm tra cỡ</h3>
+      <p>Cột phải, thẻ “Kiểm tra cỡ”: vật và lối lệch chuẩn cỡ (CLAUDE.md) có dấu đỏ; thời gian đi bộ từ mỗi cổng tới các điểm chính; khoảng cách giữa các điểm đáng xem (chuẩn 17–27 m). Công cụ <b>⏱ Đo đi bộ</b> đo hai điểm bất kỳ dọc lối.</p>
+      <h3>Thư viện model</h3>
+      <p>Mọi model <code>assets/model/vat</code>: bấm để xem 3D, đọc cỡ rộng × sâu × cao, so với nhân vật 1,9 m. Bảng màu <code>art/bang-mau.json</code>: đổi màu xem ngay trên model, tải bảng màu mới về.</p>
+      <h3>Giai đoạn 2 (chưa có)</h3>
+      <p>Vẽ lại tranh bản đồ tay trực tiếp trong trình duyệt (chuyển <code>tools/ban-do/but.py</code> sang JS); hiện chỉ lót tranh có sẵn.</p>
+    </article>
+  </div>
+</main>
+<div id="cho" class="cho">Đang tải dữ liệu…</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

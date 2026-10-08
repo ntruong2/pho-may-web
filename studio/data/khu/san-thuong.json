@@ -1,0 +1,29 @@
+{
+  "id": "san-thuong",
+  "ten": "Sân thượng Biệt Thự Mây",
+  "ghiChu": "Sân thượng của Biệt Thự Mây (GDD §11.1: nâng cấp từ Nhà Vườn, 150.000 Xu, 3 tầng + sân thượng). Cảnh riêng từng người, vùng đi 10 × 10 ('dao.vuong', lan can gỗ); lên bằng cầu thang tầng 2 Nhà Phố Ống sau khi nâng cấp, cổng duy nhất là cầu thang xuống ('kieu': 'cua'). 'kinh-thien-van' là kính thiên văn ngắm sao. 'luoiO' là lưới ô bày đồ [cột, hàng, cỡ ô] (Q260).",
+  "rieng": true,
+  "xuatHien": [0, 3],
+  "tocDoDi": 3.4,
+  "dao": { "r": 5, "vuong": true, "song": [], "banCong": [], "mepXam": [], "lanCan": "go" },
+  "tam": { "x": 0, "z": 1.4, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Tầng 2 Nhà Phố Ống", "toi": "lau-nha", "kieu": "cua", "bien": ["Xuống tầng 2"] }
+  ],
+  "loi": [
+    { "id": "tham-cua", "kieu": "dat", "rong": 1.2, "diem": [[0, 5.6], [0, 1.4]] }
+  ],
+  "vat": [
+    { "id": "kinh-thien-van", "loai": "kinh-thien-van", "x": 0, "z": -3.6, "r": 0.6,
+      "diaDanh": { "ten": "Kính thiên văn", "mau": "#4F8FC0", "toi": [0, -2.4] }, "hd": "Kính thiên văn trên sân thượng: tối trời ngắm sao, ngày quang thấy cả Bà Bồng bơi trên biển mây." },
+    { "id": "luong-hoa-thuong", "loai": "luong-hoa", "x": -3.2, "z": -3.6, "rong": 2.4, "khoi": [[-0.6, 0, 0.7], [0.6, 0, 0.7]] },
+    { "id": "ghe-thuong", "loai": "ghe", "x": 3.2, "z": -0.6, "quay": -90, "r": 1.0 },
+    { "id": "ban-tra-thuong", "loai": "ban-cafe", "x": 3.0, "z": 2.4, "r": 1.0 }
+  ],
+  "trangTri": { "luoiO": [8, 8, 1.2] },
+  "cay": { "lum": [], "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [],
+  "biMat": []
+}

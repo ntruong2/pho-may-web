@@ -1,0 +1,478 @@
+{
+  "id": "vinh",
+  "ten": "Vịnh San Hô Mây",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với ben-song.json. Khu vừa (bán kính 30), khoá tới Chương 3 (cổng Cầu Gió từ Bến Sông). Bãi cát phía Bắc, biển phía Nam: 'nuoc' là các dải hình chữ nhật xếp theo mép đảo (không đi được, trừ trên cầu tàu gỗ). 'nenCat': mặt đảo là cát. 'tam' là đầu cầu tàu trên bãi.",
+  "xuatHien": [
+    0,
+    -24
+  ],
+  "tocDoDi": 3.4,
+  "dao": {
+    "r": 30,
+    "song": [
+      [
+        0.4,
+        3,
+        1.1
+      ],
+      [
+        0.3,
+        5,
+        0.2
+      ]
+    ],
+    "banCong": [],
+    "mepXam": [],
+    "lanCan": "go",
+    "nenCat": true
+  },
+  "nuoc": [
+    [
+      -40,
+      40,
+      7,
+      14
+    ],
+    [
+      -40,
+      40,
+      14,
+      20
+    ],
+    [
+      -40,
+      40,
+      20,
+      25
+    ],
+    [
+      -40,
+      40,
+      25,
+      29.5
+    ]
+  ],
+  "tam": [
+    {
+      "x": 0,
+      "z": 3,
+      "r": 1.6
+    }
+  ],
+  "cong": [
+    {
+      "id": "N",
+      "goc": -90,
+      "ten": "Bến Sông Trăng",
+      "toi": "ben-song",
+      "kieu": "cau-gio"
+    },
+    {
+      "id": "S",
+      "goc": 90,
+      "ten": "Đảo Bão Xám",
+      "toi": "dao-bao",
+      "khoa": "Sự kiện",
+      "kieu": "ghe",
+      "x": 0,
+      "z": 26,
+      "huong": 90
+    }
+  ],
+  "loi": [
+    {
+      "id": "duong-bac",
+      "kieu": "da",
+      "rong": 2.4,
+      "diem": [
+        [
+          0,
+          -30.4
+        ],
+        [
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "id": "cau-tau",
+      "kieu": "go",
+      "rong": 2.0,
+      "diem": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          26
+        ]
+      ]
+    },
+    {
+      "id": "bo-cat",
+      "kieu": "dat",
+      "rong": 1.8,
+      "diem": [
+        [
+          -15,
+          -2.4
+        ],
+        [
+          0,
+          -4.4
+        ],
+        [
+          12,
+          -1.4
+        ],
+        [
+          17.6,
+          3.6
+        ]
+      ]
+    }
+  ],
+  "diemCa": [
+    {
+      "x": 1.9,
+      "z": 10,
+      "dung": [
+        0.6,
+        10
+      ]
+    },
+    {
+      "x": -1.9,
+      "z": 13,
+      "dung": [
+        -0.6,
+        13
+      ]
+    },
+    {
+      "x": 1.9,
+      "z": 17,
+      "dung": [
+        0.6,
+        17
+      ]
+    },
+    {
+      "x": -1.9,
+      "z": 20.5,
+      "dung": [
+        -0.6,
+        20.5
+      ]
+    },
+    {
+      "x": 1.9,
+      "z": 23,
+      "dung": [
+        0.6,
+        23
+      ]
+    },
+    {
+      "x": -9,
+      "z": 8,
+      "dung": [
+        -9,
+        6.2
+      ]
+    },
+    {
+      "x": 9,
+      "z": 8,
+      "dung": [
+        9,
+        6.2
+      ]
+    },
+    {
+      "x": 21,
+      "z": 8,
+      "dung": [
+        21,
+        6.2
+      ]
+    }
+  ],
+  "vat": [
+    {
+      "id": "dai-hoang-hon",
+      "loai": "dai-ngam",
+      "x": -19,
+      "z": -1.8,
+      "quay": 90,
+      "khoi": [
+        [
+          -1.5,
+          0,
+          1.7
+        ],
+        [
+          1.5,
+          0,
+          1.7
+        ]
+      ],
+      "chinh": true,
+      "diaDanh": {
+        "ten": "Đài ngắm hoàng hôn",
+        "mau": "#C9A27A",
+        "toi": [
+          -15.6,
+          -2.4
+        ]
+      },
+      "hd": "Đài ngắm hoàng hôn: chỗ cao nhìn về hướng Tây, hoàng hôn đẹp nhất game."
+    },
+    {
+      "id": "choi-cuu-ho",
+      "loai": "choi-cuu-ho",
+      "x": 7,
+      "z": -7.2,
+      "quay": 0,
+      "r": 1.4,
+      "diaDanh": {
+        "ten": "Chòi cứu hộ",
+        "mau": "#FF6B5A",
+        "toi": [
+          7,
+          -5.0
+        ]
+      },
+      "hd": "Chòi cứu hộ: bãi tắm có dây phao phía Tây cầu tàu."
+    },
+    {
+      "id": "hai-dang",
+      "loai": "hai-dang",
+      "x": 22.5,
+      "z": 1.5,
+      "r": 2.0,
+      "xam": true,
+      "diaDanh": {
+        "ten": "Hải đăng",
+        "mau": "#A9A9B3",
+        "toi": [
+          18.6,
+          3.8
+        ]
+      },
+      "hd": "Hải đăng: nhà xám, sáng lại khi Cầu Gió nối xong (Chương 3, cả phố)."
+    },
+    {
+      "id": "tram-xe-buyt",
+      "loai": "tram-xe-buyt",
+      "x": -5.2,
+      "z": -20,
+      "quay": 0,
+      "khoi": [
+        [
+          -1.5,
+          0,
+          1.0
+        ],
+        [
+          0,
+          0,
+          1.0
+        ],
+        [
+          1.5,
+          0,
+          1.0
+        ]
+      ],
+      "diaDanh": {
+        "ten": "Trạm Xe Buýt Gió",
+        "mau": "#4F8FC0",
+        "toi": [
+          -5.2,
+          -18.0
+        ]
+      }
+    },
+    {
+      "id": "ban-nhom",
+      "loai": "ban-nhom",
+      "x": -9,
+      "z": -9,
+      "r": 1.6,
+      "ghiChu": "bàn nhóm 6 người trên bãi, gần đài ngắm (mục 8.7)"
+    },
+    {
+      "id": "bang-vinh",
+      "loai": "bang",
+      "x": 3.2,
+      "z": -12,
+      "quay": 0,
+      "chu": "Vịnh San Hô Mây",
+      "r": 0.4
+    },
+    {
+      "id": "ran-san-ho",
+      "loai": "moc",
+      "x": -6,
+      "z": 9.4,
+      "diaDanh": {
+        "ten": "Bãi tắm, rạn san hô",
+        "mau": "#FF8A6A",
+        "toi": [
+          -6,
+          5.6
+        ]
+      },
+      "hd": "Bãi tắm có dây phao; rạn san hô ngoài xa (lặn ngắm)."
+    }
+  ],
+  "trangTri": {
+    "sanHo": [
+      [
+        -10,
+        19
+      ],
+      [
+        -15,
+        22
+      ],
+      [
+        -6,
+        23
+      ],
+      [
+        8,
+        21
+      ],
+      [
+        13,
+        25
+      ],
+      [
+        4,
+        25.5
+      ]
+    ],
+    "phao": [
+      -13,
+      -1,
+      7.6,
+      12.6
+    ],
+    "gheLa": [
+      27,
+      10.4
+    ]
+  },
+  "cay": {
+    "lum": [
+      [
+        -26,
+        -6,
+        1
+      ],
+      [
+        -22,
+        -12,
+        1
+      ],
+      [
+        24,
+        -8,
+        1
+      ],
+      [
+        18,
+        -14,
+        1
+      ],
+      [
+        -12,
+        -14,
+        1
+      ],
+      [
+        12,
+        -21,
+        1
+      ],
+      [
+        -16,
+        -21,
+        1
+      ]
+    ],
+    "rai": {
+      "da": 4,
+      "hoa": 2,
+      "nam": 0,
+      "bui": 3,
+      "rom": 0
+    }
+  },
+  "npc": [
+    {
+      "ten": "Cô Cứu Hộ",
+      "o": "choi-cuu-ho",
+      "gio": [
+        6,
+        19
+      ],
+      "ghiChu": "trông bãi tắm ban ngày"
+    },
+    {
+      "ten": "Ông Năm Lưới",
+      "x": 3.8,
+      "z": 4.6,
+      "gio": [
+        5,
+        19
+      ],
+      "ghiChu": "ngư dân Vịnh: thu mua cá (chung giới hạn ngày với Chú Bảy), bán mồi tôm, Mồi Sao (Q327)"
+    }
+  ],
+  "yenTinh": [
+    {
+      "ten": "Đài ngắm hoàng hôn",
+      "x": -17,
+      "z": -2.4,
+      "r": 4
+    }
+  ],
+  "meo": {"ten":"Mèo Muối Biển","mau":"#FFFFFF","x":10,"z":-5,"ghiChu":"Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần"},
+  "biaDa": {"so":8,"x":-13,"z":-0.9,"ghiChu":"Bia đá kể chuyện Bà Bồng (Q227), đoạn 8/10; chữ khắc trong trang"},
+  "diemHen": [
+    {
+      "ten": "Đài ngắm hoàng hôn",
+      "x": -15,
+      "z": -4.4
+    }
+  ],
+  "gocAnh": [
+    {
+      "ten": "Hoàng hôn từ đài",
+      "x": -19,
+      "z": -5.4
+    },
+    {
+      "ten": "Hải đăng",
+      "x": 13,
+      "z": 4.4
+    },
+    {
+      "ten": "Cầu tàu ra biển",
+      "x": 2.4,
+      "z": 1.6
+    }
+  ],
+  "biMat": [
+    {
+      "ten": "Chai thư dạt bờ",
+      "x": -23,
+      "z": 5.0
+    }
+  ]
+}

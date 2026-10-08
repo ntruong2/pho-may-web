@@ -1,0 +1,149 @@
+{
+  "id": "trong-dai-khi-tuong",
+  "ten": "Trong Đài Khí Tượng",
+  "ghiChu": "Q360: trong Đài Khí Tượng trên gò Quảng Trường, vào bằng cửa trước bậc thềm (diaDanh.toi của vật 'dai-khi-tuong'). Cảnh trong nhà chung, cùng quy ước với xuong-tre.json. Kính ngắm trời, bảng phấn dự báo, bàn ghi chép, tủ dụng cụ, thùng hứng mưa; chưa có việc riêng.",
+  "xuatHien": [
+    0,
+    3.9
+  ],
+  "tocDoDi": 3.4,
+  "camera": {
+    "zoomMax": 0.85
+  },
+  "dao": {
+    "r": 5.5,
+    "vuong": true,
+    "trong": true,
+    "song": [],
+    "banCong": [],
+    "mepXam": []
+  },
+  "tam": {
+    "x": 0,
+    "z": 3.3,
+    "r": 0.8
+  },
+  "cong": [
+    {
+      "id": "S",
+      "goc": 90,
+      "ten": "Quảng Trường Đồng Hồ Mây",
+      "toi": "quang-truong",
+      "kieu": "cua",
+      "bien": [
+        "Ra quảng trường"
+      ]
+    }
+  ],
+  "loi": [
+    {
+      "id": "tham-cua",
+      "kieu": "tham",
+      "rong": 1.4,
+      "diem": [
+        [
+          0,
+          3.3
+        ],
+        [
+          0,
+          5.7
+        ]
+      ]
+    }
+  ],
+  "vat": [
+    {
+      "id": "bang-du-bao",
+      "loai": "bang",
+      "x": -0.8,
+      "z": -4.6,
+      "quay": 0,
+      "r": 0.5,
+      "chu": "Dự báo hôm nay · nắng, gió nhẹ",
+      "diaDanh": {
+        "ten": "Bảng dự báo",
+        "mau": "#8FD3E0",
+        "toi": [
+          -0.8,
+          -3.4
+        ]
+      }
+    },
+    {
+      "id": "kinh-troi",
+      "loai": "kinh-thien-van",
+      "x": 3.6,
+      "z": -3.8,
+      "r": 0.6
+    },
+    {
+      "id": "tu-dung-cu",
+      "loai": "tu-do",
+      "x": -4.6,
+      "z": -1.2,
+      "quay": 90,
+      "khoi": [
+        [
+          -0.5,
+          0,
+          0.6
+        ],
+        [
+          0.5,
+          0,
+          0.6
+        ]
+      ]
+    },
+    {
+      "id": "ban-ghi-1",
+      "loai": "ban-cafe",
+      "x": -2.6,
+      "z": -2.6,
+      "r": 0.6
+    },
+    {
+      "id": "ban-ghi-2",
+      "loai": "ban-cafe",
+      "x": 2.6,
+      "z": 0.4,
+      "r": 0.6
+    },
+    {
+      "id": "ghe-cho",
+      "loai": "ghe",
+      "x": 4.6,
+      "z": 2.4,
+      "quay": -90,
+      "r": 0.9
+    },
+    {
+      "id": "thung-mua",
+      "loai": "thung",
+      "x": -4.4,
+      "z": 3.6,
+      "r": 0.5
+    }
+  ],
+  "cay": {
+    "lum": [],
+    "rai": {
+      "da": 0,
+      "hoa": 0,
+      "nam": 0,
+      "bui": 0,
+      "rom": 0
+    }
+  },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [
+    {
+      "ten": "Kính ngắm trời bên cửa sổ",
+      "x": 2.2,
+      "z": -2.2
+    }
+  ],
+  "biMat": []
+}

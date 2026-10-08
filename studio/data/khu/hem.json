@@ -1,0 +1,92 @@
+{
+  "id": "hem",
+  "ten": "Hẻm Đèn Dầu",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với dong-lua.json. Khu hẻm: vùng đi được là hợp của các hình chữ nhật 'dao.vung' [x0, x1, z0, z1] (hẻm chính 48 × 8, nhánh 6 × 16, ngõ lên Khu Nhà); 'dao.nen' là nền đảo bao quanh, phần ngoài vùng đi là dãy nhà ('trangTri.dayNha'). Cổng có toạ độ 'x', 'z' trên mép vùng đi và 'huong' quay ra. Bản mẫu dựng hẻm ở trạng thái sau Chương 2 (quán mở, đèn dầu sáng).",
+  "xuatHien": [20, 0],
+  "tocDoDi": 3.4,
+  "camera": { "zoomMax": 1.0 },
+  "dao": {
+    "r": 46,
+    "nen": [-28, 28, -14, 26],
+    "vung": [[-24, 24, -4, 4], [5, 11, 4, 20], [-21.2, -18.8, -12.4, -4], [24, 29.6, -2.6, 2.6], [-21.2, -18.8, -15.6, -12.4]],
+    "song": [],
+    "banCong": [],
+    "mepXam": [],
+    "elip": { "x": 0, "z": 6, "rx": 46, "rz": 34, "song": [[0.025, 3, 0.7], [0.018, 7, 2.1]], "ke": 0.8, "ghiChu": "Q365: đảo bầu dục tâm (x, z), bán trục rx, rz, mép gợn (song: [biên độ tương đối, tần số, pha]); vành cỏ trong mép đảo, ngoài nền khối nhà ('nen') cộng bờ kè 'ke' m là đi được; cổng có x, z đặt ở miệng hẻm, chỗ qua cầu ở mép đảo theo hướng cổng" }
+  },
+  "tam": { "x": 0, "z": 0, "r": 1.1 },
+  "cong": [
+    { "id": "E", "goc": 0, "x": 24, "z": 0, "huong": 0, "ten": "Chợ Đêm Lồng Đèn", "toi": "cho-dem", "bien": ["Chợ Đêm"] },
+    { "id": "N", "goc": -90, "x": -20, "z": -12.4, "huong": -90, "ten": "Khu Nhà Mái Ngói", "toi": "khu-nha", "bien": ["Khu Nhà"] }
+  ],
+  "loi": [
+    { "id": "hem-chinh", "kieu": "da", "rong": 2.2, "diem": [[-20, 0], [46.2, 0]] },
+    { "id": "ngo-khu-nha", "kieu": "da", "rong": 2.2, "diem": [[-20, 0], [-20, -24.6]] },
+    { "id": "nhanh", "kieu": "da", "rong": 1.6, "diem": [[6.2, 0], [6.2, 16.2]] }
+  ],
+  "vat": [
+    { "id": "bang-nghe", "loai": "bang-nghe", "nghe": "dau-bep", "chu": "Bảng nghề Đầu Bếp", "x": -1.2, "z": -3.2, "r": 0.4 },
+    { "id": "quan-co-sau", "loai": "quan", "x": -6, "z": -7.5, "rong": 8, "sau": 7, "chu": "Cà Phê Cô Sáu", "chinh": true, "diaDanh": { "ten": "Quán Cô Sáu", "mau": "#8E5A3A", "toi": [-5.2, -1.2] } },
+    { "id": "ban-cafe-1", "loai": "ban-cafe", "x": -9, "z": -2.8, "r": 1.0 },
+    { "id": "ban-cafe-2", "loai": "ban-cafe", "x": -6.2, "z": -2.8, "r": 1.0 },
+    { "id": "ban-cafe-3", "loai": "ban-cafe", "x": -3.4, "z": -2.8, "r": 1.0 },
+    { "id": "bep-1", "loai": "bep", "x": -19, "z": 2.8, "r": 0.7 },
+    { "id": "bep-2", "loai": "bep", "x": -17, "z": 2.8, "r": 0.7 },
+    { "id": "bep-3", "loai": "bep", "x": -15, "z": 2.8, "r": 0.7 },
+    { "id": "bep-4", "loai": "bep", "x": -13, "z": 2.8, "r": 0.7, "diaDanh": { "ten": "Bếp chung", "mau": "#6E6E78", "toi": [-16, 1.4], "duoi": true } },
+    { "id": "quay-giao-mon", "loai": "quay", "x": -11.2, "z": 2.8, "r": 1.0 },
+    { "id": "cot-dien", "loai": "cot-dien", "x": 18, "z": -3.3, "r": 0.45, "diaDanh": { "ten": "Cột điện", "mau": "#5B4A3A", "toi": [18, -1.6] } },
+    { "id": "ghe-cat-toc", "loai": "ghe-cat-toc", "chu": "Ghế cắt tóc vỉa hè", "x": 19.2, "z": 2.9, "r": 0.6, "hd": "Ghế cắt tóc vỉa hè: nghề Thợ Cắt Tóc với Cô Chín (bản sau)." },
+    { "id": "ban-nhom", "loai": "ban-nhom", "x": 9.3, "z": 8.2, "r": 1.6 },
+    { "id": "lu", "loai": "lu", "x": 9.6, "z": 12.4, "r": 0.6 },
+    { "id": "thung", "loai": "thung", "x": 9.8, "z": 14.6, "r": 0.5 },
+    { "id": "ghe-dau", "loai": "ghe-dau", "x": 8.4, "z": 15.6, "r": 0.35 },
+    { "id": "san-khau-dem-nhac", "loai": "san-khau", "x": 8, "z": 18.6, "quay": 180, "khoi": [[-1.6, 0, 1.2], [1.6, 0, 1.2]], "diaDanh": { "ten": "Sân khấu Đêm Nhạc Hẻm", "mau": "#7B61B8", "toi": [6.2, 16.0] }, "hd": "Đêm Nhạc Hẻm: tối thứ 6, 19–23h. Nghệ Sĩ Phố lên bậc bên phải sân khấu để diễn." },
+    { "id": "bang-nghe-si", "loai": "bang-nghe", "nghe": "nghe-si", "chu": "Bảng nghề Nghệ Sĩ Phố", "x": 10.4, "z": 10.6, "r": 0.4 },
+    { "id": "tuong-ve", "loai": "moc", "x": 11.5, "z": -4.2, "diaDanh": { "ten": "Bức tường vẽ", "mau": "#7B61B8", "toi": [11.5, -2.6] }, "hd": "Bức tường vẽ: mỗi người được thêm một nét (bản có máy chủ)." },
+    { "id": "bep-sau", "loai": "bep", "x": -15.8, "z": -3.3, "r": 0.6, "chu": "Bếp sau Cô Sáu", "diaDanh": { "ten": "Bếp sau Cô Sáu", "mau": "#8E5A3A", "toi": [-17, -2] }, "hd": "Cửa bếp sau quán Cô Sáu: Chương 1 nấu Canh chua cá lóc ở đây." },
+    { "id": "tram-xe-buyt", "loai": "tram-xe-buyt", "x": -16.2, "z": -19, "quay": -90, "khoi": [[-1.5, 0, 1.0], [0, 0, 1.0], [1.5, 0, 1.0]], "diaDanh": { "ten": "Trạm Xe Buýt Gió", "mau": "#4F8FC0", "toi": [-18.2, -19], "duoi": true } },
+    { "id": "ao-sen", "loai": "ao-sen", "x": -37, "z": 8, "rx": 4.2, "rz": 2.8, "khoi": [[-2.4, 0, 2.0], [0, 0, 2.8], [2.4, 0, 2.0]] },
+    { "id": "ghe-da-1", "loai": "ghe-da", "x": -29.55, "z": -16.27, "quay": 45, "khoi": [[-0.55, 0, 0.45], [0.55, 0, 0.45]] },
+    { "id": "den-long-1", "loai": "cot-den-long", "x": -28.34, "z": -17.87, "cao": 3.0, "r": 0.25 },
+    { "id": "ghe-da-2", "loai": "ghe-da", "x": 29.55, "z": -16.27, "quay": -45, "khoi": [[-0.55, 0, 0.45], [0.55, 0, 0.45]] },
+    { "id": "den-long-2", "loai": "cot-den-long", "x": 30.75, "z": -14.68, "cao": 3.4, "r": 0.25 },
+    { "id": "ghe-da-3", "loai": "ghe-da", "x": 29.55, "z": 28.27, "quay": 45, "khoi": [[-0.55, 0, 0.45], [0.55, 0, 0.45]] },
+    { "id": "den-long-3", "loai": "cot-den-long", "x": 28.34, "z": 29.87, "cao": 3.2, "r": 0.25 },
+    { "id": "ghe-da-4", "loai": "ghe-da", "x": -29.55, "z": 28.27, "quay": -45, "khoi": [[-0.55, 0, 0.45], [0.55, 0, 0.45]] },
+    { "id": "den-long-4", "loai": "cot-den-long", "x": -30.75, "z": 26.68, "cao": 3.5, "r": 0.25 }
+  ],
+  "trangTri": {
+    "dayNha": [[-28, -23, -4, -11, 0], [-17, -10, -4, -11, 1], [-2, 28, -4, -11, 2], [-28, 5, 4, 11, 3], [11, 28, 4, 11, 1], [0.5, 5, 11, 20, 2], [11, 15.5, 11, 20, 0], [4, 12, 20, 24, 1]],
+    "tuongVe": [6.6, 16.4, -4],
+    "vanhCo": { "bui": [[-30.75, -14.68], [28.34, -17.87], [30.75, 26.68], [-28.34, 29.87], [-12.41, -21.65], [25.82, 29.38], [17.54, -22.72], [-23.85, -17.62], [-32.16, 16.06], [11.4, -16.6], [-34.49, 15.37], [31.28, 12.15], [9.51, 29.08], [9.63, 29.93], [-10.43, -16.25], [0.81, -17.79]], "hoa": [[15.52, 34.2], [26.17, 31.63], [9.33, 35.24], [21.36, 33.34], [24.5, -18.82]], "da": [[-5.45, 35.56], [13.08, -17.22], [-2.42, -21.57]] }
+  },
+  "cay": {
+    "lum": [[21.6, 2.9, 1]],
+    "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 },
+    "diem": [[-9.81, -24.96, 1.57], [6.62, -23.33, 1.36], [-5.89, -23.08, 1.78], [2.51, -20.84, 1.33], [12.24, -20.07, 1.69], [20.32, -19.17, 1.79], [-10.79, -18.54, 1.62], [7.95, -18.06, 1.5], [-6.61, -17.83, 1.72], [-31.95, -10.01, 1.44], [32.09, -9.76, 1.82], [35.65, -6.6, 1.49], [-37.26, -3.99, 1.52], [-33.02, -0.92, 1.43], [-38.06, 1.22, 1.74], [-31.83, 3.2, 1.78], [32.67, 5.23, 1.39], [41.06, 5.94, 1.9], [34.74, 11.09, 1.61], [35.54, 16.88, 1.33], [-38.34, 17.59, 1.45], [-32.73, 18.46, 1.39], [-35.79, 21.75, 1.86], [34.36, 23.01, 1.87], [-33.33, 25.35, 1.87], [-0.94, 29.64, 1.76], [20.42, 30.04, 1.73], [-12.53, 30.89, 1.61], [-7.56, 31.39, 1.52], [11.7, 31.74, 1.73], [3.14, 32.46, 1.74], [7.6, 33.14, 1.57], [-3.25, 33.17, 1.4]],
+    "ghiChu": "diem: cây lẻ [x, z, cỡ] rải trên vành cỏ (Q365, phác hem-tron.py hạt 31)"
+  },
+  "npc": [
+    { "ten": "Cô Sáu", "o": "quan-co-sau", "x": -4.6, "z": -1.6, "gio": [6, 22], "ghiChu": "bán cà phê, trà; dạy Đầu Bếp, Pha Chế; thu mua món ăn, đồ uống (bản sau)" }
+  ],
+  "lanChiem": [
+    { "ten": "Đầu hẻm cạnh cột điện", "x": 20.5, "z": -2.6 },
+    { "ten": "Vỉa hè trước dãy nhà Nam", "x": 13.5, "z": 3.0 }
+  ],
+  "meo": { "ten": "Mèo Mái Ngói", "mau": "#9A9AA4", "x": -13, "z": 1.4, "ghiChu": "Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần" },
+  "biaDa": { "so": 6, "x": -5.2, "z": 1.8, "ghiChu": "Bia đá kể chuyện Bà Bồng (Q227), đoạn 6/10; chữ khắc trong trang" },
+  "diemHen": [
+    { "ten": "Bàn cà phê vỉa hè (ngồi đôi)", "x": -4.8, "z": -1.4 }
+  ],
+  "gocAnh": [
+    { "ten": "Hẻm dây điện buổi sáng", "x": 1.2, "z": -0.9 },
+    { "ten": "Bức tường vẽ", "x": 8.6, "z": -2.7 },
+    { "ten": "Bàn cà phê có ly cà phê muối", "x": -7.6, "z": -1.0 },
+    { "ten": "Ao sen sau hẻm", "x": -31.6, "z": 9.5 }
+  ],
+  "biMat": [
+    { "ten": "Bức tường vẽ: mỗi người thêm một nét", "x": 15.4, "z": -2.6 }
+  ],
+  "nganSachDi": { "tamCong": 14, "congChinh": 20, "ghiChu": "Q365: cổng qua cầu ở mép đảo tròn (cách miệng hẻm ~22 m vành cỏ), tâm → cổng tới 14 giây" }
+}

@@ -1,0 +1,528 @@
+{
+  "id": "dinh-deo",
+  "ten": "Đỉnh Đèo Sương",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với ben-song.json. Khu vừa (bán kính 30), khoá tới Chương 5 (cáp treo từ Đồng Lúa). 'nuoc' là các hình chữ nhật xếp thành hồ núi giữa khu; lối đất vòng quanh hồ. 'mauNen': màu cỏ núi nhạt. Rìa Bắc là vách đá nhìn ra biển mây.",
+  "xuatHien": [
+    0,
+    22
+  ],
+  "tocDoDi": 3.4,
+  "dao": {
+    "r": 30,
+    "song": [
+      [
+        0.6,
+        2,
+        0.8
+      ],
+      [
+        0.3,
+        5,
+        2.0
+      ]
+    ],
+    "banCong": [],
+    "mepXam": [],
+    "lanCan": "go",
+    "mauNen": "#BFD8A6"
+  },
+  "nuoc": [
+    [
+      -8.5,
+      8.5,
+      -8,
+      -2
+    ],
+    [
+      -6.5,
+      6.5,
+      -10.5,
+      0.5
+    ],
+    [
+      -3.5,
+      3.5,
+      -12,
+      2
+    ]
+  ],
+  "tam": [
+    {
+      "x": 0,
+      "z": 5,
+      "r": 1.5
+    }
+  ],
+  "cong": [
+    {
+      "id": "S",
+      "goc": 90,
+      "ten": "Đồng Lúa Gió",
+      "toi": "dong-lua",
+      "kieu": "cap-treo"
+    }
+  ],
+  "loi": [
+    {
+      "id": "vong-ho",
+      "kieu": "dat",
+      "rong": 1.6,
+      "diem": [
+        [
+          12.5,
+          -5.0
+        ],
+        [
+          12.07,
+          -2.41
+        ],
+        [
+          10.83,
+          -0.0
+        ],
+        [
+          8.84,
+          2.07
+        ],
+        [
+          6.25,
+          3.66
+        ],
+        [
+          3.24,
+          4.66
+        ],
+        [
+          0.0,
+          5.0
+        ],
+        [
+          -3.24,
+          4.66
+        ],
+        [
+          -6.25,
+          3.66
+        ],
+        [
+          -8.84,
+          2.07
+        ],
+        [
+          -10.83,
+          -0.0
+        ],
+        [
+          -12.07,
+          -2.41
+        ],
+        [
+          -12.5,
+          -5.0
+        ],
+        [
+          -12.07,
+          -7.59
+        ],
+        [
+          -10.83,
+          -10.0
+        ],
+        [
+          -8.84,
+          -12.07
+        ],
+        [
+          -6.25,
+          -13.66
+        ],
+        [
+          -3.24,
+          -14.66
+        ],
+        [
+          -0.0,
+          -15.0
+        ],
+        [
+          3.24,
+          -14.66
+        ],
+        [
+          6.25,
+          -13.66
+        ],
+        [
+          8.84,
+          -12.07
+        ],
+        [
+          10.83,
+          -10.0
+        ],
+        [
+          12.07,
+          -7.59
+        ],
+        [
+          12.5,
+          -5.0
+        ]
+      ]
+    },
+    {
+      "id": "duong-ga",
+      "kieu": "da",
+      "rong": 2.0,
+      "diem": [
+        [
+          0,
+          29.4
+        ],
+        [
+          0,
+          5
+        ]
+      ]
+    },
+    {
+      "id": "loi-dai-sao",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          8.8,
+          -12.1
+        ],
+        [
+          12.6,
+          -14
+        ]
+      ]
+    },
+    {
+      "id": "loi-thay-do",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          -11.6,
+          0
+        ],
+        [
+          -13.6,
+          5.4
+        ]
+      ]
+    },
+    {
+      "id": "loi-vach-da",
+      "kieu": "dat",
+      "rong": 1.4,
+      "diem": [
+        [
+          0,
+          -15
+        ],
+        [
+          -4.6,
+          -22.4
+        ]
+      ]
+    }
+  ],
+  "sanChoi": [
+    {
+      "id": "bai-tuyet",
+      "ten": "Bãi Tuyết Mây (mùa đông)",
+      "x": -21,
+      "z": -8,
+      "rong": 6,
+      "sau": 4,
+      "mau": "#EEF3F6"
+    }
+  ],
+  "diemCa": [
+    {
+      "x": 7.6,
+      "z": -5,
+      "dung": [
+        9.6,
+        -5
+      ]
+    },
+    {
+      "x": -7.6,
+      "z": -5,
+      "dung": [
+        -9.6,
+        -5
+      ]
+    },
+    {
+      "x": 0,
+      "z": 1.4,
+      "dung": [
+        0,
+        3.2
+      ]
+    },
+    {
+      "x": 0,
+      "z": -11.4,
+      "dung": [
+        0,
+        -13.2
+      ]
+    },
+    {
+      "x": 5.8,
+      "z": -1.4,
+      "dung": [
+        7,
+        0.2
+      ]
+    },
+    {
+      "x": -5.8,
+      "z": -1.4,
+      "dung": [
+        -7,
+        0.2
+      ]
+    },
+    {
+      "x": 5.8,
+      "z": -9.6,
+      "dung": [
+        7,
+        -11
+      ]
+    },
+    {
+      "x": -5.8,
+      "z": -9.6,
+      "dung": [
+        -7,
+        -11
+      ]
+    }
+  ],
+  "vat": [
+    {
+      "id": "ga-cap-treo",
+      "loai": "ga-cap-treo",
+      "x": -5.2,
+      "z": 22.6,
+      "quay": 90,
+      "khoi": [
+        [
+          -1.6,
+          0,
+          1.5
+        ],
+        [
+          1.6,
+          0,
+          1.5
+        ]
+      ],
+      "diaDanh": {
+        "ten": "Ga cáp treo",
+        "mau": "#8E3426",
+        "toi": [
+          -2.0,
+          22.6
+        ]
+      }
+    },
+    {
+      "id": "dai-ngam-sao",
+      "loai": "dai-ngam",
+      "x": 16,
+      "z": -17,
+      "quay": 30,
+      "khoi": [
+        [
+          -1.5,
+          0,
+          1.7
+        ],
+        [
+          1.5,
+          0,
+          1.7
+        ]
+      ],
+      "chinh": true,
+      "diaDanh": {
+        "ten": "Đài ngắm sao",
+        "mau": "#C9A27A",
+        "toi": [
+          13.2,
+          -14.6
+        ]
+      },
+      "hd": "Đài ngắm sao: chỗ cao nhất khu; đêm quang có sao băng."
+    },
+    {
+      "id": "nha-thay-do",
+      "loai": "mieu-linh-may",
+      "x": -17,
+      "z": 9.4,
+      "quay": 90,
+      "xam": true,
+      "khoi": [
+        [
+          -1.4,
+          0,
+          1.6
+        ],
+        [
+          1.4,
+          0,
+          1.6
+        ]
+      ],
+      "diaDanh": {
+        "ten": "Nhà Thầy Đồ",
+        "mau": "#A9A9B3",
+        "toi": [
+          -13.8,
+          6.4
+        ]
+      },
+      "hd": "Nhà Thầy Đồ: nhà xám, sáng lại sau Chương 5."
+    },
+    {
+      "id": "ban-thu-phap",
+      "loai": "ban-thu-phap",
+      "x": -12,
+      "z": 10.6,
+      "quay": 0,
+      "r": 0.7
+    },
+    {
+      "id": "vach-da",
+      "loai": "moc",
+      "x": -6.6,
+      "z": -24.6,
+      "diaDanh": {
+        "ten": "Vách đá ngắm biển mây",
+        "mau": "#8E6A48",
+        "toi": [
+          -5,
+          -23
+        ]
+      },
+      "hd": "Vách đá ngắm biển mây, có lan can."
+    },
+    {
+      "id": "ban-nhom",
+      "loai": "ban-nhom",
+      "x": 6.4,
+      "z": -21,
+      "r": 1.6,
+      "ghiChu": "bàn nhóm gần đài ngắm sao (mục 8.7)"
+    }
+  ],
+  "cay": {
+    "lum": [
+      [
+        -22,
+        -14,
+        1
+      ],
+      [
+        22,
+        -4,
+        1
+      ],
+      [
+        -22,
+        18,
+        2
+      ],
+      [
+        12,
+        20,
+        1
+      ],
+      [
+        -8,
+        20,
+        1
+      ],
+      [
+        24,
+        12,
+        1
+      ],
+      [
+        8,
+        16,
+        1
+      ]
+    ],
+    "rai": {
+      "da": 8,
+      "hoa": 2,
+      "nam": 0,
+      "bui": 4,
+      "rom": 0
+    }
+  },
+  "npc": [
+    {
+      "ten": "Thầy Đồ",
+      "x": -12,
+      "z": 12.6,
+      "gio": [
+        7,
+        20
+      ],
+      "ghiChu": "viết thư pháp ở bàn trước nhà"
+    }
+  ],
+  "yenTinh": [
+    {
+      "ten": "Vách đá",
+      "x": -5,
+      "z": -23,
+      "r": 4
+    }
+  ],
+  "meo": {"ten":"Mèo Sương Bạc","mau":"#C9CCD6","x":1,"z":22.6,"ghiChu":"Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần"},
+  "biaDa": {"so":10,"x":-2,"z":25.6,"ghiChu":"Bia đá kể chuyện Bà Bồng (Q227), đoạn 10/10; chữ khắc trong trang"},
+  "diemHen": [
+    {
+      "ten": "Đài ngắm sao",
+      "x": 12.4,
+      "z": -18.6
+    }
+  ],
+  "gocAnh": [
+    {
+      "ten": "Hồ phản chiếu núi",
+      "x": -2,
+      "z": -14
+    },
+    {
+      "ten": "Biển mây từ vách đá",
+      "x": -6.2,
+      "z": -26.4
+    },
+    {
+      "ten": "Bầu trời sao trên đài",
+      "x": 19.8,
+      "z": -13
+    }
+  ],
+  "biMat": [
+    {
+      "ten": "Sao băng đêm quang",
+      "x": 12.6,
+      "z": -21.8
+    }
+  ]
+}

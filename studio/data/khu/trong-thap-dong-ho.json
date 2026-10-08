@@ -1,0 +1,138 @@
+{
+  "id": "trong-thap-dong-ho",
+  "ten": "Phòng Máy Đồng Hồ",
+  "ghiChu": "Q360: tầng trệt Tháp Đồng Hồ giữa đài phun Quảng Trường, vào bằng cửa vòm qua ba tảng đá kê trên mặt nước (cửa ở diaDanh.toi của vật 'thap-dong-ho'). Cảnh trong nhà chung, cùng quy ước với xuong-tre.json. Bảng giờ lên dây cót, kính ngắm qua ô cửa tròn, ghế chờ, bàn trà người giữ tháp; chưa có việc riêng.",
+  "xuatHien": [
+    0,
+    3.9
+  ],
+  "tocDoDi": 3.4,
+  "camera": {
+    "zoomMax": 0.85
+  },
+  "dao": {
+    "r": 5.5,
+    "vuong": true,
+    "trong": true,
+    "song": [],
+    "banCong": [],
+    "mepXam": []
+  },
+  "tam": {
+    "x": 0,
+    "z": 3.3,
+    "r": 0.8
+  },
+  "cong": [
+    {
+      "id": "S",
+      "goc": 90,
+      "ten": "Quảng Trường Đồng Hồ Mây",
+      "toi": "quang-truong",
+      "kieu": "cua",
+      "bien": [
+        "Ra quảng trường"
+      ]
+    }
+  ],
+  "loi": [
+    {
+      "id": "tham-cua",
+      "kieu": "tham",
+      "rong": 1.4,
+      "diem": [
+        [
+          0,
+          3.3
+        ],
+        [
+          0,
+          5.7
+        ]
+      ]
+    }
+  ],
+  "vat": [
+    {
+      "id": "bang-gio",
+      "loai": "bang",
+      "x": 0,
+      "z": -4.6,
+      "quay": 0,
+      "r": 0.5,
+      "chu": "Giờ Mây · lên dây cót 6 giờ sáng",
+      "diaDanh": {
+        "ten": "Bảng giờ",
+        "mau": "#4FA9C8",
+        "toi": [
+          0,
+          -3.4
+        ]
+      }
+    },
+    {
+      "id": "kinh-ngam",
+      "loai": "kinh-thien-van",
+      "x": 3.7,
+      "z": -3.7,
+      "r": 0.6
+    },
+    {
+      "id": "ban-tra",
+      "loai": "ban-cafe",
+      "x": -3.4,
+      "z": -3.2,
+      "r": 0.6
+    },
+    {
+      "id": "ghe-tay",
+      "loai": "ghe",
+      "x": -4.6,
+      "z": 0.6,
+      "quay": 90,
+      "r": 0.9
+    },
+    {
+      "id": "ghe-dong",
+      "loai": "ghe",
+      "x": 4.6,
+      "z": 0.6,
+      "quay": -90,
+      "r": 0.9
+    },
+    {
+      "id": "lu-nuoc",
+      "loai": "lu",
+      "x": -4.4,
+      "z": 3.6,
+      "r": 0.6
+    },
+    {
+      "id": "thung-dau",
+      "loai": "thung",
+      "x": 4.4,
+      "z": 3.6,
+      "r": 0.5
+    }
+  ],
+  "cay": {
+    "lum": [],
+    "rai": {
+      "da": 0,
+      "hoa": 0,
+      "nam": 0,
+      "bui": 0,
+      "rom": 0
+    }
+  },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [
+    {
+      "ten": "Bánh răng tháp trong nắng sớm",
+      "x": 1.4,
+      "z": -1.2
+    }
+  ],
+  "biMat": []
+}

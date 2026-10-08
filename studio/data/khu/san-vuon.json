@@ -1,0 +1,31 @@
+{
+  "id": "san-vuon",
+  "ten": "Sân vườn Nhà Vườn",
+  "ghiChu": "Sân vườn của Nhà Vườn (GDD §11.1: nâng cấp từ Nhà Phố Ống, 40.000 Xu, 16 × 16 + sân vườn). Cảnh riêng từng người, vùng đi hình vuông 16 × 16 ('dao.vuong', rào gỗ); ra vườn bằng cửa vườn tường Tây Phòng Trọ, cổng duy nhất là cửa vào nhà ('kieu': 'cua'). 'luong-hoa' là luống hoa xây gạch. 'luoiO' là lưới ô bày đồ [cột, hàng, cỡ ô] (Q260).",
+  "rieng": true,
+  "xuatHien": [0, 5.4],
+  "tocDoDi": 3.4,
+  "dao": { "r": 8, "vuong": true, "song": [], "banCong": [], "mepXam": [], "lanCan": "go" },
+  "tam": { "x": 0, "z": 1.6, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Phòng Trọ Số 0", "toi": "phong-tro", "kieu": "cua", "bien": ["Vào nhà"] }
+  ],
+  "loi": [
+    { "id": "loi-da", "kieu": "dat", "rong": 1.2, "diem": [[0, 8.6], [0, 1.6], [0, -4.6]] }
+  ],
+  "vat": [
+    { "id": "vong-vuon", "loai": "vong", "x": 0, "z": -6.6, "quay": 0, "khoi": [[-0.9, 0, 0.5], [0, 0, 0.5], [0.9, 0, 0.5]],
+      "diaDanh": { "ten": "Võng giữa vườn", "mau": "#E8735A", "toi": [0, -5.4] }, "hd": "Nằm võng giữa vườn, nghe chim hót và gió thổi qua giàn hoa." },
+    { "id": "luong-hoa-tay", "loai": "luong-hoa", "x": -4.6, "z": -4.4, "rong": 3.6, "khoi": [[-1.1, 0, 0.7], [0, 0, 0.7], [1.1, 0, 0.7]] },
+    { "id": "luong-hoa-dong", "loai": "luong-hoa", "x": 4.6, "z": -4.4, "rong": 3.6, "khoi": [[-1.1, 0, 0.7], [0, 0, 0.7], [1.1, 0, 0.7]] },
+    { "id": "ao-ca-vuon", "loai": "ao", "x": -4.4, "z": 3.2, "ban": 1.6, "r": 1.8 },
+    { "id": "ghe-vuon", "loai": "ghe", "x": 4.4, "z": 2.2, "quay": 0, "r": 1.0 },
+    { "id": "ban-tra-vuon", "loai": "ban-cafe", "x": 4.4, "z": 4.8, "r": 1.0 }
+  ],
+  "trangTri": { "luoiO": [12, 12, 1.2] },
+  "cay": { "lum": [[-6.6, -6.6, 1], [6.6, -6.6, 1], [-6.8, 6.8, 1], [6.8, 6.8, 1]], "rai": { "da": 2, "hoa": 6, "nam": 0, "bui": 4, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [],
+  "biMat": []
+}

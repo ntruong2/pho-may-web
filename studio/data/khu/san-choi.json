@@ -1,0 +1,71 @@
+{
+  "id": "san-choi",
+  "ten": "Sân Chơi Cầu Vồng",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với dong-lua.json (khu không đại lộ: lối 'loi', sân 'tam'). 'tam' là sân lát đá giữa khu dưới cổng cầu vồng. 'sanChoi' là các khoảng trống minigame (mục 8.5), không chặn đường. 'hd' là câu báo khi người chơi bấm nút hành động cạnh vật.",
+  "xuatHien": [-30, 1.6],
+  "tocDoDi": 3.4,
+  "dao": { "r": 40, "song": [[0.5, 3, 1], [0.3, 5, 0.4]], "banCong": [45, 135, 315], "mepXam": [], "lanCan": "mau" },
+  "tam": { "x": 0, "z": 0, "r": 7 },
+  "cong": [
+    { "id": "W", "goc": 180, "ten": "Quảng Trường", "toi": "quang-truong", "bien": ["Quảng Trường"] },
+    { "id": "S", "goc": 90, "ten": "Bến Sông Trăng", "toi": "ben-song", "kieu": "bac-da", "bien": ["Bến Sông"] },
+    { "id": "NW", "goc": -135, "ten": "Đồng Lúa Gió", "toi": "dong-lua", "khoa": "Dự Án Phố", "kieu": "cau-tre" }
+  ],
+  "loi": [
+    { "id": "duong-tay", "kieu": "da", "rong": 2.4, "diem": [[-40.6, 0], [-7, 0]] },
+    { "id": "duong-nam", "kieu": "da", "rong": 2.4, "diem": [[0, 7], [0, 40.6]] },
+    { "id": "loi-keo-co", "kieu": "dat", "rong": 1.8, "diem": [[0, -7], [0, -17.3]] },
+    { "id": "loi-san-dien", "kieu": "dat", "rong": 1.8, "diem": [[7, 0], [17.3, 0]] },
+    { "id": "loi-tay-bac", "kieu": "dat", "rong": 1.6, "diem": [[-5, -5], [-29, -29]] }
+  ],
+  "sanChoi": [
+    { "id": "san-keo-co", "ten": "Sân cát Kéo Co", "x": 0, "z": -21, "rong": 14, "sau": 6, "mau": "#F3E0B0" },
+    { "id": "san-truoc-dien", "ten": "Sân trước Sàn Diễn", "x": 22, "z": 0, "rong": 9, "sau": 11, "mau": "#D8ECC0" }
+  ],
+  "vat": [
+    { "id": "cong-cau-vong", "loai": "cong-cau-vong", "x": 0, "z": -2.2, "quay": 0, "khoi": [[-5.5, 0, 0.55], [5.5, 0, 0.55]], "chinh": true,
+      "diaDanh": { "ten": "Cổng cầu vồng", "mau": "#E8453C", "toi": [0, 1.2] } },
+    { "id": "bang-xep-hang", "loai": "bang", "x": -8.5, "z": -4.6, "quay": 0, "chu": "Bảng xếp hàng minigame", "khoi": [[-0.9, 0, 0.4], [0.9, 0, 0.4]],
+      "hd": "Minigame mở từ cấp 3 (Đua Thuyền Thúng, Kéo Co, Họa Sĩ Nhí); xếp hàng sẽ có ở bản sau." },
+    { "id": "bang-xep-hang-2", "loai": "bang", "x": 8.5, "z": -4.6, "quay": 0, "chu": "Bảng xếp hạng tuần", "khoi": [[-0.9, 0, 0.4], [0.9, 0, 0.4]],
+      "hd": "Bảng xếp hạng tuần: cần máy chủ, hiện ở bản sau." },
+    { "id": "thap-trong-tai", "loai": "thap-trong-tai", "x": -10, "z": -21, "r": 1.1 },
+    { "id": "ghe-keo-co-1", "loai": "ghe", "x": -3, "z": -25.6, "quay": 0, "r": 1.0 },
+    { "id": "ghe-keo-co-2", "loai": "ghe", "x": 3, "z": -25.6, "quay": 0, "r": 1.0 },
+    { "id": "ghe-keo-co-3", "loai": "ghe", "x": -3.2, "z": -15.6, "quay": 180, "r": 1.0 },
+    { "id": "ghe-keo-co-4", "loai": "ghe", "x": 3.2, "z": -15.6, "quay": 180, "r": 1.0 },
+    { "id": "keo-co", "loai": "moc", "x": 0, "z": -21, "diaDanh": { "ten": "Sân Kéo Co", "mau": "#C9A87A", "toi": [0, -19] },
+      "hd": "Kéo Co Mây: sân cát 14 × 6; bản mẫu chơi với bot Linh Mây, bản có máy chủ 4–10 người." },
+    { "id": "ban-ve", "loai": "ban-ve", "x": 19, "z": -19, "quay": 0, "khoi": [[-1.3, 0, 1.1], [1.3, 0, 1.1]],
+      "diaDanh": { "ten": "Họa Sĩ Nhí", "mau": "#E0A020", "toi": [19, -15.8] }, "hd": "Họa Sĩ Nhí: bàn vẽ 8 chỗ; bản mẫu đoán hình bot Linh Mây vẽ, bản có máy chủ 3–8 người vẽ đoán cho nhau." },
+    { "id": "bang-dung", "loai": "bang", "x": 19, "z": -21.6, "quay": 0, "chu": "Đề vẽ hôm nay: Mây", "r": 0.5 },
+    { "id": "san-dien", "loai": "san-dien", "x": 29.5, "z": 0, "quay": -90, "khoi": [[-3.5, 0, 2], [0, 0, 2], [3.5, 0, 2]],
+      "diaDanh": { "ten": "Sàn Diễn Chủ Nhật", "mau": "#8E3426", "toi": [25.4, 0] }, "hd": "Sàn Diễn Chủ Nhật: tối Chủ Nhật (từ 18 giờ game) lên sàn trình diễn theo chủ đề tuần, ba giám khảo chấm sao." },
+    { "id": "khan-dai-bac", "loai": "khan-dai", "x": 22, "z": -10.5, "quay": 0, "khoi": [[-2.8, 0, 1.6], [0, 0, 1.6], [2.8, 0, 1.6]] },
+    { "id": "khan-dai-nam", "loai": "khan-dai", "x": 22, "z": 10.5, "quay": 180, "khoi": [[-2.8, 0, 1.6], [0, 0, 1.6], [2.8, 0, 1.6]],
+      "diaDanh": { "ten": "Khán đài", "mau": "#A7804E", "toi": [22, 8.2], "duoi": true } },
+    { "id": "nha-thi-dau", "loai": "nha-thi-dau", "x": -20, "z": 18, "r": 7,
+      "diaDanh": { "ten": "Nhà thi đấu", "mau": "#7B61B8", "toi": [-14.6, 12.6] }, "hd": "Nhà thi đấu mái vòm: minigame chuyển vào đây khi giông (bản sau)." },
+    { "id": "quay-ve-vui", "loai": "ki-ot-xam", "x": -11, "z": 6.5, "quay": 180, "chu": "Quầy Vé Vui", "khoi": [[-0.8, 0, 1.2], [0.8, 0, 1.2]] },
+    { "id": "bang-dang-ky-dua", "loai": "bang", "x": 4.6, "z": 29, "quay": -90, "chu": "Đăng ký Đua Thuyền Thúng", "r": 0.5,
+      "diaDanh": { "ten": "Đăng ký đua thuyền", "mau": "#FF6B5A", "toi": [2.6, 29] }, "hd": "Đua Thuyền Thúng: xuất phát ở Bến Sông dưới bậc đá, mở từ cấp 3 (bản sau)." },
+    { "id": "tram-xe-buyt", "loai": "tram-xe-buyt", "x": -30, "z": 4.6, "quay": 180, "khoi": [[-1.5, 0, 1.0], [0, 0, 1.0], [1.5, 0, 1.0]],
+      "diaDanh": { "ten": "Trạm Xe Buýt Gió", "mau": "#4F8FC0", "toi": [-30, 2.4], "duoi": true } }
+  ],
+  "cay": {
+    "lum": [[-14, -8, 1], [12, 12, 1], [8, -32, 2], [-8, 32, 2], [30, -18, 1], [30, 18, 1], [-32, -14, 2], [14, 28, 2], [-4, -31, 1], [26, -26, 1], [-30, 26, 1]],
+    "rai": { "da": 5, "hoa": 10, "nam": 2, "bui": 8, "rom": 0 }
+  },
+  "npc": [
+    { "ten": "MC Linh Mây", "x": 2.4, "z": -3.6, "gio": [0, 24], "ghiChu": "luôn có mặt; giờ hội 12–13h và 20–22h thì nhảy múa" }
+  ],
+  "meo": {"ten":"Mèo Kẹo Bông","mau":"#F7F2EA","x":3,"z":-19,"ghiChu":"Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần"},
+  "biaDa": {"so":3,"x":3,"z":1.2,"ghiChu":"Bia đá kể chuyện Bà Bồng (Q227), đoạn 3/10; chữ khắc trong trang"},
+  "diemHen": [{ "ten": "Khán đài (ngồi xem, cổ vũ bằng emote)", "x": 17.6, "z": 7.8 }],
+  "gocAnh": [
+    { "ten": "Dưới cổng cầu vồng", "x": 0, "z": 4.6 },
+    { "ten": "Sàn diễn lúc có show", "x": 24, "z": 5.4 },
+    { "ten": "Toàn cảnh từ khán đài", "x": 25.5, "z": 13.6 }
+  ],
+  "biMat": [{ "ten": "Sau mưa, đứng đúng chân cầu vồng trên trời", "x": -24, "z": -8 }]
+}

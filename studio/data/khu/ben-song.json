@@ -1,0 +1,82 @@
+{
+  "id": "ben-song",
+  "ten": "Bến Sông Trăng",
+  "ghiChu": "Dữ liệu khu theo mục 8.13 tài liệu ban-do-3d, cùng quy ước với dong-lua.json. 'nuoc' là các vùng nước hình chữ nhật [x0, x1, z0, z1] (sông chảy Đông–Tây và hai vũng lõm bờ Bắc): không đi được, trừ trên lối gỗ ('kieu': 'go' là cầu, cầu tàu). 'tam' có hai điểm là hai đầu cầu vòm (khu có sông không có một tâm chung). 'diemCa' là các điểm cá trên mặt nước, 'dung' là chỗ người câu đứng trên bờ hoặc cầu tàu; điểm có 'cam' nằm ở đoạn cấm mùa cá đẻ (câu trộm, mục 8.18), quây bằng dây phao đỏ trắng.",
+  "xuatHien": [0, -14],
+  "tocDoDi": 3.4,
+  "dao": { "r": 40, "song": [[0.5, 3, 2], [0.3, 5, 0.9]], "banCong": [-45, 135], "mepXam": [[100, 150]], "lanCan": "go" },
+  "nuoc": [[-60, 60, -5, 5], [-15, -1, -9, -5], [15, 22, -8.5, -5]],
+  "tam": [{ "x": 0, "z": -8.5, "r": 1.2 }, { "x": 0, "z": 8.5, "r": 1.2 }],
+  "cong": [
+    { "id": "N", "goc": -90, "ten": "Sân Chơi Cầu Vồng", "toi": "san-choi", "kieu": "bac-da", "bien": ["Sân Chơi"] },
+    { "id": "S", "goc": 90, "ten": "Vịnh San Hô Mây", "toi": "vinh", "khoa": "Chương 3", "kieu": "cau-gio" },
+    { "id": "W", "goc": -170, "ten": "Chợ Đêm Lồng Đèn", "toi": "cho-dem", "khoa": "Dự Án Phố", "kieu": "ghe" }
+  ],
+  "loi": [
+    { "id": "duong-bac", "kieu": "da", "rong": 2.4, "diem": [[0, -40.6], [0, -11.5]] },
+    { "id": "bac-da", "kieu": "da", "rong": 2.0, "diem": [[0, -26], [-12, -17.5], [-22, -13.5], [-26, -6.4]] },
+    { "id": "bo-bac", "kieu": "dat", "rong": 2.0, "diem": [[-40.0, -7.05], [-34, -10.4], [-26, -11.5], [26, -11.5]] },
+    { "id": "cau-tau", "kieu": "go", "rong": 2.0, "diem": [[-7, -10.5], [-7, -5.2]] },
+    { "id": "ben-do-bac", "kieu": "go", "rong": 1.6, "diem": [[-31, -10.6], [-31, -5.2]] },
+    { "id": "cau-vom", "kieu": "go", "rong": 2.8, "diem": [[0, -11.5], [0, 12.8]] },
+    { "id": "bo-nam", "kieu": "dat", "rong": 2.0, "diem": [[0, 12.8], [-20, 13.2], [-31, 9.4], [-31, 5.4]] },
+    { "id": "duong-nam", "kieu": "da", "rong": 2.4, "diem": [[0, 12.8], [0, 40.6]] }
+  ],
+  "diemCa": [
+    { "x": -20, "z": -4.2, "dung": [-20, -5.8] }, { "x": 4, "z": -4.2, "dung": [4, -5.8] }, { "x": 10, "z": -4.2, "dung": [10, -5.8] },
+    { "x": 27, "z": -4.2, "dung": [27, -5.8] }, { "x": -7, "z": -4.2, "dung": [-7, -5.6] },
+    { "x": -22, "z": 4.2, "dung": [-22, 5.8] }, { "x": -5, "z": 4.2, "dung": [-5, 5.8] }, { "x": 8, "z": 4.2, "dung": [8, 5.8] },
+    { "x": 20, "z": 4.2, "dung": [20, 5.8] }, { "x": 28, "z": 4.2, "dung": [28, 5.8] },
+    { "x": 32, "z": -4.2, "dung": [32, -5.8], "cam": true }, { "x": 32, "z": 4.2, "dung": [32, 5.8], "cam": true }
+  ],
+  "loTre": [
+    { "x": -26, "z": -4.2, "dung": [-26, -5.8] }, { "x": 14, "z": -4.2, "dung": [14, -5.8] },
+    { "x": -13, "z": 4.2, "dung": [-13, 5.8] }, { "x": 14, "z": 4.2, "dung": [14, 5.8] }
+  ],
+  "vat": [
+    { "id": "ban-nhom", "loai": "ban-nhom", "x": -6, "z": -15.5, "r": 1.6, "ghiChu": "bàn nhóm 6 người trên bờ, gần điểm hẹn cầu tàu (mục 8.7)" },
+    { "id": "choi-cau", "loai": "choi-cau", "x": 8, "z": -15, "quay": 0, "khoi": [[-1.2, 0, 1.6], [1.2, 0, 1.6]], "chinh": true,
+      "diaDanh": { "ten": "Chòi câu Chú Bảy", "mau": "#B07A4E", "toi": [8, -12.4] } },
+    { "id": "bang-ngu-dan", "loai": "bang-nghe", "nghe": "ngu-dan", "x": 11.6, "z": -13.8, "quay": 0, "chu": "Bảng nghề Ngư Dân", "r": 0.4 },
+    { "id": "tram-xe-buyt", "loai": "tram-xe-buyt", "x": -10, "z": -14.2, "quay": 0, "khoi": [[-1.5, 0, 1.0], [0, 0, 1.0], [1.5, 0, 1.0]],
+      "diaDanh": { "ten": "Trạm Xe Buýt Gió", "mau": "#4F8FC0", "toi": [-10, -12.4] } },
+    { "id": "bai-xe-om", "loai": "bang", "x": 24.8, "z": -15.4, "quay": 0, "chu": "Bãi xe ôm · Chú Mười", "r": 0.5 },
+    { "id": "nha-san", "loai": "nha-san", "x": -13, "z": 8.8, "quay": 0, "xam": true, "toi": "nha-chu-bay", "chu": "Nhà Chú Bảy", "khoi": [[-2, 0, 2.2], [2, 0, 2.2]],
+      "diaDanh": { "ten": "Nhà sàn Chú Bảy", "mau": "#A9A9B3", "toi": [-13, 12.0], "duoi": true } },
+    { "id": "tru-cau-gio-tay", "loai": "tru-cau-gio", "x": -3.6, "z": 34.5, "r": 1.2 },
+    { "id": "tru-cau-gio-dong", "loai": "tru-cau-gio", "x": 3.6, "z": 34.5, "r": 1.2,
+      "diaDanh": { "ten": "Chân Cầu Gió", "mau": "#8A8A94", "toi": [0, 31] }, "hd": "Cầu Gió dựng dần theo tiến độ cả phố ở Chương 3 (Dự Án Phố)." },
+    { "id": "bang-du-an", "loai": "bang", "x": 5.8, "z": 29.5, "quay": -90, "chu": "Dự Án Phố: Cầu Gió", "r": 0.4 },
+    { "id": "ben-thuyen", "loai": "moc", "x": -7, "z": -8, "diaDanh": { "ten": "Cầu tàu", "mau": "#8E6A48", "toi": [-7, -9.6] },
+      "hd": "Bến thuyền thúng: Đua Thuyền Thúng xuất phát dưới bậc đá, mở từ cấp 3 (bản sau)." },
+    { "id": "ben-do", "loai": "moc", "x": -31, "z": -8, "diaDanh": { "ten": "Bến đò", "mau": "#B88A5E", "toi": [-31, -9.4] },
+      "hd": "Đò ngang sang bờ Nam: nghề Lái Đò chở người chơi khác (bản sau). Đi bộ qua cầu vòm giữa sông." },
+    { "id": "bang-doan-cam", "loai": "bang", "x": 29.6, "z": -7.6, "quay": 0, "chu": "Đoạn cấm câu · mùa cá đẻ", "r": 0.4,
+      "hd": "Câu trộm ở đoạn cấm (nghề ngoài luồng, mục 8.18): cá to và hiếm hơn; Chú Bảy đang ở bến thì đứng câu càng lâu càng dễ bị bắt." }
+  ],
+  "trangTri": {
+    "thung": [[-11, -7.2], [-9.4, -8.2], [-3.6, -7.6]],
+    "ghe": [18.5, -6.8],
+    "gheLa": [38, 1.4],
+    "xuatPhat": -28,
+    "dich": 30
+  },
+  "cay": {
+    "lum": [[-30, -20, 2], [-16, -27, 1], [14, -27, 2], [28, -22, 1], [-8, -34, 1], [-22, 24, 2], [18, 22, 2], [-12, 30, 1], [14, 32, 1], [26, 18, 1], [-34, 16, 1], [12, 7.6, 1], [24, 7.6, 1], [-36, 7.4, 1]],
+    "rai": { "da": 6, "hoa": 6, "nam": 3, "bui": 6, "rom": 0 }
+  },
+  "npc": [
+    { "ten": "Chú Bảy", "o": "choi-cau", "x": 8, "z": -12.4, "gio": [5, 22], "ghiChu": "thu mua cá ở chòi câu; đêm mưa không ra bến (3D-21)" },
+    { "ten": "Chị Ghe", "x": 18.5, "z": -9.6, "gio": [5, 11], "ghiChu": "bán trái cây trên ghe; bản 3D đứng trên bờ cạnh ghe" }
+  ],
+  "yenTinh": [{ "ten": "Bến câu", "x": -7, "z": -8.6, "r": 5 }],
+  "meo": {"ten":"Mèo Mun Bến Sông","mau":"#4A4650","x":23,"z":-13.2,"ghiChu":"Hội Mèo Phố Mây (Q226): mèo nằm phơi nắng, vuốt ve mỗi ngày một lần"},
+  "biaDa": {"so":4,"x":9.5,"z":-9.8,"ghiChu":"Bia đá kể chuyện Bà Bồng (Q227), đoạn 4/10; chữ khắc trong trang"},
+  "diemHen": [{ "ten": "Cầu tàu (ngồi thả chân, câu chung)", "x": -7, "z": -7.6 }],
+  "gocAnh": [
+    { "ten": "Trăng soi mặt sông", "x": 6, "z": 16.4 },
+    { "ten": "Cầu tàu lúc hoàng hôn", "x": -11.5, "z": -13.8 },
+    { "ten": "Cầu Gió nhìn từ bờ", "x": -6, "z": 24 }
+  ],
+  "biMat": [{ "ten": "Đêm rằm, vệt trăng trên sông dẫn tới cá hiếm", "x": 14, "z": -5.8 }]
+}

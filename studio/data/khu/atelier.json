@@ -1,0 +1,33 @@
+{
+  "id": "atelier",
+  "ten": "Lụa Mây Atelier",
+  "ghiChu": "Trong Lụa Mây Atelier (Khu Nhà Mái Ngói), cảnh trong nhà chung, vào bằng cửa tiệm. Cùng quy ước với xuong-tre.json. Chỗ làm nghề Thợ May (mục 8.16): 4 bàn may ('ban-may'), góc nhuộm 3 chậu ('goc-nhuom'), gương thử đồ ('guong', mở Tủ đồ), kệ trưng gửi bán áo cho Anh Lụa.",
+  "xuatHien": [0, 3.4],
+  "tocDoDi": 3.4,
+  "camera": { "zoomMax": 0.85 },
+  "dao": { "r": 5.5, "vuong": true, "trong": true, "song": [], "banCong": [], "mepXam": [] },
+  "tam": { "x": 0, "z": 3, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Khu Nhà Mái Ngói", "toi": "khu-nha", "kieu": "cua", "bien": ["Ra phố"] }
+  ],
+  "loi": [
+    { "id": "tham-cua", "kieu": "tham", "rong": 1.4, "diem": [[0, 3], [0, 5.7]] }
+  ],
+  "vat": [
+    { "id": "ban-may-1", "loai": "ban-may", "x": -3.4, "z": -3.2, "quay": 0, "khoi": [[-0.45, 0, 0.55], [0.45, 0, 0.55]], "dung": [-3.4, -2.1] },
+    { "id": "ban-may-2", "loai": "ban-may", "x": -0.6, "z": -3.2, "quay": 0, "khoi": [[-0.45, 0, 0.55], [0.45, 0, 0.55]], "dung": [-0.6, -2.1] },
+    { "id": "ban-may-3", "loai": "ban-may", "x": -3.4, "z": -0.2, "quay": 0, "khoi": [[-0.45, 0, 0.55], [0.45, 0, 0.55]], "dung": [-3.4, 0.9] },
+    { "id": "ban-may-4", "loai": "ban-may", "x": -0.6, "z": -0.2, "quay": 0, "khoi": [[-0.45, 0, 0.55], [0.45, 0, 0.55]], "dung": [-0.6, 0.9] },
+    { "id": "goc-nhuom", "loai": "goc-nhuom", "x": 3.4, "z": -3.8, "quay": 0, "khoi": [[-0.8, 0, 0.45], [0, 0, 0.45], [0.8, 0, 0.45]],
+      "diaDanh": { "ten": "Góc nhuộm", "mau": "#4F8FC0", "toi": [3.4, -2.6] } },
+    { "id": "guong", "loai": "guong", "x": 4.8, "z": 0.2, "quay": -90, "r": 0.5,
+      "diaDanh": { "ten": "Gương thử đồ", "mau": "#C9A2F0", "toi": [3.7, 0.2] } },
+    { "id": "ke-trung", "loai": "ke-trung", "x": -4.8, "z": 3, "quay": 90, "khoi": [[-0.7, 0, 0.5], [0.7, 0, 0.5]],
+      "diaDanh": { "ten": "Kệ trưng áo", "mau": "#B07A4E", "toi": [-3.6, 3] } }
+  ],
+  "cay": { "lum": [], "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [{ "ten": "Lụa phơi trước gương", "x": 2.4, "z": 1.6 }],
+  "biMat": []
+}

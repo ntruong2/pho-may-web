@@ -1,0 +1,36 @@
+{
+  "id": "phong-tro",
+  "ten": "Phòng Trọ Số 0",
+  "ghiChu": "Nhà riêng cấp 1 (mục 7 'Nhà riêng'): cảnh riêng từng người ('rieng'), vào bằng cửa Phòng Trọ Số 0 ở Khu Nhà Mái Ngói hoặc nút Về nhà. Căn phòng 10 × 10 ('dao.vuong', 'dao.trong': sàn gỗ, tường thay lan can); lối 'tham' là thảm từ giữa phòng ra cửa; cổng duy nhất là cửa ra phố ('kieu': 'cua'). 'luoiO' là lưới ô đặt đồ [cột, hàng, cỡ ô] vẽ trên sàn.",
+  "rieng": true,
+  "xuatHien": [0, 3],
+  "tocDoDi": 3.4,
+  "camera": { "zoomMax": 0.8 },
+  "dao": { "r": 5, "vuong": true, "trong": true, "song": [], "banCong": [], "mepXam": [] },
+  "tam": { "x": 0, "z": 2.6, "r": 0.8 },
+  "cong": [
+    { "id": "S", "goc": 90, "ten": "Khu Nhà Mái Ngói", "toi": "khu-nha", "kieu": "cua", "bien": ["Ra phố"] }
+  ],
+  "loi": [
+    { "id": "tham-cua", "kieu": "tham", "rong": 1.4, "diem": [[0, 2.6], [0, 5.2]] }
+  ],
+  "vat": [
+    { "id": "giuong", "loai": "giuong", "x": -3.2, "z": -3, "quay": 0, "khoi": [[0, -0.6, 0.9], [0, 0.6, 0.9]] },
+    { "id": "tu-do", "loai": "tu-do", "x": -4, "z": 1.2, "quay": 90, "r": 0.7 },
+    { "id": "bep-nha", "loai": "bep", "x": 3, "z": -4, "r": 0.7, "chinh": true,
+      "diaDanh": { "ten": "Bếp (2 khe)", "mau": "#6E6E78", "toi": [3, -2.6] } },
+    { "id": "ban-an", "loai": "ban-cafe", "x": 2.4, "z": 0.6, "r": 1.0 },
+    { "id": "cua-vuon", "loai": "cua-vuon", "x": -4.95, "z": -0.6, "toi": "san-vuon", "chu": "Cửa vườn",
+      "diaDanh": { "ten": "Cửa vườn (Nhà Vườn)", "mau": "#5FA852", "toi": [-4.0, -0.6] } },
+    { "id": "cau-thang", "loai": "cau-thang", "x": -0.8, "z": -4.75, "toi": "lau-nha", "chu": "Cầu thang",
+      "diaDanh": { "ten": "Cầu thang (Nhà Phố Ống)", "mau": "#8A5A33", "toi": [-0.8, -3.6] } },
+    { "id": "so-luu-but", "loai": "bang", "x": 3.8, "z": 3.2, "quay": -90, "r": 0.4, "chu": "Sổ Lưu Bút",
+      "diaDanh": { "ten": "Sổ Lưu Bút", "mau": "#C4553F", "toi": [2.8, 3.2] }, "hd": "Sổ Lưu Bút và nút Thích cho khách ghé nhà (bản có máy chủ)." }
+  ],
+  "trangTri": { "luoiO": [8, 8, 1.2] },
+  "cay": { "lum": [], "rai": { "da": 0, "hoa": 0, "nam": 0, "bui": 0, "rom": 0 } },
+  "npc": [],
+  "diemHen": [],
+  "gocAnh": [],
+  "biMat": []
+}
