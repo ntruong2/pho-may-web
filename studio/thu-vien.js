@@ -33,7 +33,7 @@ export function taoThuVien(root, M) {
     const o = await taiGLB(id); if (dangId !== id) return; dang = o; if (o) { C.scene.add(o); toMau(); }
     nv.position.set(m.max[0] + 0.8, 0, 0);
     const R = Math.max(m.w, m.d, m.h, 2.5); C.camera.position.set(R * 1.2, R * 0.9, R * 1.6); C.ctl.target.set(m.w / 4, m.h / 2.5, 0);
-    info.innerHTML = `<b>${id}</b> · rộng ${fmt(m.w, 2)} × sâu ${fmt(m.d, 2)} × cao ${fmt(m.h, 2)} m · ${m.kb} KB${m.kb > 120 ? ' <span class="do">quá 120 KB</span>' : ''}<br><span class="nho">Nhân vật đứng cạnh cao 1,9 m. Vật liệu: ${m.vatLieu.join(', ')}</span>`;
+    info.innerHTML = `<b>${id}</b> · rộng ${fmt(m.w, 2)} × sâu ${fmt(m.d, 2)} × cao ${fmt(m.h, 2)} m${m.matTren != null && m.matDT > 0.2 ? ` · mặt trên ${fmt(m.matTren, 2)} m` : ''} · ${m.kb} KB${m.kb > 120 ? ' <span class="do">quá 120 KB</span>' : ''}<br><span class="nho">Nhân vật đứng cạnh cao 1,9 m. Vật liệu: ${m.vatLieu.join(', ')}</span>`;
     veBang();
     try { history.replaceState(null, '', '#thu-vien/' + id); } catch { /* bỏ qua */ }
   }

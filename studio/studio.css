@@ -63,3 +63,6 @@ details { margin: 4px 0; } summary { cursor: pointer; font-size: 13px; }
   .thu-vien { grid-template-columns: 1fr; grid-template-rows: 1fr auto; } .tv-phai { max-height: 60vh; border-left: 0; border-top: 1px solid var(--vien); } .tv-3d { height: 240px; }
   .dau { padding: 4px 16px; gap: 8px; } .logo { font-size: 14px; }
 }
+.huy.xanh { background: #E8892A; }
+.ds-khac { list-style: none; padding: 0; margin: 0; font: 12px/1.4 ui-monospace, monospace; } .ds-khac li { padding: 3px 4px; border-bottom: 1px solid var(--vien); overflow-wrap: anywhere; } .ds-khac .them { color: #2E8B4A; } .ds-khac .bot { color: var(--do); } .ds-khac .doi { color: #B5631A; }
+.trai label.hang { flex-wrap: nowrap; align-items: flex-start; }

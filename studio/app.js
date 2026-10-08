@@ -18,4 +18,6 @@ const khu = (tab === 'map' && arg) || luu.get('khu') || 'quang-truong';
 await map.moKhu(M.khu.some((k) => k.id === khu) ? khu : 'quang-truong');
 if (tab === 'thu-vien') { moTab('thu-vien'); if (arg && M.modelMap[arg]) tv.mo(arg); }
 $('#cho').remove();
+if (M.lech?.length) $('.dau').append(Object.assign(document.createElement('span'), { className: 'nho', textContent: `⚠ data/khu khác bản game: ${M.lech.join(', ')} (Studio dùng bản game)` }));
+$('.logo').title = `Dữ liệu: ${M.nguon || 'data/'} · gói lúc ${M.dung}`;
 window.__studioApp = { map, M, moTab, tv: () => tv };

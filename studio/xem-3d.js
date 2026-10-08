@@ -1,5 +1,6 @@
 // Xem 3D bằng three.js r128 (cùng CDN với game; THREE, GLTFLoader, OrbitControls là biến toàn cục).
-import { DEG, vatXY, vatRot, vienDao, congXY, loiAo, LAT } from './chung.js';
+import { DEG, vatXY, vatRot, vienDao, congXY, banKinh, LAT } from './chung.js';
+import { hinhKhu } from './hinh.mjs';
 
 const T = () => window.THREE;
 const cacheGLB = new Map();
@@ -42,14 +43,35 @@ export function taoXemKhu(canvas, M) {
     const me = ++phien;
     scene.remove(nhom); nhom = new THREE.Group(); scene.add(nhom);
     const dao = K.dao || { r: 20 }, vien = vienDao(dao);
+    let H = null; try { H = hinhKhu({ cong: [], ...K, dao: { banCong: [], song: [], ...dao } }); } catch { /* dữ liệu đang sửa dở */ }
     const sh = new THREE.Shape(vien.map(([x, z]) => new THREE.Vector2(x, z)));
-    const geo = new THREE.ExtrudeGeometry(sh, { depth: 1.5, bevelEnabled: false }); geo.rotateX(Math.PI / 2);
-    const dat = new THREE.Mesh(geo, mat(dao.trong ? '#D9C2A0' : dao.mauNen || '#9CCB6E')); nhom.add(dat);
-    for (const p of (K.loi?.length ? K.loi : loiAo(K))) {
-      const d = p.diem || [], c = mat(p.kieu === 'tham' ? '#C0504A' : p.kieu === 'go' ? '#A7744A' : LAT.has(p.kieu) ? '#D8D2C4' : '#D6B98A');
-      for (let i = 1; i < d.length; i++) { const [ax, az] = d[i - 1], [bx, bz] = d[i], L = Math.hypot(bx - ax, bz - az); const b = new THREE.Mesh(new THREE.BoxGeometry(L + (+p.rong || 1.5), 0.04, +p.rong || 1.5), c); b.position.set((ax + bx) / 2, 0.02 + i * 0.0005, (az + bz) / 2); b.rotation.y = -Math.atan2(bz - az, bx - ax); nhom.add(b); }
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: dao.trong ? 0.3 : 1.2, bevelEnabled: false }); geo.rotateX(Math.PI / 2);
+    nhom.add(new THREE.Mesh(geo, mat(dao.trong ? '#D9C2A0' : dao.mauNen || (dao.nenCat ? '#EAD7AE' : '#9CCB6E'))));
+    if (!dao.trong) {   // vách đất dưới đảo, ban công
+      const v2 = vien.map(([x, z]) => new THREE.Vector2(x * 0.92, z * 0.92)), g2 = new THREE.ExtrudeGeometry(new THREE.Shape(v2), { depth: 5, bevelEnabled: false }); g2.rotateX(Math.PI / 2); g2.translate(0, -1.2, 0);
+      nhom.add(new THREE.Mesh(g2, mat('#B08E68')));
+      for (const gb of dao.banCong || []) { const a = gb * DEG, e = banKinh(dao)(a), b = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, 0.25, 20), mat('#C9A27A')); b.position.set(Math.cos(a) * (e + 0.6), 0.05, Math.sin(a) * (e + 0.6)); nhom.add(b); }
+    } else {   // tường phòng thấp cho dễ nhìn
+      for (let i = 0; i < vien.length; i++) { const [ax, az] = vien[i], [bx, bz] = vien[(i + 1) % vien.length], L = Math.hypot(bx - ax, bz - az), w = new THREE.Mesh(new THREE.BoxGeometry(L, 1.2, 0.2), mat('#F1E6CC')); w.position.set((ax + bx) / 2, 0.6, (az + bz) / 2); w.rotation.y = -Math.atan2(bz - az, bx - ax); nhom.add(w); }
     }
-    for (const c of K.cong || []) { const p = congXY(c, dao), g = new THREE.Group(); for (const s of [-1.2, 1.2]) { const cot = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 2.4, 8), mat('#C4553F')); cot.position.set(s, 1.2, 0); g.add(cot); } const xa = new THREE.Mesh(new THREE.BoxGeometry(3, 0.25, 0.3), mat('#C4553F')); xa.position.y = 2.4; g.add(xa); g.position.set(p.x, 0, p.z); g.rotation.y = -Math.atan2(p.z, p.x) + Math.PI / 2; nhom.add(g); }
+    for (const [a, b, c, d] of dao.vung || []) { const m = new THREE.Mesh(new THREE.BoxGeometry(b - a, 0.06, d - c), mat('#D8D2C4')); m.position.set((a + b) / 2, 0.03, (c + d) / 2); nhom.add(m); }
+    const nuocMat = new THREE.MeshLambertMaterial({ color: new THREE.Color('#6DB9CC').convertSRGBToLinear(), transparent: true, opacity: 0.85 });
+    for (const [a, b, c, d] of K.nuoc || []) { const m = new THREE.Mesh(new THREE.BoxGeometry(b - a, 0.5, d - c), nuocMat); m.position.set((a + b) / 2, -0.2, (c + d) / 2); nhom.add(m); }
+    const daiBang = (d, rong, m, y) => { for (let i = 1; i < d.length; i++) { const [ax, az] = d[i - 1], [bx, bz] = d[i], L = Math.hypot(bx - ax, bz - az); const b = new THREE.Mesh(new THREE.BoxGeometry(L + rong * 0.98, 0.05, rong), m); b.position.set((ax + bx) / 2, y + i * 0.0005, (az + bz) / 2); b.rotation.y = -Math.atan2(bz - az, bx - ax); nhom.add(b); } };
+    if (K.suoi?.diem) daiBang(K.suoi.diem, +K.suoi.rong || 1.6, nuocMat, 0.03);
+    if (K.san) { const s0 = new THREE.Mesh(new THREE.CylinderGeometry(K.san.r, K.san.r, 0.08, 64), mat('#E8E0D0')); s0.position.y = 0.04; nhom.add(s0); if (K.san.nuoc) { const w = new THREE.Mesh(new THREE.CylinderGeometry(K.san.nuoc, K.san.nuoc, 0.3, 40), nuocMat); w.position.y = 0.1; nhom.add(w); } }
+    if (K.duongVong) { const r = new THREE.Mesh(new THREE.RingGeometry(K.duongVong.r - K.duongVong.rong / 2, K.duongVong.r + K.duongVong.rong / 2, 96), mat('#D8D2C4')); r.rotation.x = -Math.PI / 2; r.position.y = 0.035; nhom.add(r); }
+    if (K.daiLo && H) for (const rd of H.ROADS) daiBang([[Math.cos(rd.a) * (H.PLAZA_R - 1), Math.sin(rd.a) * (H.PLAZA_R - 1)], [rd.px, rd.pz]], K.daiLo.rong, mat('#D8D2C4'), 0.03);
+    for (const p of K.loi || []) daiBang(p.diem || [], +p.rong || 1.5, mat(p.kieu === 'tham' ? '#C0504A' : p.kieu === 'go' ? '#A7744A' : LAT.has(p.kieu) ? '#D8D2C4' : '#D6B98A'), p.kieu === 'go' ? 0.12 : 0.02);
+    // cổng + cầu ra biển mây theo hướng cổng (hinh.mjs: ROADS như game)
+    const congDs = H ? H.ROADS : (K.cong || []).map((c) => { const p = congXY(c, dao), a = Math.atan2(p.z, p.x); return { ...c, px: p.x, pz: p.z, a, h: a }; });
+    for (const c of congDs) {
+      const g = new THREE.Group(), cot = c.kieu === 'cua' ? '#8A5A3A' : /tre/.test(c.kieu || '') ? '#7FB84E' : '#C4553F';
+      for (const s of [-1.6, 1.6]) { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 3, 8), mat(cot)); m.position.set(0, 1.5, s); g.add(m); }
+      const xa = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 3.8), mat(cot)); xa.position.y = 3; g.add(xa);
+      g.position.set(c.px, 0, c.pz); g.rotation.y = -c.h; nhom.add(g);
+      if (!dao.trong && c.kieu !== 'cap-treo') { const x0 = c.qx ?? c.px, z0 = c.qz ?? c.pz; daiBang([[x0, z0], [x0 + Math.cos(c.h) * 10, z0 + Math.sin(c.h) * 10]], 2.2, mat(/tre/.test(c.kieu || '') ? '#9CC46A' : '#A7744A'), 0); }
+    }
     const cay = (x, z, s = 1) => { const g = new THREE.Group(), t = new THREE.Mesh(new THREE.CylinderGeometry(0.18 * s, 0.25 * s, 1.6 * s, 6), mat('#8A5A3A')); t.position.y = 0.8 * s; g.add(t); const l = new THREE.Mesh(new THREE.IcosahedronGeometry(1.3 * s, 0), mat('#5FA852')); l.position.y = 2.5 * s; g.add(l); g.position.set(x, 0, z); nhom.add(g); };
     for (const [x, z, n, to] of K.cay?.lum || []) for (let k = 0; k < Math.max(1, n); k++) cay(x + (k ? Math.cos(k * 2.4) * 2.2 : 0), z + (k ? Math.sin(k * 2.4) * 2.2 : 0), k === 0 && to ? to * 1.4 : 1.1);
     for (const [x, z, s] of K.cay?.diem || []) cay(x, z, s || 1);

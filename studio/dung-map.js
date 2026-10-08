@@ -1,25 +1,30 @@
 // Dựng map: bản vẽ 2D từ trên xuống (lưới mét), công cụ, bảng thuộc tính, hoàn tác, bản nháp, xuất JSON/PNG, kiểm tra cỡ.
 import { $, el, DEG, r2, fmt, taiKhu, taiBanDo, taiXuong, luu, vatXY, vatRot, vienDao, congXY, loiAo, LAT } from './chung.js';
-import { kiemKhu, khoangCachXem, congToiDiem, doThi, diBo, coVat, V_CO, V_LAT } from './kiem-co.js';
+import { kiemKhu, khoangCachXem, congToiDiem, doThi, diBo, coVat, V_CO, V_LAT, luoiDi, diBoTranh } from './kiem-co.js';
 import { taoXemKhu } from './xem-3d.js';
+import { veTay } from './ve-tay.js';
+import { tomTatKhu } from './tom-tat.js';
+import { ghiGon } from './json-gon.js';
 
 const SNAP = 0.5, snap = (v) => Math.round(v / SNAP) * SNAP;
 const DS_DIEM = ['npc', 'gocAnh'];   // mảng điểm có x, z được sửa trực tiếp
 const BO_QUA = new Set(['cong', 'loi', 'vat', 'cay', 'npc', 'gocAnh']);
 
 export function taoDungMap(root, M) {
-  const S = { id: null, K: null, goc: '', chon: null, tool: 'chon', model: null, cam: { x: 0, z: 0, s: 8 }, nen: { img: null, vb: null, on: false, op: 0.6 }, hoan: [], lam: [], loiMoi: null, do: [], doKq: null, loiCo: [], an: { khac: true, nhan: true } };
+  const S = { id: null, K: null, goc: '', chon: null, tool: 'chon', model: null, cam: { x: 0, z: 0, s: 8 }, nen: { img: null, vb: null, on: false, op: 0.6 }, tay: { on: false, img: null, vb: null, svg: '' }, hoan: [], lam: [], loiMoi: null, do: [], doKq: null, loiCo: [], an: { khac: true, nhan: true } };
   window.__studio = S;
   // ---- khung ----
   const cv = el('canvas', { class: 'map-cv', tabindex: 0 }), ctx = cv.getContext('2d');
   const cv3 = el('canvas', { class: 'map-3d' });
-  const thuocTinh = el('div', { class: 'tt' }), kiemTra = el('div', { class: 'kt' });
+  const thuocTinh = el('div', { class: 'tt' }), kiemTra = el('div', { class: 'kt' }), khacGoc = el('div', { class: 'kg' });
+  const chonTep = el('input', { type: 'file', accept: '.json,application/json', hidden: true, onchange: () => { if (chonTep.files[0]) moTep(chonTep.files[0]); chonTep.value = ''; } });
   const chonKhu = el('select', { class: 'chon-khu', 'aria-label': 'Chọn khu' }, M.khu.map((k) => el('option', { value: k.id }, (k.trong ? '🏠 ' : '') + k.ten + ' · ' + k.id)));
   const tim = el('input', { type: 'search', placeholder: 'Tìm model…' }), dsModel = el('div', { class: 'ds-model' });
   const nutTool = (id, ten, goiY) => el('button', { class: 'tool', 'data-tool': id, title: goiY, onclick: () => datTool(id) }, ten);
   const banNhap = el('div', { class: 'ban-nhap', hidden: true });
   const trangThai = el('div', { class: 'trang-thai' });
   const opNen = el('input', { type: 'range', min: 0, max: 1, step: 0.05, value: 0.6, oninput: () => { S.nen.op = +opNen.value; ve(); } });
+  const bTay = el('input', { type: 'checkbox', onchange: () => { S.tay.on = bTay.checked; if (S.tay.on) veLaiTay(); else ve(); } });
   const bNen = el('input', { type: 'checkbox', onchange: () => { S.nen.on = bNen.checked; ve(); } });
   const trai = el('aside', { class: 'pa trai' },
     el('h3', {}, 'Công cụ'),
@@ -36,15 +41,17 @@ export function taoDungMap(root, M) {
     el('h3', {}, 'Model'), tim, dsModel,
     el('h3', {}, 'Bản đồ vẽ tay'),
     el('label', { class: 'hang' }, bNen, ' Lót tranh data/ban-do'), el('label', { class: 'hang' }, 'Độ đục ', opNen),
-    el('p', { class: 'nho' }, 'Vẽ lại tranh tay trực tiếp (chuyển tools/ban-do/but.py sang JS) để giai đoạn 2.'),
+    el('label', { class: 'hang' }, bTay, ' Vẽ lại tranh tay từ dữ liệu đang sửa'),
+    el('div', { class: 'hang' }, el('button', { onclick: () => xuatTay('svg') }, '⬇ SVG tay'), el('button', { onclick: () => xuatTay('png') }, '⬇ PNG tay')),
+    el('p', { class: 'nho' }, 'Bút vẽ là bản JS của tools/ban-do/but.py; chi tiết trang trí đặt tay trong <khu>.py không có.'),
     el('h3', {}, 'Hiện'),
     el('label', { class: 'hang' }, el('input', { type: 'checkbox', checked: true, onchange: (e) => { S.an.nhan = e.target.checked; ve(); } }), ' Nhãn'),
     el('label', { class: 'hang' }, el('input', { type: 'checkbox', checked: true, onchange: (e) => { S.an.khac = e.target.checked; ve(); } }), ' Điểm khác (mèo, bia đá…)'));
-  const tabTT = el('button', { class: 'tab-p chon', onclick: () => tabPhai('tt') }, 'Thuộc tính'), tabKT = el('button', { class: 'tab-p', onclick: () => tabPhai('kt') }, 'Kiểm tra cỡ ', el('b', { class: 'huy' }, '0'));
-  const phai = el('aside', { class: 'pa phai' }, el('div', { class: 'hang tabs-p' }, tabTT, tabKT), thuocTinh, kiemTra);
+  const tabTT = el('button', { class: 'tab-p chon', onclick: () => tabPhai('tt') }, 'Thuộc tính'), tabKT = el('button', { class: 'tab-p', onclick: () => tabPhai('kt') }, 'Kiểm tra cỡ ', el('b', { class: 'huy' }, '0')), tabKG = el('button', { class: 'tab-p', onclick: () => tabPhai('kg') }, 'Khác gốc ', el('b', { class: 'huy xanh' }, '0'));
+  const phai = el('aside', { class: 'pa phai' }, el('div', { class: 'hang tabs-p' }, tabTT, tabKT, tabKG), thuocTinh, kiemTra, khacGoc);
   const giua = el('section', { class: 'giua' },
     el('div', { class: 'thanh' }, chonKhu,
-      el('button', { onclick: xuatJSON, class: 'chinh' }, '⬇ JSON khu'), el('button', { onclick: xuatTomTat }, '⬇ Tóm tắt thay đổi'), el('button', { onclick: xuatPNG }, '⬇ PNG'),
+      el('button', { onclick: () => chonTep.click(), title: 'Mở tệp JSON khu đã tải trước đây (hoặc kéo thả tệp vào bản đồ)' }, '⬆ Mở JSON'), chonTep, el('button', { onclick: xuatJSON, class: 'chinh' }, '⬇ JSON khu'), el('button', { onclick: xuatTomTat }, '⬇ Tóm tắt thay đổi'), el('button', { onclick: xuatPNG }, '⬇ PNG'),
       el('button', { onclick: () => { S.cam = vuaKhung(); ve(); } }, '⤢ Vừa khung'),
       el('button', { class: 'nut-pa', onclick: () => root.classList.toggle('an-trai') }, '☰ Công cụ'), el('button', { class: 'nut-pa', onclick: () => root.classList.toggle('an-phai') }, '☰ Thuộc tính'), el('button', { class: 'nut-pa', onclick: () => root.classList.toggle('an-3d') }, '⧈ 3D')),
     el('div', { class: 'khung-cv' }, cv, trangThai, banNhap),
@@ -60,18 +67,48 @@ export function taoDungMap(root, M) {
   }
   tim.addEventListener('input', veDsModel); veDsModel();
   function datTool(t) { S.tool = t; if (t !== 'loi') ketThucLoi(); if (t !== 'do') { S.do = []; S.doKq = null; } trai.querySelectorAll('.tool').forEach((b) => b.classList.toggle('chon', b.dataset.tool === t)); goiY(); ve(); }
-  function tabPhai(t) { tabTT.classList.toggle('chon', t === 'tt'); tabKT.classList.toggle('chon', t === 'kt'); thuocTinh.hidden = t !== 'tt'; kiemTra.hidden = t !== 'kt'; if (t === 'kt') veKiem(); }
+  function tabPhai(t) { tabTT.classList.toggle('chon', t === 'tt'); tabKT.classList.toggle('chon', t === 'kt'); tabKG.classList.toggle('chon', t === 'kg'); thuocTinh.hidden = t !== 'tt'; kiemTra.hidden = t !== 'kt'; khacGoc.hidden = t !== 'kg'; if (t === 'kt') veKiem(); if (t === 'kg') veKhac(); }
+  // ---- mở lại tệp đã tải, so với bản gói sẵn ----
+  async function moTep(file) {
+    let K; try { K = JSON.parse(await file.text()); } catch (e) { alert('Tệp không phải JSON: ' + e.message); return; }
+    const id = K.id || file.name.replace(/(-\d+)?\.json$/, '');
+    if (!M.khu.some((k) => k.id === id)) { alert(`Không có khu “${id}” trong Studio.`); return; }
+    if (id !== S.id) await moKhu(id, true);
+    ghi(); S.K = K; S.chon = null; doi(); tabPhai('kg');
+  }
+  const goc = () => (S._gocObj && S._gocTxt === S.goc ? S._gocObj : (S._gocTxt = S.goc, S._gocObj = JSON.parse(S.goc)));
+  function vatKhac() {   // vật đổi chỗ / xoá: [vật gốc, có còn không]
+    const A = goc().vat || [], B = new Map((S.K.vat || []).filter((v) => v.id).map((v) => [v.id, v]));
+    return A.filter((v) => v.id && JSON.stringify(v) !== JSON.stringify(B.get(v.id))).map((v) => [v, B.has(v.id)]);
+  }
+  function veKhac() {
+    const dong = tomTatKhu(S.id, goc(), S.K).split('\n').slice(3).filter((l) => /^[~+-]/.test(l));
+    tabKG.querySelector('b').textContent = dong.length;
+    khacGoc.replaceChildren(el('h3', {}, `Khác bản gói sẵn: ${dong.length}`), el('p', { class: 'nho' }, 'Vật đổi chỗ có khung đứt màu cam ở chỗ cũ. Mở lại tệp đã tải bằng ⬆ Mở JSON hoặc kéo thả tệp vào bản đồ.'),
+      el('ul', { class: 'ds-khac' }, dong.map((l) => el('li', { class: l[0] === '+' ? 'them' : l[0] === '-' ? 'bot' : 'doi' }, l))));
+  }
   tabPhai('tt');
-  const goiY = () => { trangThai.textContent = { chon: 'Chọn: bấm vật để chọn, kéo để dời (bắt 0,5 m), kéo chấm tròn để xoay, kéo nền để cuộn, cuộn chuột/chụm 2 ngón để phóng.', 'them-vat': S.model ? `Bấm lên bản đồ để đặt “${S.model}”.` : 'Chọn một model ở cột trái.', loi: 'Bấm từng điểm của lối; bấm đúp / Enter để xong, Esc huỷ. Chọn lối có sẵn để kéo đỉnh, bấm lên đoạn để chèn đỉnh, Alt+bấm đỉnh để xoá.', npc: 'Bấm để đặt chỗ NPC.', anh: 'Bấm để đặt góc ảnh.', cay: 'Bấm để đặt lùm cây (cay.lum).', do: 'Bấm điểm A rồi điểm B: thời gian đi bộ dọc lối (cỏ 3,7 m/s, lát 4 m/s).' }[S.tool]; };
+  const goiY = () => { trangThai.textContent = { chon: 'Chọn: bấm vật để chọn, kéo để dời (bắt 0,5 m), kéo chấm tròn để xoay, kéo nền để cuộn, cuộn chuột/chụm 2 ngón để phóng.', 'them-vat': S.model ? `Bấm lên bản đồ để đặt “${S.model}”.` : 'Chọn một model ở cột trái.', loi: 'Bấm từng điểm của lối; bấm đúp / Enter để xong, Esc huỷ. Chọn lối có sẵn để kéo đỉnh, bấm lên đoạn để chèn đỉnh, Alt+bấm đỉnh để xoá.', npc: 'Bấm để đặt chỗ NPC.', anh: 'Bấm để đặt góc ảnh.', cay: 'Bấm để đặt lùm cây (cay.lum).', do: 'Bấm điểm A rồi điểm B: thời gian đi bộ tránh vật cản và nước (lưới 0,5 m; cỏ 3,7 m/s, đường lát 4 m/s).' }[S.tool]; };
 
   // ---- dữ liệu, hoàn tác, nháp ----
   const ghi = () => { S.hoan.push(JSON.stringify(S.K)); if (S.hoan.length > 200) S.hoan.shift(); S.lam = []; };
-  let hen3d = 0;
+  let hen3d = 0, henTay = 0, henKiem = 0;
+  function veLaiTay() {
+    const svg = veTay(S.K, M); S.tay.svg = svg; S.tay.vb = /viewBox="([^"]+)"/.exec(svg)[1].split(/[\s,]+/).map(Number);
+    const img = new Image(); img.onload = () => { S.tay.img = img; ve(); }; img.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  }
+  function xuatTay(kieu) {
+    const svg = veTay(S.K, M);
+    if (kieu === 'svg') return taiXuong(`${S.id}.svg`, svg, 'image/svg+xml');
+    const img = new Image(); img.onload = () => { const c = document.createElement('canvas'); c.width = c.height = 1024; c.getContext('2d').drawImage(img, 0, 0, 1024, 1024); c.toBlob((b) => taiXuong(`${S.id}-tay.png`, b), 'image/png'); };
+    img.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  }
   function doi(khongVe3d) {
     luu.set('nhap:' + S.id, JSON.stringify(S.K)); banNhap.hidden = false;
     banNhap.replaceChildren('Đã lưu nháp trong trình duyệt. ', el('button', { onclick: boNhap }, 'Bỏ nháp, về bản gốc'));
     S.loiCo = kiemKhu(S.K, M); tabKT.querySelector('b').textContent = S.loiCo.length;
-    ve(); veTT(); if (!kiemTra.hidden) veKiem();
+    ve(); veTT(); if (!kiemTra.hidden) { clearTimeout(henKiem); henKiem = setTimeout(veKiem, 400); } veKhac();
+    if (S.tay.on && !khongVe3d) { clearTimeout(henTay); henTay = setTimeout(veLaiTay, 250); }
     if (!khongVe3d) { clearTimeout(hen3d); hen3d = setTimeout(() => X3.dung(S.K), 350); }
   }
   function hoanTac() { if (!S.hoan.length) return; S.lam.push(JSON.stringify(S.K)); S.K = JSON.parse(S.hoan.pop()); S.chon = null; doi(); }
@@ -87,7 +124,7 @@ export function taoDungMap(root, M) {
     if (svg) { const vb = /viewBox="([^"]+)"/.exec(svg)?.[1].split(/[\s,]+/).map(Number); const img = new Image(); img.onload = () => ve(); img.src = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })); S.nen.img = img; S.nen.vb = vb; }
     bNen.disabled = !svg; bNen.parentElement.title = svg ? '' : 'Khu này chưa có tranh vẽ tay';
     S.cam = vuaKhung(); S.loiCo = kiemKhu(S.K, M); tabKT.querySelector('b').textContent = S.loiCo.length;
-    ve(); veTT(); veKiem(); X3.dung(S.K);
+    ve(); veTT(); veKiem(); veKhac(); X3.dung(S.K); if (S.tay.on) veLaiTay();
     try { history.replaceState(null, '', '#map/' + id); } catch { /* bỏ qua */ }
   }
   chonKhu.addEventListener('change', () => moKhu(chonKhu.value));
@@ -128,6 +165,21 @@ export function taoDungMap(root, M) {
     return [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]].map(([lx, lz]) => { lx += ox; lz += oz; return [x + lx * Math.cos(t) + lz * Math.sin(t), z - lx * Math.sin(t) + lz * Math.cos(t)]; }); }
   const tayXoay = (v) => { const { x, z } = vatXY(v), t = vatRot(v), [w, d] = coVatXZ(v), R = Math.max(w, d) / 2 + 1.2; return [x + Math.cos(t) * R, z - Math.sin(t) * R]; };
   function tayDao() { const D = S.K.dao; if (D.elip) return [{ k: 'rx', x: D.elip.x + D.elip.rx, z: D.elip.z }, { k: 'rz', x: D.elip.x, z: D.elip.z + D.elip.rz }]; if (D.hcn) return [{ k: 'h0', x: D.hcn[0], z: 0 }, { k: 'h1', x: 0, z: D.hcn[1] }]; return [{ k: 'r', x: D.vuong ? D.r : banR(0), z: 0 }]; }
+  // tay nắm khác (Q367): sân, đường vòng, đại lộ, suối, vùng nước, vùng đi (hẻm), tâm đảo bầu dục
+  function tayKhac() {
+    const K = S.K, o = [], c45 = Math.SQRT1_2;
+    if (K.dao.elip) { const E = K.dao.elip; o.push({ ten: 'tâm đảo bầu dục', x: E.x, z: E.z, dat: (x, z) => { E.x = x; E.z = z; } }); }
+    if (K.san?.r) { o.push({ ten: 'san.r', x: -K.san.r * c45, z: K.san.r * c45, dat: (x, z) => { K.san.r = Math.max(2, r2(Math.hypot(x, z))); } }); if (K.san.nuoc) o.push({ ten: 'san.nuoc', x: 0, z: -K.san.nuoc, dat: (x, z) => { K.san.nuoc = Math.max(0.5, r2(Math.hypot(x, z))); } }); }
+    if (K.duongVong?.r) { const D = K.duongVong; o.push({ ten: 'duongVong.r', x: D.r * c45, z: -D.r * c45, dat: (x, z) => { D.r = Math.max(3, r2(Math.hypot(x, z))); } }); o.push({ ten: 'duongVong.rong', x: (D.r + D.rong / 2) * c45, z: (D.r + D.rong / 2) * c45, dat: (x, z) => { D.rong = Math.max(1, r2(2 * Math.abs(Math.hypot(x, z) - D.r))); } }); }
+    if (K.daiLo?.rong) { const L = K.daiLo, x0 = (K.san?.r || 10) + 4; o.push({ ten: 'daiLo.rong', x: x0, z: L.rong / 2, dat: (x, z) => { L.rong = Math.max(1, r2(2 * Math.abs(z))); } }); }
+    (K.suoi?.diem || []).forEach((p, j) => o.push({ ten: `suoi.diem[${j}]`, x: p[0], z: p[1], dat: (x, z) => { K.suoi.diem[j] = [x, z]; } }));
+    for (const ten of ['nuoc', 'vung']) { const ds = ten === 'nuoc' ? K.nuoc : K.dao.vung; (ds || []).forEach((q, j) => {
+      o.push({ ten: `${ten}[${j}] góc 1`, x: q[0], z: q[2], dat: (x, z) => { q[0] = Math.min(x, q[1] - 0.5); q[2] = Math.min(z, q[3] - 0.5); } });
+      o.push({ ten: `${ten}[${j}] góc 2`, x: q[1], z: q[3], dat: (x, z) => { q[1] = Math.max(x, q[0] + 0.5); q[3] = Math.max(z, q[2] + 0.5); } });
+      o.push({ ten: `${ten}[${j}] dời`, x: (q[0] + q[1]) / 2, z: (q[2] + q[3]) / 2, tron: true, dat: (x, z) => { const w = q[1] - q[0], h = q[3] - q[2]; q[0] = r2(x - w / 2); q[1] = r2(x + w / 2); q[2] = r2(z - h / 2); q[3] = r2(z + h / 2); } });
+    }); }
+    return o;
+  }
   const banR = (a) => (S.K.dao.song || []).reduce((r, [am, k, ph]) => r + am * Math.sin(k * a + ph), S.K.dao.r);
   const trongDaGiac = (P, x, z) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > z) !== (P[j][1] > z) && x < (P[j][0] - P[i][0]) * (z - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
   const dDoan = (x, z, [ax, az], [bx, bz]) => { const dx = bx - ax, dz = bz - az, L = dx * dx + dz * dz || 1, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / L)); return Math.hypot(x - ax - dx * t, z - az - dz * t); };
@@ -136,6 +188,7 @@ export function taoDungMap(root, M) {
     if (S.chon?.loai === 'loi') { const p = S.K.loi[S.chon.i]; for (let j = 0; j < p.diem.length; j++) if (Math.hypot(p.diem[j][0] - x, p.diem[j][1] - z) < tol) return { ...S.chon, dinh: j }; }
     if (S.chon?.loai === 'vat') { const [hx, hz] = tayXoay(lay(S.chon)); if (Math.hypot(hx - x, hz - z) < tol * 1.2) return { ...S.chon, xoay: true }; }
     for (const h of tayDao()) if (Math.hypot(h.x - x, h.z - z) < tol) return { loai: 'dao', tay: h.k };
+    for (const h of tayKhac()) if (Math.hypot(h.x - x, h.z - z) < tol) return { loai: 'tay', h };
     const diem = [...(S.K.cong || []).map((_, i) => ({ loai: 'cong', i })), ...DS_DIEM.flatMap((k) => (S.K[k] || []).map((_, i) => ({ loai: k, i }))), ...(S.K.cay?.lum || []).map((_, i) => ({ loai: 'lum', i })), ...(S.K.cay?.diem || []).map((_, i) => ({ loai: 'diem', i })), ...khacDs()];
     let best = null; for (const c of diem) { const p = viTri(c), d = Math.hypot(p.x - x, p.z - z); if (d < tol * 1.1 && (!best || d < best.d)) best = { c, d }; } if (best) return best.c;
     for (let i = (S.K.vat || []).length - 1; i >= 0; i--) { if (trongDaGiac(gocHop(S.K.vat[i]), x, z)) return { loai: 'vat', i }; }
@@ -161,7 +214,8 @@ export function taoDungMap(root, M) {
     for (const [a, b, c, d] of K.dao.vung || []) { const [p, q] = P(a, c), [r, t] = P(b, d); ctx.fillStyle = 'rgba(200,190,170,.5)'; ctx.fillRect(p, q, r - p, t - q); }
     for (const [a, b, c, d] of K.nuoc || []) { const [p, q] = P(a, c), [r, t] = P(b, d); ctx.fillStyle = 'rgba(90,160,210,.6)'; ctx.fillRect(p, q, r - p, t - q); }
     if (S.nen.on && S.nen.img?.complete && S.nen.vb) { ctx.globalAlpha = S.nen.op; const [vx, vz, vw, vh] = S.nen.vb, [a, b] = P(vx, vz); ctx.drawImage(S.nen.img, a, b, vw * s, vh * s); ctx.globalAlpha = 1; }
-    if (K.san) { const [a, b] = P(0, 0); ctx.fillStyle = 'rgba(232,224,208,.8)'; ctx.beginPath(); ctx.arc(a, b, K.san.r * s, 0, 7); ctx.fill(); }
+    if (S.tay.on && S.tay.img && S.tay.vb) { const [vx, vz, vw, vh] = S.tay.vb, [a, b] = P(vx, vz); ctx.drawImage(S.tay.img, a, b, vw * s, vh * s); }
+    if (K.san && !S.tay.on) { const [a, b] = P(0, 0); ctx.fillStyle = 'rgba(232,224,208,.8)'; ctx.beginPath(); ctx.arc(a, b, K.san.r * s, 0, 7); ctx.fill(); }
     // lối
     const veLoi = (p, ao) => { const d = p.diem || []; if (d.length < 2) return; ctx.lineCap = ctx.lineJoin = 'round'; ctx.strokeStyle = MAU_LOI[p.kieu] || (LAT.has(p.kieu) ? '#D8D2C4' : '#D6B98A'); ctx.globalAlpha = ao ? 0.7 : 1; ctx.lineWidth = Math.max(2, (+p.rong || 1.5) * s); ctx.beginPath(); d.forEach(([x, z], i) => { const [a, b] = P(x, z); i ? ctx.lineTo(a, b) : ctx.moveTo(a, b); }); ctx.stroke(); ctx.globalAlpha = 1; };
     (K.loi?.length ? [] : loiAo(K)).forEach((p) => veLoi(p, true)); (K.loi || []).forEach((p) => veLoi(p));
@@ -193,6 +247,8 @@ export function taoDungMap(root, M) {
       (K.vat || []).forEach((v) => { if (!v.diaDanh && s < 6) return; const { x, z } = vatXY(v), [a, b] = P(x, z), t = v.diaDanh?.ten || v.id || v.loai; ctx.fillStyle = 'rgba(255,255,255,.75)'; const tw = ctx.measureText(t).width; ctx.fillRect(a - tw / 2 - 2, b - 19, tw + 4, 13); ctx.fillStyle = '#2A2030'; ctx.fillText(t, a - tw / 2, b - 9); });
       if (s > 6) (K.npc || []).forEach((n) => { const [a, b] = P(n.x, n.z); ctx.fillText(n.ten, a + 9, b + 4); });
       if (s > 6) (K.gocAnh || []).forEach((n) => { const [a, b] = P(n.x, n.z); ctx.fillText(n.ten, a + 9, b + 4); }); }
+    // chỗ cũ của vật đã đổi (so với bản gói sẵn)
+    for (const [v, con] of vatKhac()) { const g = gocHop(v); ctx.setLineDash([5, 4]); ctx.strokeStyle = con ? '#E8892A' : '#E0403A'; ctx.lineWidth = 1.5; ctx.beginPath(); g.forEach(([x, z], j) => { const [a, b] = P(x, z); j ? ctx.lineTo(a, b) : ctx.moveTo(a, b); }); ctx.closePath(); ctx.stroke(); ctx.setLineDash([]); }
     // chọn
     if (S.chon) {
       ctx.strokeStyle = '#1F6FEB'; ctx.lineWidth = 2;
@@ -201,6 +257,7 @@ export function taoDungMap(root, M) {
       else if (S.chon.loai !== 'dao') { const p = viTri(S.chon); if (p) { const [a, b] = P(p.x, p.z); ctx.beginPath(); ctx.arc(a, b, 11, 0, 7); ctx.stroke(); } }
     }
     for (const t of tayDao()) { const [a, b] = P(t.x, t.z); ctx.fillStyle = S.chon?.loai === 'dao' ? '#1F6FEB' : '#fff'; ctx.strokeStyle = '#1F6FEB'; ctx.lineWidth = 2; ctx.fillRect(a - 5, b - 5, 10, 10); ctx.strokeRect(a - 5, b - 5, 10, 10); }
+    for (const t of tayKhac()) { const [a, b] = P(t.x, t.z); ctx.fillStyle = '#FFE2B8'; ctx.strokeStyle = '#E8892A'; ctx.lineWidth = 2; ctx.beginPath(); t.tron ? ctx.arc(a, b, 5, 0, 7) : ctx.rect(a - 4.5, b - 4.5, 9, 9); ctx.fill(); ctx.stroke(); }
     // lối đang vẽ
     if (S.loiMoi?.length) { ctx.strokeStyle = '#1F6FEB'; ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.beginPath(); S.loiMoi.forEach(([x, z], i) => { const [a, b] = P(x, z); i ? ctx.lineTo(a, b) : ctx.moveTo(a, b); }); if (S.troi) { const [a, b] = P(...S.troi); ctx.lineTo(a, b); } ctx.stroke(); ctx.setLineDash([]); }
     // đo đi bộ
@@ -239,7 +296,7 @@ export function taoDungMap(root, M) {
       kq.push(el('h3', {}, nhan(c)), el('p', { class: 'nho' }, { vat: 'Vật', cong: 'Cổng', loi: 'Lối', npc: 'Chỗ NPC', gocAnh: 'Góc ảnh', lum: 'Lùm cây [x, z, số cây, to]', diem: 'Cây [x, z, cỡ]', khac: 'Mảng ' + c.k, dao: 'Đảo' }[c.loai] + (c.loai === 'vat' && !M.modelMap[o.loai] ? ' · chưa có model .glb (vẽ hộp theo r)' : '')));
       if (Array.isArray(o)) { const ten = c.loai === 'lum' ? ['x', 'z', 'số cây', 'to'] : ['x', 'z', 'cỡ']; o.forEach((v, j) => kq.push(oNhap(ten[j] || String(j), v, (nv) => { o[j] = nv; }))); }
       else {
-        if (c.loai === 'vat') { const cv2 = coVat(o, M); if (cv2) kq.push(el('p', { class: 'nho' }, `Cỡ model: ${fmt(cv2.w, 2)} × ${fmt(cv2.d, 2)} × cao ${fmt(cv2.h, 2)} m`)); }
+        if (c.loai === 'vat') { const cv2 = coVat(o, M); if (cv2) kq.push(el('p', { class: 'nho' }, `Cỡ model: ${fmt(cv2.w, 2)} × ${fmt(cv2.d, 2)} × cao ${fmt(cv2.h, 2)} m` + (cv2.mat != null && cv2.m.matDT > 0.2 ? ` · mặt trên ${fmt(cv2.mat, 2)} m` : ''))); }
         if (c.loai === 'loi') kq.push(el('p', { class: 'nho' }, `Dài ${fmt(o.diem.slice(1).reduce((t, p, j) => t + Math.hypot(p[0] - o.diem[j][0], p[1] - o.diem[j][1]), 0))} m · ${o.diem.length} đỉnh`));
         for (const [k, v] of Object.entries(o)) kq.push(oNhap(k, v, (nv) => { if (nv === null || nv === '') delete o[k]; else o[k] = nv; }));
         const kMoi = el('input', { type: 'text', placeholder: 'tên trường mới' });
@@ -256,7 +313,7 @@ export function taoDungMap(root, M) {
     const L = S.loiCo, kq = [el('h3', {}, `Sai chuẩn cỡ: ${L.length}`), el('p', { class: 'nho' }, 'Chuẩn CLAUDE.md (Q361), dung sai 10 %. Bấm dòng để chọn.')];
     kq.push(el('ul', { class: 'ds-loi' }, L.map((l) => el('li', { onclick: () => { S.chon = { loai: l.loai, i: l.i }; const p = viTri(S.chon); S.cam.x = p.x; S.cam.z = p.z; tabPhai('tt'); ve(); veTT(); } }, el('b', { class: 'huy' }, '!'), ` ${l.id} · ${l.nhom}: ${l.doDo} ${fmt(l.val, 2)} m (chuẩn ${fmt(l.min, 2)}–${fmt(l.max, 2)})`))));
     if (!L.length) kq.push(el('p', {}, 'Mọi vật và lối đều đúng chuẩn.'));
-    kq.push(el('h3', {}, 'Đi bộ cổng → điểm chính'), el('p', { class: 'nho' }, `Dọc lối: cỏ/đất ${fmt(V_CO)} m/s, lát ${fmt(V_LAT)} m/s.${S.K.loi?.length ? '' : ' Khu không có “loi”: dùng đường vòng + đại lộ tổng hợp.'}`));
+    kq.push(el('h3', {}, 'Đi bộ cổng → điểm chính'), el('p', { class: 'nho' }, `Tìm đường tránh vật cản (vòng va chạm vật, nước, mép đảo) trên lưới 0,5 m: cỏ/đất ${fmt(V_CO)} m/s, đường lát ${fmt(V_LAT)} m/s.`));
     for (const g of congToiDiem(S.K)) kq.push(el('details', {}, el('summary', {}, `Cổng ${g.cong.id} (${g.cong.ten || g.cong.toi}) · gần nhất ${g.ds[0] ? fmt(g.ds[0].t) + ' s' : '–'}`), el('table', {}, g.ds.map((d) => el('tr', {}, el('td', {}, d.p.ten), el('td', { class: 'so' }, fmt(d.t) + ' s'), el('td', { class: 'so' }, fmt(d.m, 0) + ' m'))))));
     if (!S.K.dao?.trong) {
       const kc = khoangCachXem(S.K);
@@ -301,7 +358,7 @@ export function taoDungMap(root, M) {
     if (e.button === 1 || e.button === 2) { keo = { cuon: true, sx: e.clientX, sz: e.clientY, cam: { ...S.cam } }; return; }
     if (S.tool === 'them-vat') { if (S.model) them('vat', snap(x), snap(z)); return; }
     if (S.tool === 'npc' || S.tool === 'anh' || S.tool === 'cay') { them(S.tool, snap(x), snap(z)); return; }
-    if (S.tool === 'do') { if (S.do.length >= 2) { S.do = []; S.doKq = null; } S.do.push({ x, z }); if (S.do.length === 2) S.doKq = diBo(doThi(S.K), S.do[0], S.do[1]); ve(); return; }
+    if (S.tool === 'do') { if (S.do.length >= 2) { S.do = []; S.doKq = null; } S.do.push({ x, z }); if (S.do.length === 2) { const L = luoiDi(S.K); S.doKq = (L && diBoTranh(L, S.do[0], S.do[1])) || diBo(doThi(S.K), S.do[0], S.do[1]); } ve(); return; }
     const h = trung(x, z);
     if (S.tool === 'loi' && !(h?.loai === 'loi' && h.i === S.chon?.i && S.chon?.loai === 'loi')) {
       if (e.detail >= 2) { ketThucLoi(); return; }
@@ -309,6 +366,7 @@ export function taoDungMap(root, M) {
     }
     if (h?.loai === 'loi' && h.dinh != null && e.altKey) { const p = S.K.loi[h.i]; if (p.diem.length > 2) { ghi(); p.diem.splice(h.dinh, 1); doi(); } return; }
     if (h?.loai === 'loi' && h.doan != null && S.chon?.loai === 'loi' && S.chon.i === h.i) { ghi(); S.K.loi[h.i].diem.splice(h.doan, 0, [snap(x), snap(z)]); keo = { c: { ...h, dinh: h.doan }, dau: true }; doi(true); return; }
+    if (h?.loai === 'tay') { S.chon = null; keo = { tay2: h.h.ten, dau: false }; ve(); veTT(); trangThai.textContent = 'Kéo: ' + h.h.ten; return; }
     if (h) {
       const coDinh = h.dinh != null, xoay = h.xoay, tay = h.tay;
       S.chon = { loai: h.loai, i: h.i, k: h.k }; if (h.loai === 'dao') S.chon = { loai: 'dao' };
@@ -328,6 +386,7 @@ export function taoDungMap(root, M) {
     if (keo.cuon) { S.cam.x = keo.cam.x - (e.clientX - keo.sx) / S.cam.s; S.cam.z = keo.cam.z - (e.clientY - keo.sz) / S.cam.s; ve(); return; }
     if (!keo.dau) { ghi(); keo.dau = true; }
     const c = keo.c;
+    if (keo.tay2) { const h = tayKhac().find((t) => t.ten === keo.tay2); if (h) h.dat(snap(x), snap(z)); doi(true); return; }
     if (keo.tay) { const D = S.K.dao; if (keo.tay === 'r') D.r = r2(Math.max(3, D.vuong ? snap(x) : snap(Math.hypot(x, z)))); else if (keo.tay === 'rx') D.elip.rx = Math.max(3, snap(x - D.elip.x)); else if (keo.tay === 'rz') D.elip.rz = Math.max(3, snap(z - D.elip.z)); else if (keo.tay === 'h0') D.hcn[0] = Math.max(2, snap(x)); else if (keo.tay === 'h1') D.hcn[1] = Math.max(2, snap(z)); }
     else if (keo.xoay) { const v = lay(c), p = vatXY(v); let q = Math.round(Math.atan2(-(z - p.z), x - p.x) / DEG); if (!e.shiftKey) q = Math.round(q / 15) * 15; v.quay = q; delete v.lech; }
     else if (keo.dinh != null || c.dinh != null) { const j = keo.dinh ?? c.dinh; S.K.loi[c.i].diem[j] = [snap(x), snap(z)]; }
@@ -352,32 +411,15 @@ export function taoDungMap(root, M) {
     else if (S.chon && S.chon.loai !== 'dao' && k.startsWith('arrow')) { e.preventDefault(); const p = viTri(S.chon), d = e.shiftKey ? 2 : SNAP; ghi(); datViTri(S.chon, p.x + (k === 'arrowleft' ? -d : k === 'arrowright' ? d : 0), p.z + (k === 'arrowup' ? -d : k === 'arrowdown' ? d : 0)); doi(); }
   });
   new ResizeObserver(() => ve()).observe(cv);
+  cv.addEventListener('dragover', (e) => { e.preventDefault(); });
+  cv.addEventListener('drop', (e) => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f) moTep(f); });
 
   // ---- xuất ----
-  const jsonKhu = () => JSON.stringify(S.K, null, 2) + '\n';
+  const jsonKhu = () => ghiGon(S.K, S.goc);
   function xuatJSON() { taiXuong(`${S.id}.json`, jsonKhu()); }
-  function tomTat() {
-    const A = JSON.parse(S.goc), B = S.K, dong = [`Phố Mây Studio · thay đổi khu ${S.id} (${B.ten || ''}) · ${new Date().toLocaleString('vi-VN')}`, `Tệp đích: data/khu/${S.id}.json`, ''];
-    const tenMuc = (o, i) => (o && typeof o === 'object' && !Array.isArray(o) ? o.id || o.ten || `#${i}` : `#${i}`);
-    const keys = new Set([...Object.keys(A), ...Object.keys(B)]);
-    for (const k of keys) {
-      const a = A[k], b = B[k]; if (JSON.stringify(a) === JSON.stringify(b)) continue;
-      if (Array.isArray(a) && Array.isArray(b) && [...a, ...b].every((o) => o && typeof o === 'object' && !Array.isArray(o) && (o.id || o.ten))) {
-        const key = (o) => o.id || o.ten, ma = new Map(a.map((o) => [key(o), o])), mb = new Map(b.map((o) => [key(o), o]));
-        for (const [id, o] of mb) { if (!ma.has(id)) dong.push(`+ ${k}: thêm “${id}” ${JSON.stringify(o)}`); else if (JSON.stringify(ma.get(id)) !== JSON.stringify(o)) { const oa = ma.get(id); const tr = [...new Set([...Object.keys(oa), ...Object.keys(o)])].filter((f) => JSON.stringify(oa[f]) !== JSON.stringify(o[f])).map((f) => `${f}: ${JSON.stringify(oa[f])} → ${JSON.stringify(o[f])}`); dong.push(`~ ${k}: “${id}” ${tr.join('; ')}`); } }
-        for (const id of ma.keys()) if (!mb.has(id)) dong.push(`- ${k}: xoá “${id}”`);
-      } else if (Array.isArray(a) && Array.isArray(b)) {
-        const n = Math.max(a.length, b.length); for (let i = 0; i < n; i++) if (JSON.stringify(a[i]) !== JSON.stringify(b[i])) dong.push(`${a[i] === undefined ? '+' : b[i] === undefined ? '-' : '~'} ${k}[${i}] ${tenMuc(a[i] || b[i], i)}: ${JSON.stringify(a[i]) ?? '—'} → ${JSON.stringify(b[i]) ?? '—'}`);
-      } else if (a && b && typeof a === 'object' && typeof b === 'object') {
-        for (const f of new Set([...Object.keys(a), ...Object.keys(b)])) if (JSON.stringify(a[f]) !== JSON.stringify(b[f])) dong.push(`~ ${k}.${f}: ${JSON.stringify(a[f]) ?? '—'} → ${JSON.stringify(b[f]) ?? '—'}`);
-      } else dong.push(`~ ${k}: ${JSON.stringify(a) ?? '—'} → ${JSON.stringify(b) ?? '—'}`);
-    }
-    if (dong.length === 3) dong.push('(không có thay đổi)');
-    const L = kiemKhu(B, M); dong.push('', `Kiểm tra cỡ: ${L.length} chỗ sai chuẩn.`, ...L.map((l) => `  ! ${l.id} · ${l.nhom}: ${l.doDo} ${fmt(l.val, 2)} m (chuẩn ${l.min}–${l.max})`));
-    return dong.join('\n') + '\n';
-  }
+  const tomTat = () => tomTatKhu(S.id, JSON.parse(S.goc), S.K, kiemKhu(S.K, M));
   function xuatTomTat() { taiXuong(`${S.id}-thay-doi.txt`, tomTat(), 'text/plain'); }
   function xuatPNG() { ve(); cv.toBlob((b) => taiXuong(`${S.id}-ban-do.png`, b), 'image/png'); }
 
-  return { moKhu, S, jsonKhu, tomTat, ve };
+  return { moKhu, S, jsonKhu, tomTat, ve, moTep };
 }

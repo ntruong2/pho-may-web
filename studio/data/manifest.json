@@ -1,137 +1,161 @@
 {
- "dung": "2026-10-08T14:46:10.464Z",
+ "dung": "2026-10-08T15:07:30.051Z",
+ "nguon": "src/du-lieu.html",
+ "lech": [],
  "khu": [
   {
    "id": "atelier",
    "ten": "Lụa Mây Atelier",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "ben-song",
    "ten": "Bến Sông Trăng",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "cho-dem",
    "ten": "Chợ Đêm Lồng Đèn",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "dao-bao",
    "ten": "Đảo Bão Xám",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "dinh-deo",
    "ten": "Đỉnh Đèo Sương",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "dong-lua",
    "ten": "Đồng Lúa Gió",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "hem",
    "ten": "Hẻm Đèn Dầu",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "khu-nha",
    "ten": "Khu Nhà Mái Ngói",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "lau-nha",
    "ten": "Tầng 2 Nhà Phố Ống",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "nha-chu-bay",
    "ten": "Nhà Chú Bảy",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "nong-trai",
    "ten": "Nông trại riêng",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "phong-tro",
    "ten": "Phòng Trọ Số 0",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "quang-truong",
    "ten": "Quảng Trường Đồng Hồ Mây",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "rung",
    "ten": "Rừng Đom Đóm",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "san-choi",
    "ten": "Sân Chơi Cầu Vồng",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "san-thuong",
    "ten": "Sân thượng Biệt Thự Mây",
    "trong": false,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "san-vuon",
    "ten": "Sân vườn Nhà Vườn",
    "trong": false,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "trong-dai-khi-tuong",
    "ten": "Trong Đài Khí Tượng",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "trong-thap-dong-ho",
    "ten": "Phòng Máy Đồng Hồ",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "trong-tiem-hoa",
    "ten": "Tiệm Hoa",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   },
   {
    "id": "vinh",
    "ten": "Vịnh San Hô Mây",
    "trong": false,
-   "banDo": true
+   "banDo": true,
+   "nguon": "game"
   },
   {
    "id": "xuong-tre",
    "ten": "Xưởng Tre",
    "trong": true,
-   "banDo": false
+   "banDo": false,
+   "nguon": "game"
   }
  ],
  "model": [
@@ -151,6 +175,8 @@
    "w": 11.6,
    "h": 3.5,
    "d": 8.94,
+   "matTren": 3.5,
+   "matDT": 98.15,
    "vatLieu": [
     "tuong-tim",
     "tim-san-khau",
@@ -179,6 +205,8 @@
    "w": 2.4,
    "h": 0.46,
    "d": 0.58,
+   "matTren": null,
+   "matDT": 0,
    "vatLieu": [
     "tre-dam",
     "tre-xanh"
@@ -200,6 +228,8 @@
    "w": 1.83,
    "h": 0.76,
    "d": 0.84,
+   "matTren": 0.64,
+   "matDT": 0.49,
    "vatLieu": [
     "go-cafe",
     "sat-den",
@@ -223,6 +253,8 @@
    "w": 4.42,
    "h": 2.84,
    "d": 5.56,
+   "matTren": 0.92,
+   "matDT": 1.35,
    "vatLieu": [
     "go-nau",
     "go-sang",
@@ -250,6 +282,8 @@
    "w": 1.8,
    "h": 1.3,
    "d": 0.9,
+   "matTren": 0.86,
+   "matDT": 1.81,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -274,6 +308,8 @@
    "w": 1.8,
    "h": 0.98,
    "d": 0.9,
+   "matTren": 0.86,
+   "matDT": 1.46,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -297,6 +333,8 @@
    "w": 3,
    "h": 0.79,
    "d": 2.65,
+   "matTren": 0.78,
+   "matDT": 1.83,
    "vatLieu": [
     "nhua-do",
     "nhua-xanh"
@@ -318,6 +356,8 @@
    "w": 1.4,
    "h": 0.51,
    "d": 0.8,
+   "matTren": 0.48,
+   "matDT": 1.5,
    "vatLieu": [
     "nhua-do",
     "do-son",
@@ -341,6 +381,8 @@
    "w": 2.4,
    "h": 2.32,
    "d": 0.74,
+   "matTren": 0.74,
+   "matDT": 0.27,
    "vatLieu": [
     "go-cafe",
     "da-xam",
@@ -367,6 +409,8 @@
    "w": 0.2,
    "h": 1.6,
    "d": 0.2,
+   "matTren": 1.6,
+   "matDT": 0,
    "vatLieu": [
     "go-nau",
     "go-dam"
@@ -388,6 +432,8 @@
    "w": 1.6,
    "h": 1.44,
    "d": 0.9,
+   "matTren": 1.42,
+   "matDT": 2.55,
    "vatLieu": [
     "go-nau",
     "kinh-be",
@@ -411,6 +457,8 @@
    "w": 1.1,
    "h": 1.25,
    "d": 0.91,
+   "matTren": 0.9,
+   "matDT": 0.73,
    "vatLieu": [
     "inox",
     "sat-den",
@@ -433,6 +481,8 @@
    "w": 1.58,
    "h": 2.22,
    "d": 1,
+   "matTren": 1.5,
+   "matDT": 0.1,
    "vatLieu": [
     "go-nau",
     "ao-tim",
@@ -456,6 +506,8 @@
    "w": 8.18,
    "h": 8.33,
    "d": 8.31,
+   "matTren": 0.78,
+   "matDT": 39.69,
    "vatLieu": [
     "goc-co-thu",
     "go-xam-dam",
@@ -478,6 +530,8 @@
    "w": 2.89,
    "h": 3.31,
    "d": 2.2,
+   "matTren": 3.06,
+   "matDT": 0.62,
    "vatLieu": [
     "than-cay",
     "nhuom-la",
@@ -501,6 +555,8 @@
    "w": 1.75,
    "h": 0.58,
    "d": 1.55,
+   "matTren": 0.44,
+   "matDT": 3.17,
    "vatLieu": [
     "nem-xanh",
     "ve-xanh",
@@ -525,6 +581,8 @@
    "w": 9.58,
    "h": 6.49,
    "d": 9.58,
+   "matTren": 3.66,
+   "matDT": 42.16,
    "vatLieu": [
     "go-sang",
     "ve-kem",
@@ -557,6 +615,8 @@
    "w": 3,
    "h": 2.95,
    "d": 3.36,
+   "matTren": 1.88,
+   "matDT": 8.64,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -580,6 +640,8 @@
    "w": 3.9,
    "h": 2.44,
    "d": 3.19,
+   "matTren": 0.98,
+   "matDT": 4.43,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -605,6 +667,8 @@
    "w": 4.1,
    "h": 2.78,
    "d": 3.51,
+   "matTren": 1.6,
+   "matDT": 8.99,
    "vatLieu": [
     "mat-rom",
     "mai-ngoi",
@@ -629,6 +693,8 @@
    "w": 1.95,
    "h": 0.56,
    "d": 1.17,
+   "matTren": 0.52,
+   "matDT": 0.85,
    "vatLieu": [
     "cua-go",
     "go-cafe",
@@ -656,6 +722,8 @@
    "w": 1.55,
    "h": 1.35,
    "d": 1.59,
+   "matTren": 0.5,
+   "matDT": 1.53,
    "vatLieu": [
     "da-coi",
     "da-coi-2",
@@ -679,6 +747,8 @@
    "w": 7.69,
    "h": 6.24,
    "d": 1.71,
+   "matTren": 4.34,
+   "matDT": 2.24,
    "vatLieu": [
     "ve-kem",
     "da-kem",
@@ -707,6 +777,8 @@
    "w": 0.44,
    "h": 2.36,
    "d": 0.36,
+   "matTren": 0.32,
+   "matDT": 0.01,
    "vatLieu": [
     "da-xam",
     "go-cafe",
@@ -732,6 +804,8 @@
    "w": 0.51,
    "h": 2.96,
    "d": 0.54,
+   "matTren": 0.26,
+   "matDT": 0.08,
    "vatLieu": [
     "de-nau",
     "cot-nau",
@@ -755,6 +829,8 @@
    "w": 8.03,
    "h": 7.5,
    "d": 6.71,
+   "matTren": 0.74,
+   "matDT": 73.4,
    "vatLieu": [
     "ve-kem",
     "da-kem",
@@ -797,6 +873,8 @@
    "w": 9.5,
    "h": 0.89,
    "d": 9.52,
+   "matTren": 0.5,
+   "matDT": 9.22,
    "vatLieu": [
     "da-kem-2",
     "da-kem",
@@ -827,6 +905,8 @@
    "w": 3.49,
    "h": 7.62,
    "d": 3.49,
+   "matTren": 4.48,
+   "matDT": 5.29,
    "vatLieu": [
     "go-dam",
     "long-den-vang",
@@ -850,6 +930,8 @@
    "w": 1.82,
    "h": 2.08,
    "d": 0.22,
+   "matTren": 1.84,
+   "matDT": 0.15,
    "vatLieu": [
     "go-cafe",
     "go-sang",
@@ -876,6 +958,8 @@
    "w": 1.38,
    "h": 1.4,
    "d": 0.79,
+   "matTren": 0.48,
+   "matDT": 0.35,
    "vatLieu": [
     "cua-go",
     "nhua-do",
@@ -906,6 +990,8 @@
    "w": 1.6,
    "h": 0.95,
    "d": 0.51,
+   "matTren": 0.5,
+   "matDT": 0.51,
    "vatLieu": [
     "go-nau",
     "go-chan"
@@ -927,6 +1013,8 @@
    "w": 1.4,
    "h": 2.2,
    "d": 0.3,
+   "matTren": 0.36,
+   "matDT": 0.35,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -949,6 +1037,8 @@
    "w": 6.53,
    "h": 6.11,
    "d": 1.03,
+   "matTren": 0.22,
+   "matDT": 0.5,
    "vatLieu": [
     "da-xam",
     "go-nau",
@@ -974,6 +1064,8 @@
    "w": 1.8,
    "h": 1.15,
    "d": 2.66,
+   "matTren": 0.44,
+   "matDT": 4.33,
    "vatLieu": [
     "go-nau",
     "nem-xanh",
@@ -997,6 +1089,8 @@
    "w": 2.6,
    "h": 0.99,
    "d": 2.6,
+   "matTren": 0.5,
+   "matDT": 0.99,
    "vatLieu": [
     "tham-meo",
     "go-sang",
@@ -1019,6 +1113,8 @@
    "w": 2.4,
    "h": 0.62,
    "d": 0.82,
+   "matTren": 0.6,
+   "matDT": 1.81,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -1043,6 +1139,8 @@
    "w": 3.6,
    "h": 1.05,
    "d": 3.4,
+   "matTren": 0.6,
+   "matDT": 0.42,
    "vatLieu": [
     "go-san",
     "ve-xam",
@@ -1068,6 +1166,8 @@
    "w": 0.9,
    "h": 2,
    "d": 0.4,
+   "matTren": 2,
+   "matDT": 0.02,
    "vatLieu": [
     "go-sang",
     "guong-kinh"
@@ -1089,6 +1189,8 @@
    "w": 1.8,
    "h": 1.5,
    "d": 0.6,
+   "matTren": 0.34,
+   "matDT": 0.99,
    "vatLieu": [
     "go-nau",
     "go-dam"
@@ -1110,6 +1212,8 @@
    "w": 8,
    "h": 1.35,
    "d": 3.3,
+   "matTren": 0.44,
+   "matDT": 8.08,
    "vatLieu": [
     "go-sang",
     "go-san",
@@ -1132,6 +1236,8 @@
    "w": 6,
    "h": 3.87,
    "d": 3.77,
+   "matTren": 0.2,
+   "matDT": 19.35,
    "vatLieu": [
     "xam-soc",
     "xam-cot",
@@ -1156,6 +1262,8 @@
    "w": 5.75,
    "h": 5,
    "d": 5.24,
+   "matTren": 0.16,
+   "matDT": 22.27,
    "vatLieu": [
     "xam-cot",
     "xam-soc",
@@ -1179,6 +1287,8 @@
    "w": 3.6,
    "h": 2.45,
    "d": 3,
+   "matTren": 2.1,
+   "matDT": 7.27,
    "vatLieu": [
     "xam-soc",
     "inox",
@@ -1201,6 +1311,8 @@
    "w": 0.75,
    "h": 1.73,
    "d": 1.04,
+   "matTren": null,
+   "matDT": 0,
    "vatLieu": [
     "sat-den",
     "nhua-xanh"
@@ -1222,6 +1334,8 @@
    "w": 1.05,
    "h": 4.36,
    "d": 1.05,
+   "matTren": 0.16,
+   "matDT": 0.12,
    "vatLieu": [
     "ve-kem",
     "ve-xam",
@@ -1247,6 +1361,8 @@
    "w": 2.74,
    "h": 3.39,
    "d": 2.84,
+   "matTren": 0.32,
+   "matDT": 6.2,
    "vatLieu": [
     "ve-kem",
     "da-kem",
@@ -1284,6 +1400,8 @@
    "w": 3.75,
    "h": 1.9,
    "d": 2.87,
+   "matTren": 1.4,
+   "matDT": 0.67,
    "vatLieu": [
     "tuong-xam",
     "mai-xam"
@@ -1305,6 +1423,8 @@
    "w": 4.63,
    "h": 4.15,
    "d": 3.01,
+   "matTren": 1.8,
+   "matDT": 7.59,
    "vatLieu": [
     "nhuom-tuong",
     "go-khung",
@@ -1339,6 +1459,8 @@
    "w": 3.9,
    "h": 4.24,
    "d": 6.85,
+   "matTren": 0.22,
+   "matDT": 20.22,
    "vatLieu": [
     "nhuom-tuong",
     "da-xam",
@@ -1366,6 +1488,8 @@
    "w": 3.9,
    "h": 4.24,
    "d": 7.05,
+   "matTren": 0.22,
+   "matDT": 20.22,
    "vatLieu": [
     "nhuom-tuong",
     "da-xam",
@@ -1398,6 +1522,8 @@
    "w": 7.2,
    "h": 4.42,
    "d": 5.3,
+   "matTren": 1.24,
+   "matDT": 27.85,
    "vatLieu": [
     "xam-cot",
     "inox",
@@ -1421,6 +1547,8 @@
    "w": 1.62,
    "h": 0.66,
    "d": 1.12,
+   "matTren": 0.6,
+   "matDT": 2.66,
    "vatLieu": [
     "da-coi-2",
     "da-coi",
@@ -1445,6 +1573,8 @@
    "w": 8.6,
    "h": 3.7,
    "d": 8.58,
+   "matTren": 3.7,
+   "matDT": 64.07,
    "vatLieu": [
     "go-quan",
     "mai-quan",
@@ -1474,6 +1604,8 @@
    "w": 1.7,
    "h": 1.07,
    "d": 0.9,
+   "matTren": 0.96,
+   "matDT": 1.43,
    "vatLieu": [
     "go-cafe",
     "go-dam",
@@ -1499,6 +1631,8 @@
    "w": 3.4,
    "h": 3,
    "d": 3.44,
+   "matTren": 0.6,
+   "matDT": 9.57,
    "vatLieu": [
     "tim-san-khau",
     "go-dam",
@@ -1523,6 +1657,8 @@
    "w": 4.1,
    "h": 2.63,
    "d": 2.58,
+   "matTren": 2.4,
+   "matDT": 4.87,
    "vatLieu": [
     "xam-sap",
     "xam-cot",
@@ -1545,6 +1681,8 @@
    "w": 4.1,
    "h": 2.63,
    "d": 2.58,
+   "matTren": 2.4,
+   "matDT": 4.87,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -1573,6 +1711,8 @@
    "w": 5.81,
    "h": 13.8,
    "d": 7,
+   "matTren": 8.72,
+   "matDT": 13.01,
    "vatLieu": [
     "da-kem",
     "xanh-thap",
@@ -1605,6 +1745,8 @@
    "w": 7.08,
    "h": 3.93,
    "d": 2.53,
+   "matTren": 3.38,
+   "matDT": 6.16,
    "vatLieu": [
     "da-kem",
     "hoa-vang",
@@ -1639,6 +1781,8 @@
    "w": 5.02,
    "h": 3.03,
    "d": 1.7,
+   "matTren": 2.58,
+   "matDT": 7.24,
    "vatLieu": [
     "nhua-xanh",
     "xanh-dam",
@@ -1665,6 +1809,8 @@
    "w": 1.07,
    "h": 2.56,
    "d": 1.07,
+   "matTren": 2.54,
+   "matDT": 0.88,
    "vatLieu": [
     "da-tru",
     "tuong-xam"
@@ -1686,6 +1832,8 @@
    "w": 1.56,
    "h": 2.06,
    "d": 0.87,
+   "matTren": 2.06,
+   "matDT": 1.22,
    "vatLieu": [
     "go-nau",
     "nau-dam",
@@ -1709,6 +1857,8 @@
    "w": 1.68,
    "h": 2.25,
    "d": 1.37,
+   "matTren": 0.86,
+   "matDT": 2.08,
    "vatLieu": [
     "go-dam",
     "go-cafe",
@@ -1734,6 +1884,8 @@
    "w": 2.74,
    "h": 1.6,
    "d": 0.76,
+   "matTren": 0.98,
+   "matDT": 0.41,
    "vatLieu": [
     "go-nau",
     "vai-vong",
@@ -1756,6 +1908,8 @@
    "w": 2.03,
    "h": 1.46,
    "d": 0.79,
+   "matTren": 0.94,
+   "matDT": 2.94,
    "vatLieu": [
     "nhua-xanh",
     "kem",
@@ -1787,6 +1941,8 @@
    "w": 2.09,
    "h": 1.39,
    "d": 0.84,
+   "matTren": 0.8,
+   "matDT": 0.29,
    "vatLieu": [
     "muc-den",
     "inox",
@@ -1815,6 +1971,8 @@
    "w": 2.5,
    "h": 2.21,
    "d": 1.56,
+   "matTren": 0.84,
+   "matDT": 0.11,
    "vatLieu": [
     "go-nau",
     "go-dam",
@@ -1838,6 +1996,8 @@
    "w": 12.6,
    "h": 6.16,
    "d": 8.2,
+   "matTren": 3.5,
+   "matDT": 94.15,
    "vatLieu": [
     "go-sang",
     "mai-xuong",
