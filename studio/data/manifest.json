@@ -1,5 +1,5 @@
 {
- "dung": "2026-10-08T16:25:31.741Z",
+ "dung": "2026-10-08T16:49:28.855Z",
  "nguon": "src/du-lieu.html",
  "lech": [],
  "khu": [
@@ -2013,8 +2013,15 @@
   {
    "id": "ai/cua-go-den-treo",
    "nhom": "ai",
+   "nguon": "repo",
    "loai": "dist",
    "tieuDe": "Cửa gỗ có đèn treo",
+   "phienBan": [
+    "v001.json",
+    "v002.json",
+    "v003.json",
+    "v004.json"
+   ],
    "kb": 39,
    "min": [
     -0.75,

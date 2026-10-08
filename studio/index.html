@@ -5,27 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Phố Mây Studio</title>
 <link rel="stylesheet" href="studio.css">
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 <header class="dau">
   <b class="logo">☁ Phố Mây Studio</b>
-  <nav class="tabs">
-    <button data-tab="map" class="chon">Dựng map</button>
-    <button data-tab="thu-vien">Thư viện model</button>
-    <button data-tab="huong-dan">Hướng dẫn</button>
+  <nav class="che-do-chinh" aria-label="Chế độ">
+    <button data-tab="map" class="chon" title="Dựng map (Alt+1)">🗺 Dựng map</button>
+    <button data-tab="thu-vien" title="Thư viện model (Alt+2)">📦 Thư viện model</button>
+    <button data-tab="lo-ai" title="Lò Model AI: sinh model 3D bằng Claude (Alt+3)">🔥 Lò Model AI</button>
+    <button data-tab="huong-dan" title="Hướng dẫn (Alt+4)">Hướng dẫn</button>
   </nav>
-  <a class="lo-ai" href="../mo-hinh/" title="Sinh model 3D bằng Claude (Q368)">🔥 Lò Model AI</a>
+  <span class="gian"></span>
+  <span id="che-do" class="the-nho"></span>
+  <button id="nut-cai" title="Cài đặt API key, model, effort, Chế độ thử, thư mục làm việc">⚙ Cài đặt</button>
 </header>
 <main>
   <div id="map" class="trang map"></div>
   <div id="thu-vien" class="trang thu-vien" hidden></div>
+  <div id="lo-ai" class="trang lo-ai" hidden>
+    <div class="lo-dau">
+      <nav id="tabs" class="lo-tabs"></nav>
+      <button id="them-tab" title="Mở thêm một model (chạy song song)">+ tab</button>
+      <select id="mo-model" title="Mở model đã lưu"><option value="">📂 Mở model đã lưu…</option></select>
+    </div>
+    <div class="khung">
+      <aside id="trai" class="lo-trai"></aside>
+      <section class="lo-giua">
+        <div class="cv-boc"><canvas id="cv"></canvas><div id="trong" class="trong">Chưa có model. Viết mô tả bên trái rồi bấm <b>Tạo</b> — hay thử ngay với <b>Chế độ thử</b>.</div></div>
+        <div class="thanh-xem" id="bat"></div>
+        <div class="thanh-xem" id="hoat-anh"></div>
+        <div id="co" class="co"></div>
+        <div id="tien-do" class="tien-do" hidden></div>
+      </section>
+      <aside id="phai" class="lo-phai"></aside>
+    </div>
+  </div>
   <div id="huong-dan" class="trang huong-dan" hidden>
     <article>
       <h2>Phố Mây Studio là gì</h2>
-      <p>Công cụ trên trình duyệt để sửa bản đồ khu và xem model của game Phố Mây. Không cần cài gì. Mọi thay đổi chỉ nằm trong trình duyệt của bạn (tự lưu nháp theo từng khu); muốn đưa vào game thì <b>tải tệp xuống và gửi cho Claude</b> để ghép.</p>
+      <p>Công cụ trên trình duyệt để sửa bản đồ khu, xem model và sinh model 3D bằng Claude cho game Phố Mây — ba chế độ trong một trang: <b>Dựng map</b> (Alt+1, <code>#map</code>), <b>Thư viện model</b> (Alt+2, <code>#thu-vien</code>), <b>Lò Model AI</b> (Alt+3, <code>#lo-ai</code>). Không cần cài gì. Mọi thay đổi chỉ nằm trong trình duyệt của bạn (tự lưu nháp theo từng khu); muốn đưa vào game thì <b>tải tệp xuống và gửi cho Claude</b> để ghép.</p>
       <h3>Dựng map</h3>
       <ul>
         <li>Chọn khu ở ô trên cùng (khu trong nhà có 🏠). Kéo nền để cuộn, cuộn chuột hay chụm hai ngón để phóng.</li>
@@ -38,12 +56,42 @@
       <h3>Kiểm tra cỡ</h3>
       <p>Cột phải, thẻ “Kiểm tra cỡ”: vật và lối lệch chuẩn cỡ (CLAUDE.md) có dấu đỏ; thời gian đi bộ từ mỗi cổng tới các điểm chính; khoảng cách giữa các điểm đáng xem (chuẩn 17–27 m). Công cụ <b>⏱ Đo đi bộ</b> đo hai điểm bất kỳ dọc lối.</p>
       <h3>Thư viện model</h3>
-      <p>Mọi model <code>assets/model/vat</code>: bấm để xem 3D, đọc cỡ rộng × sâu × cao, so với nhân vật 1,9 m. Bảng màu <code>art/bang-mau.json</code>: đổi màu xem ngay trên model, tải bảng màu mới về.</p>
-      <h3>Giai đoạn 2 (chưa có)</h3>
-      <p>Vẽ lại tranh bản đồ tay trực tiếp trong trình duyệt (chuyển <code>tools/ban-do/but.py</code> sang JS); hiện chỉ lót tranh có sẵn.</p>
+      <p>Mọi model <code>assets/model/vat</code>, model AI đã nhập (<code>assets/model/ai</code>) và model AI đang có trong Lò AI của trình duyệt này (nhãn <b>AI · loại</b>, tự cập nhật khi Lò lưu phiên bản mới): bấm để xem 3D, đọc cỡ rộng × sâu × cao, so với nhân vật 1,9 m. <b>✎ Sửa bằng AI</b> mở model trong Lò AI (lần chạy sau thành phiên bản mới; model game thì mở tab mới điền sẵn mô tả và cỡ). <b>📍 Đặt vào map</b> chuyển sang Dựng map với model đó làm công cụ đặt vật; vật dùng model AI được ghi trong JSON khu kèm <code>"ai": "assets/model/ai/&lt;ten&gt;/"</code> — gửi kèm tệp <b>⬇ thư mục .zip</b> của model. Bảng màu <code>art/bang-mau.json</code>: đổi màu xem ngay trên model, tải bảng màu mới về.</p>
+      <h3>Lò Model AI</h3>
+      <p>Viết mô tả, chọn loại (Entity/Item/Dist/Material) và cỡ theo chuẩn rồi bấm <b>Tạo</b>: Claude trả spec JSON, trang dựng model và lưu thành phiên bản <code>vNNN.json</code> + <code>&lt;ten&gt;.glb</code> trong kho trình duyệt (OPFS, dự phòng IndexedDB; có thể soi gương sang một thư mục thật ở ⚙). Nhiều tab chạy song song, đồng bộ giữa các tab trình duyệt. Không có API key thì chạy <b>Chế độ thử</b> với spec mẫu (miễn phí).</p>
     </article>
   </div>
 </main>
+<dialog id="cai-dat">
+  <form method="dialog" class="cai">
+    <h2>Cài đặt</h2>
+    <label>Nhà cung cấp<select name="nhaCC"><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI-compatible (OpenAI, OpenRouter, LM Studio, Ollama, vLLM…)</option></select></label>
+    <div class="nhom-openai cai" hidden>
+      <label>Base URL<input name="oaBase" placeholder="https://api.openai.com/v1 · http://localhost:1234/v1"></label>
+      <div class="hai"><label>API key (bỏ trống nếu máy cục bộ)<input type="password" name="oaKey" autocomplete="off"></label><label>Tên model<input name="oaModel" placeholder="gpt-5 · qwen3-coder…"></label></div>
+      <label>Header thêm (JSON, tuỳ chọn)<textarea name="oaHeaders" rows="2" placeholder='{"HTTP-Referer": "https://ntruong2.github.io"}'></textarea></label>
+      <div class="hai"><label>Temperature (trống = mặc định)<input name="oaNhiet" type="number" step="0.1" min="0" max="2"></label><label>max_tokens<input name="oaMaxTok" type="number" min="256" step="256"></label></div>
+      <div class="hai"><label>Giá vào USD / 1 triệu token (tuỳ chọn)<input name="oaGiaVao" type="number" step="0.01" min="0"></label><label>Giá ra USD / 1 triệu token<input name="oaGiaRa" type="number" step="0.01" min="0"></label></div>
+      <p class="nho">Gọi <code>POST {Base URL}/chat/completions</code> thẳng từ trình duyệt (stream). Máy chủ phải cho phép CORS. Thử JSON schema, không được thì JSON object, rồi tách JSON từ chữ. Khoá chỉ gửi tới Base URL này.</p>
+    </div>
+    <div class="nhom-anthropic cai">
+    <label>Anthropic API key của bạn<input type="password" name="key" autocomplete="off" placeholder="sk-ant-…"></label>
+    <p class="canh">⚠ Khoá chỉ lưu trong <b>localStorage của trình duyệt này</b> và chỉ gửi thẳng tới <code>api.anthropic.com</code>; không có máy chủ trung gian, không đưa vào mã nguồn. Trang gọi API từ trình duyệt bằng tuỳ chọn <code>dangerouslyAllowBrowser</code> của SDK: bất kỳ mã nào chạy trên trang này (tiện ích trình duyệt, ai dùng chung máy) đều có thể đọc khoá. Chỉ dùng trên máy riêng, nên tạo khoá riêng có hạn mức chi tiêu thấp ở console.anthropic.com và xoá khoá khi xong.</p>
+    <div class="hai">
+      <label>Model<select name="model"></select></label>
+      <label>Effort<select name="effort"></select></label>
+    </div>
+    <label class="chk"><input type="checkbox" name="fallback"> Fallback phía máy chủ (<code>fallbacks: "default"</code>): nếu bị bộ lọc an toàn từ chối, Anthropic tự chạy lại bằng model dự phòng và báo cho bạn.</label>
+    <p class="nho">Ước tính chi phí Opus 5.5 ($4 / $20 mỗi triệu token vào / ra): lời nhắc hệ thống ~9k token (được cache, lần sau rẻ ~10×), mỗi lần tạo ~8–30k token ra (gồm phần suy nghĩ) ≈ <b>0,2–0,7 USD</b>; effort cao hơn thì đắt và chậm hơn.</p>
+    </div>
+    <label class="chk"><input type="checkbox" name="structured"> Structured output (JSON schema). Tắt nếu máy chủ báo schema quá phức tạp.</label>
+    <label class="chk"><input type="checkbox" name="thu"> Chế độ thử: không gọi API, dùng spec mẫu có sẵn (miễn phí).</label>
+    <h3>Thư mục làm việc</h3>
+    <p class="nho">Model AI lưu trong kho riêng của trình duyệt (<span id="kieu-kho"></span>). Trên Chrome/Edge có thể soi gương sang một thư mục thật trên máy.</p>
+    <div class="hang"><button type="button" id="chon-tm">Chọn thư mục làm việc</button><button type="button" id="bo-tm">Bỏ thư mục</button><span id="ten-tm" class="nho"></span></div>
+    <div class="hang cuoi"><button type="button" id="xoa-key">Xoá khoá</button><span class="gian"></span><button value="ok" class="chinh">Lưu</button></div>
+  </form>
+</dialog>
 <div id="cho" class="cho">Đang tải dữ liệu…</div>
 <script type="module" src="app.js"></script>
 </body>

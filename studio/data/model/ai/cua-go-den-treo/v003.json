@@ -1,0 +1,422 @@
+{
+ "phienBan": "v003",
+ "luc": "2026-10-08T16:22:38.924Z",
+ "prompt": "khung cao 3,4 m (thử cảnh báo)",
+ "cheDo": "sua",
+ "tu": "v002",
+ "model": "chế độ thử",
+ "effort": null,
+ "usage": null,
+ "giaUSD": null,
+ "phucVuBoi": null,
+ "kb": 39,
+ "anh": "data:image/jpeg;base64,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",
+ "spec": {
+  "name": "cua-go-den-treo",
+  "title": "Cửa gỗ có đèn treo",
+  "category": "dist",
+  "sizeClass": "cua",
+  "size": {
+   "w": 1.5,
+   "d": 0.44,
+   "h": 2.45
+  },
+  "description": "Cửa gỗ một cánh trong khung, đèn lồng nhỏ trên đầu khung, mở/đóng và bật/tắt đèn.",
+  "materials": [
+   {
+    "name": "go-khung"
+   },
+   {
+    "name": "cua-go"
+   },
+   {
+    "name": "vang-dong",
+    "roughness": 0.4
+   },
+   {
+    "name": "long-den",
+    "emissive": 0
+   },
+   {
+    "name": "kinh-cua",
+    "roughness": 0.2
+   }
+  ],
+  "parts": [
+   {
+    "id": "khung-trai",
+    "shape": {
+     "type": "box",
+     "w": 0.12,
+     "h": 3.4,
+     "d": 0.24
+    },
+    "pos": [
+     -0.69,
+     1.15,
+     0
+    ],
+    "material": "go-khung"
+   },
+   {
+    "id": "khung-phai",
+    "shape": {
+     "type": "box",
+     "w": 0.12,
+     "h": 3.4,
+     "d": 0.24
+    },
+    "pos": [
+     0.69,
+     1.15,
+     0
+    ],
+    "material": "go-khung"
+   },
+   {
+    "id": "mi-cua",
+    "shape": {
+     "type": "roundedBox",
+     "w": 1.5,
+     "h": 0.15,
+     "d": 0.28,
+     "r": 0.03
+    },
+    "pos": [
+     0,
+     3.45,
+     0
+    ],
+    "material": "go-khung"
+   },
+   {
+    "id": "ban-le",
+    "shape": {
+     "type": "empty"
+    },
+    "pos": [
+     -0.62,
+     0,
+     0
+    ]
+   },
+   {
+    "id": "canh",
+    "shape": {
+     "type": "roundedBox",
+     "w": 1.22,
+     "h": 2.26,
+     "d": 0.06,
+     "r": 0.02
+    },
+    "pos": [
+     0.61,
+     1.14,
+     0
+    ],
+    "material": "cua-go",
+    "parent": "ban-le"
+   },
+   {
+    "id": "nep-tren",
+    "shape": {
+     "type": "box",
+     "w": 1,
+     "h": 0.06,
+     "d": 0.03
+    },
+    "pos": [
+     0,
+     0.6,
+     0.04
+    ],
+    "material": "go-khung",
+    "parent": "canh"
+   },
+   {
+    "id": "nep-duoi",
+    "shape": {
+     "type": "box",
+     "w": 1,
+     "h": 0.06,
+     "d": 0.03
+    },
+    "pos": [
+     0,
+     -0.6,
+     0.04
+    ],
+    "material": "go-khung",
+    "parent": "canh"
+   },
+   {
+    "id": "tay-nam",
+    "shape": {
+     "type": "sphere",
+     "r": 0.04,
+     "seg": 8,
+     "hseg": 6
+    },
+    "pos": [
+     0.48,
+     0,
+     0.06
+    ],
+    "material": "vang-dong",
+    "parent": "canh"
+   },
+   {
+    "id": "moc-den",
+    "shape": {
+     "type": "cylinder",
+     "r": 0.015,
+     "h": 0.12,
+     "seg": 6
+    },
+    "pos": [
+     0,
+     2.27,
+     0.2
+    ],
+    "material": "vang-dong"
+   },
+   {
+    "id": "den",
+    "shape": {
+     "type": "lathe",
+     "points": [
+      [
+       0,
+       -0.1
+      ],
+      [
+       0.08,
+       -0.07
+      ],
+      [
+       0.1,
+       0
+      ],
+      [
+       0.08,
+       0.07
+      ],
+      [
+       0,
+       0.1
+      ]
+     ],
+     "seg": 10
+    },
+    "pos": [
+     0,
+     2.12,
+     0.2
+    ],
+    "material": "long-den"
+   },
+   {
+    "id": "o-kinh",
+    "shape": {
+     "type": "cylinder",
+     "r": 0.16,
+     "h": 0.03,
+     "seg": 14
+    },
+    "pos": [
+     0,
+     0.3,
+     0.035
+    ],
+    "material": "kinh-cua",
+    "parent": "canh",
+    "rot": [
+     90,
+     0,
+     0
+    ]
+   }
+  ],
+  "animations": [
+   {
+    "name": "open",
+    "duration": 0.8,
+    "loop": false,
+    "tracks": [
+     {
+      "target": "ban-le",
+      "prop": "rotation",
+      "times": [
+       0,
+       0.8
+      ],
+      "values": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        -100,
+        0
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "close",
+    "duration": 0.8,
+    "loop": false,
+    "tracks": [
+     {
+      "target": "ban-le",
+      "prop": "rotation",
+      "times": [
+       0,
+       0.8
+      ],
+      "values": [
+       [
+        0,
+        -100,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "den-lac",
+    "duration": 2,
+    "loop": true,
+    "tracks": [
+     {
+      "target": "den",
+      "prop": "rotation",
+      "times": [
+       0,
+       1,
+       2
+      ],
+      "values": [
+       [
+        0,
+        0,
+        -5
+       ],
+       [
+        0,
+        0,
+        5
+       ],
+       [
+        0,
+        0,
+        -5
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "go-cua",
+    "duration": 0.6,
+    "loop": false,
+    "tracks": [
+     {
+      "target": "ban-le",
+      "prop": "rotation",
+      "times": [
+       0,
+       0.1,
+       0.2,
+       0.3,
+       0.4,
+       0.6
+      ],
+      "values": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        -2,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        -2,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0
+       ]
+      ]
+     }
+    ]
+   }
+  ],
+  "interactions": [
+   {
+    "id": "mo-dong",
+    "kind": "open-close",
+    "label": "Mở / đóng cửa",
+    "anchor": {
+     "pos": [
+      0,
+      0,
+      0.9
+     ],
+     "rot": [
+      0,
+      180,
+      0
+     ]
+    },
+    "clipOn": "open",
+    "clipOff": "close"
+   },
+   {
+    "id": "den",
+    "kind": "toggle-light",
+    "label": "Bật / tắt đèn",
+    "anchor": {
+     "pos": [
+      0.4,
+      0,
+      0.8
+     ]
+    },
+    "toggles": [
+     {
+      "part": "den",
+      "prop": "emissive",
+      "on": 1,
+      "off": 0
+     }
+    ]
+   }
+  ]
+ }
+}

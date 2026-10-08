@@ -1,6 +1,6 @@
-:root { --nen: #FFF8EC; --giay: #FFFFFF; --chu: #3B2A20; --mo: #7A6A5E; --vien: #E6D9C3; --nhan: #1F6FEB; --do: #E0403A; --nut: #F4EBDD; color-scheme: light; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --nen: #1E1A17; --giay: #2A2521; --chu: #F2E8DC; --mo: #B5A898; --vien: #43392F; --nut: #3A322B; color-scheme: dark; } }
-:root[data-theme="dark"] { --nen: #1E1A17; --giay: #2A2521; --chu: #F2E8DC; --mo: #B5A898; --vien: #43392F; --nut: #3A322B; color-scheme: dark; }
+:root { --nen: #FFF8EC; --giay: #FFFFFF; --chu: #3B2A20; --mo: #7A6A5E; --vien: #E6D9C3; --nhan: #1F6FEB; --do: #E0403A; --nut: #F4EBDD; --chinh: #E0735A; --chinh-2: #C4553F; --nhat-chinh: #FFE3D6; --vang: #B7791F; --xanh: #3F8F5A; --canh: #FFF1D6; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --nen: #1E1A17; --giay: #2A2521; --chu: #F2E8DC; --mo: #B5A898; --vien: #43392F; --nut: #3A322B; --nhat-chinh: #4A2E24; --canh: #3A3020; color-scheme: dark; } }
+:root[data-theme="dark"] { --nen: #1E1A17; --giay: #2A2521; --chu: #F2E8DC; --mo: #B5A898; --vien: #43392F; --nut: #3A322B; --nhat-chinh: #4A2E24; --canh: #3A3020; color-scheme: dark; }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body { background: var(--nen); color: var(--chu); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; flex-direction: column; overflow: hidden; }
@@ -14,7 +14,8 @@ h3 { margin: 14px 0 6px; font-size: 14px; } h4 { margin: 12px 0 4px; font-size: 
 .nho { font-size: 12px; color: var(--mo); margin: 4px 0; }
 .hang { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 4px 0; }
 .dau { display: flex; align-items: center; gap: 16px; padding: 6px 12px; border-bottom: 1px solid var(--vien); background: var(--giay); flex-wrap: wrap; }
-.logo { font-size: 16px; } .tabs { display: flex; gap: 6px; }
+.logo { font-size: 16px; } .che-do-chinh { display: flex; gap: 6px; flex-wrap: wrap; } .gian { flex: 1; }
+button:disabled { opacity: .5; cursor: default; } [hidden] { display: none !important; }
 main { flex: 1; min-height: 0; position: relative; }
 .trang { position: absolute; inset: 0; } .trang[hidden] { display: none; }
 .cho { position: fixed; inset: 0; display: grid; place-items: center; background: var(--nen); font-size: 18px; }
@@ -66,6 +67,53 @@ details { margin: 4px 0; } summary { cursor: pointer; font-size: 13px; }
 .huy.xanh { background: #E8892A; }
 .ds-khac { list-style: none; padding: 0; margin: 0; font: 12px/1.4 ui-monospace, monospace; } .ds-khac li { padding: 3px 4px; border-bottom: 1px solid var(--vien); overflow-wrap: anywhere; } .ds-khac .them { color: #2E8B4A; } .ds-khac .bot { color: var(--do); } .ds-khac .doi { color: #B5631A; }
 .trai label.hang { flex-wrap: nowrap; align-items: flex-start; }
-/* Q368: liên kết Lò Model AI, nhãn model AI trong thư viện */
-.lo-ai { margin-left: auto; text-decoration: none; color: inherit; border: 1px solid var(--vien); border-radius: 8px; padding: 4px 10px; }
-.nhan-ai { color: #C4553F; font-weight: 600; }
+/* Q368/Q369: nhãn model AI, thanh bật/tắt của khung xem chung, cài đặt dùng chung */
+.nhan-ai { color: var(--chinh-2); font-weight: 600; }
+.the-nho { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: var(--nut); } .the-nho.thu { background: #FFE9B8; color: #5A4500; }
+.thanh-xem { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 4px 0; }
+.thanh-xem label { display: flex; gap: 4px; align-items: center; font-size: 13px; }
+.thanh-xem .nhan { font-size: 12px; color: var(--mo); }
+.thanh-xem button.dang { background: var(--nhat-chinh); border-color: var(--chinh); }
+.tv-nut button { font-weight: 600; }
+dialog { border: 1px solid var(--vien); border-radius: 12px; max-width: 560px; width: calc(100% - 32px); background: var(--nen); color: var(--chu); }
+.cai { display: flex; flex-direction: column; gap: 8px; } .cai h2 { font-size: 16px; margin: 0 0 8px; }
+.cai label:not(.chk) { display: flex; flex-direction: column; gap: 2px; font-weight: 600; font-size: 13px; }
+.canh { background: var(--canh); border: 1px solid #F0C878; padding: 8px; border-radius: 8px; font-size: 12px; margin: 0; }
+.cuoi { margin-top: 8px; } .hai { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .chk { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; }
+/* Lò Model AI (#lo-ai) */
+.lo-ai { display: flex; flex-direction: column; }
+.lo-dau { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--vien); background: var(--giay); flex-wrap: wrap; }
+.lo-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+#lo-ai .tab { display: flex; align-items: center; gap: 6px; border-radius: 8px 8px 0 0; border-bottom: 3px solid transparent; }
+#lo-ai .tab.chon { border-bottom-color: var(--chinh); background: var(--nhat-chinh); }
+#lo-ai .tab .x { border: 0; padding: 0 4px; background: none; color: var(--mo); min-height: 0; }
+#lo-ai .tab .chay { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--vang); animation: nhay 1s infinite; margin-right: 4px; }
+@keyframes nhay { 50% { opacity: .2; } }
+#lo-ai button.chinh { background: var(--chinh); border-color: var(--chinh-2); font-weight: 600; }
+#lo-ai .khung { flex: 1; display: grid; grid-template-columns: 300px 1fr 280px; min-height: 0; }
+.lo-trai, .lo-phai { overflow: auto; padding: 12px; background: var(--giay); }
+.lo-trai { border-right: 1px solid var(--vien); } .lo-phai { border-left: 1px solid var(--vien); }
+.lo-giua { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 8px; gap: 6px; overflow: auto; }
+#lo-ai .cv-boc { position: relative; flex: 1; min-height: 280px; border-radius: 10px; overflow: hidden; border: 1px solid var(--vien); }
+#cv { width: 100%; height: 100%; display: block; touch-action: none; }
+#lo-ai .trong { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--mo); pointer-events: none; }
+#lo-ai .co { font-size: 13px; } #lo-ai .co .do { color: var(--do); font-weight: 600; } #lo-ai .co .vang { color: var(--vang); } #lo-ai .co ul { margin: 4px 0; padding-left: 18px; }
+#lo-ai .tien-do { background: var(--giay); border: 1px solid var(--vien); border-radius: 8px; padding: 8px; font-size: 12px; max-height: 180px; overflow: auto; }
+#lo-ai .tien-do pre { white-space: pre-wrap; margin: 4px 0; color: var(--mo); font: 12px/1.4 ui-monospace, monospace; }
+#lo-ai .tien-do .loi { color: var(--do); font-weight: 600; } #lo-ai .tien-do .tb { color: var(--vang); }
+#lo-ai h2 { font-size: 16px; margin: 0 0 8px; }
+#lo-ai .nhom { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; } #lo-ai .nhom > span { font-weight: 600; font-size: 13px; }
+#lo-ai textarea { font: inherit; }
+#lo-ai .chon-loai, #lo-ai .che-do-form { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; } #lo-ai .che-do-form { margin-bottom: 10px; }
+#lo-ai .chon-loai button.chon, #lo-ai .co-san button.chon, #lo-ai .che-do-form button.chon { background: var(--nhat-chinh); color: inherit; border-color: var(--chinh); font-weight: 600; }
+#lo-ai .co-san { display: flex; gap: 4px; } #lo-ai .so3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; } #lo-ai .so3 input { width: 100%; }
+#lo-ai .pb { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--vien); border-radius: 8px; margin-bottom: 6px; background: var(--giay); }
+#lo-ai .pb.chon { border-color: var(--chinh); box-shadow: 0 0 0 2px var(--nhat-chinh); }
+#lo-ai .pb img { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; background: #F4EEE2; }
+#lo-ai .pb b { font-size: 13px; } #lo-ai .pb .p { font-size: 12px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+#lo-ai .pb .diff { font-size: 11px; color: var(--xanh); } #lo-ai .pb .hang button { padding: 2px 8px; font-size: 12px; min-height: 26px; }
+.the img { object-fit: cover; }
+@media (max-width: 899px) {
+  #lo-ai .khung { grid-template-columns: 1fr; overflow: auto; } .lo-trai, .lo-phai { border: 0; } #lo-ai .cv-boc { min-height: 50vh; }
+  .lo-ai { overflow: auto; }
+}

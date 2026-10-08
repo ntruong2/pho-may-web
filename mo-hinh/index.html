@@ -1,52 +1,6 @@
 <!doctype html>
-<html lang="vi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lò Model AI</title>
-<link rel="stylesheet" href="mo-hinh.css">
-</head>
-<body>
-<header class="dau">
-  <b class="logo">🔥 Lò Model AI</b>
-  <nav id="tabs" class="tabs"></nav>
-  <button id="them-tab" class="nho-nut" title="Mở thêm một model (chạy song song)">+ tab</button>
-  <select id="mo-model" title="Mở model đã lưu"><option value="">📂 Mở model đã lưu…</option></select>
-  <span class="gian"></span>
-  <span id="che-do" class="the-nho"></span>
-  <a href="../studio/" class="nho-nut">☁ Studio</a>
-  <button id="nut-cai" class="nho-nut" title="Cài đặt API key, model, thư mục làm việc">⚙ Cài đặt</button>
-</header>
-<main class="khung">
-  <aside id="trai" class="trai"></aside>
-  <section class="giua">
-    <div class="cv-boc"><canvas id="cv"></canvas><div id="trong" class="trong">Chưa có model. Viết mô tả bên trái rồi bấm <b>Tạo</b> — hay thử ngay với <b>Chế độ thử</b>.</div></div>
-    <div class="thanh" id="bat"></div>
-    <div class="thanh" id="hoat-anh"></div>
-    <div id="co" class="co"></div>
-    <div id="tien-do" class="tien-do" hidden></div>
-  </section>
-  <aside id="phai" class="phai"></aside>
-</main>
-<dialog id="cai-dat">
-  <form method="dialog" class="cai">
-    <h2>Cài đặt</h2>
-    <label>Anthropic API key của bạn<input type="password" name="key" autocomplete="off" placeholder="sk-ant-…"></label>
-    <p class="canh">⚠ Khoá chỉ lưu trong <b>localStorage của trình duyệt này</b> và chỉ gửi thẳng tới <code>api.anthropic.com</code>; không có máy chủ trung gian, không đưa vào mã nguồn. Trang gọi API từ trình duyệt bằng tuỳ chọn <code>dangerouslyAllowBrowser</code> của SDK: bất kỳ mã nào chạy trên trang này (tiện ích trình duyệt, ai dùng chung máy) đều có thể đọc khoá. Chỉ dùng trên máy riêng, nên tạo khoá riêng có hạn mức chi tiêu thấp ở console.anthropic.com và xoá khoá khi xong.</p>
-    <div class="hai">
-      <label>Model<select name="model"></select></label>
-      <label>Effort<select name="effort"></select></label>
-    </div>
-    <label class="chk"><input type="checkbox" name="fallback"> Fallback phía máy chủ (<code>fallbacks: "default"</code>): nếu bị bộ lọc an toàn từ chối, Anthropic tự chạy lại bằng model dự phòng và báo cho bạn.</label>
-    <label class="chk"><input type="checkbox" name="structured"> Structured output (JSON schema). Tắt nếu máy chủ báo schema quá phức tạp.</label>
-    <label class="chk"><input type="checkbox" name="thu"> Chế độ thử: không gọi API, dùng spec mẫu có sẵn (miễn phí).</label>
-    <p class="nho">Ước tính chi phí Opus 5.5 ($4 / $20 mỗi triệu token vào / ra): lời nhắc hệ thống ~9k token (được cache, lần sau rẻ ~10×), mỗi lần tạo ~8–30k token ra (gồm phần suy nghĩ) ≈ <b>0,2–0,7 USD</b>; effort cao hơn thì đắt và chậm hơn.</p>
-    <h3>Thư mục làm việc</h3>
-    <p class="nho">Model lưu trong kho riêng của trình duyệt (<span id="kieu-kho"></span>). Trên Chrome/Edge có thể soi gương sang một thư mục thật trên máy.</p>
-    <div class="hang"><button type="button" id="chon-tm">Chọn thư mục làm việc</button><button type="button" id="bo-tm">Bỏ thư mục</button><span id="ten-tm" class="nho"></span></div>
-    <div class="hang cuoi"><button type="button" id="xoa-key">Xoá khoá</button><span class="gian"></span><button value="ok" class="chinh">Lưu</button></div>
-  </form>
-</dialog>
-<script type="module" src="app.js"></script>
-</body>
-</html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lò Model AI → Phố Mây Studio</title>
+<meta http-equiv="refresh" content="0; url=../studio/#lo-ai">
+<script>location.replace('../studio/' + location.search + '#lo-ai' + (location.hash.length > 1 ? '/' + location.hash.slice(1) : ''));</script>
+</head><body style="font:16px system-ui;background:#FFF8EC;color:#3B2A20;padding:24px">Lò Model AI đã gộp vào <a href="../studio/#lo-ai">Phố Mây Studio → Lò Model AI</a>.</body></html>
