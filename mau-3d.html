@@ -11275,8 +11275,12 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
   // ±13 quanh người chơi. Lưới gộp chính thôi đổ bóng; thêm lưới chỉ-đổ-bóng (chỉ vị trí đỉnh, gộp mọi vật liệu) chia ô bongO × bongO (khu nhỏ: cả khu một lưới) ở lớp LAYER_BONG
   // mà chỉ lượt vẽ bóng thấy; ô ngoài vùng bóng bị loại. Bóng giữ nguyên (bóng vốn không đung đưa, không dùng ảnh trừ vật cắt alpha), cảnh chính không đổi
   const bongMat = {};
+  // Chế độ dựng (Q371): khu đang sửa không gộp lô (từng vật giữ lưới riêng để kéo trực tiếp, sửa tại chỗ); chơi thường DUNG = null, không đổi gì
+  const dungZ = DUNG && (ZONES[DUNG.khu] || null), dungV = new THREE.Vector3();
+  const dungGiu = (m) => { if (!m.geometry.boundingSphere) m.geometry.computeBoundingSphere(); dungV.copy(m.geometry.boundingSphere.center).applyMatrix4(m.matrixWorld); return Math.abs(dungV.x - dungZ.cx) < 400 && Math.abs(dungV.z - dungZ.cz) < 400; };
   function mergeMeshes(container, meshes, bongO) {
     container.updateMatrixWorld(true);
+    if (dungZ && container === scene) meshes = meshes.filter((m) => !dungGiu(m));
     const inv = new THREE.Matrix4().copy(container.matrixWorld).invert(), rel = new THREE.Matrix4();
     const buckets = new Map();
     for (const m of meshes) {
@@ -11873,7 +11877,7 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     let tc = null;
     { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js';
       s.onload = () => { tc = new THREE.TransformControls(camera, lop); tc.setTranslationSnap(SNAP); tc.setRotationSnap(15 * DEG); tc.setScaleSnap(0.1); tc.setSpace('world'); scene.add(tc); datKieu(kieu);
-        tc.addEventListener('objectChange', () => { const m = ds.find((q) => cung(q, chon)); if (m && m.d) for (const o of m.d) { o.position.set(pivot.position.x, 0.16, pivot.position.z); o.scale.set(m.r * pivot.scale.x, 1, m.r * pivot.scale.z); } });
+        tc.addEventListener('objectChange', () => { keoTheo(); const m = ds.find((q) => cung(q, chon)); if (m && m.d) for (const o of m.d) { o.position.set(pivot.position.x, 0.16, pivot.position.z); o.scale.set(m.r * pivot.scale.x, 1, m.r * pivot.scale.z); } });
         tc.addEventListener('mouseUp', () => apGizmo());
         if (chon) gan(); };
       document.head.appendChild(s); }
@@ -11883,13 +11887,43 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const m = ds.find((q) => cung(q, chon)); if (!m) { if (tc) tc.detach(); return; }
       pivot.position.set(ox + m.x, 0, oz + m.z); pivot.rotation.set(0, m.q || 0, 0); pivot.scale.set(1, 1, 1); pivot.updateMatrixWorld();
       if (tc) tc.attach(pivot);
+      keoGoc = { inv: pivot.matrixWorld.clone().invert(), objs: objsCua(m).map((o) => { o.updateMatrix(); return [o, o.matrix.clone()]; }) };
+    }
+    // ---- sửa tại chỗ (không tải lại): khu đang sửa không gộp lô (17-vong-lap) nên mỗi vật còn nhóm/lưới riêng đặt đúng chỗ vật;
+    // nhóm gốc của cảnh nằm đúng toạ độ vật (và không to bất thường) là hình của vật. Kéo gizmo: nhóm đó đi theo; thả: sửa vật cản, cửa vào.
+    let keoGoc = null, taiTrang = ls.get('pmdung.taiTrang') === '1', lanCuoi = null;
+    const objCache = new Map(), mTmp = new THREE.Matrix4(), mD = new THREE.Matrix4();
+    function objsCua(m) {
+      if (m.kind !== 'vat') return [];
+      const v = K.vat[m.i], key = v.id || 'i' + m.i; if (objCache.has(key)) return objCache.get(key);
+      const wx = ox + m.x, wz = oz + m.z, lim = 2 * m.r + 8, b = new THREE.Box3(), sz = new THREE.Vector3(), bo = new Set([G, pivot, tc, player.root, ...walkers.map((w) => w.root)]);
+      const ra = scene.children.filter((o) => !bo.has(o) && !o.isLight && Math.hypot(o.position.x - wx, o.position.z - wz) < 0.06 && (b.setFromObject(o), b.isEmpty() || (b.getSize(sz), Math.max(sz.x, sz.z) < lim && (b.getCenter(sz), Math.hypot(sz.x - wx, sz.z - wz) < m.r + 1.5))));   // khối đặt ở gốc mà hình nằm chỗ khác thì không phải của vật
+      objCache.set(key, ra); return ra;
+    }
+    function keoTheo() {
+      if (!keoGoc) return; pivot.updateMatrixWorld(); mD.multiplyMatrices(pivot.matrixWorld, keoGoc.inv);
+      for (const [o, M] of keoGoc.objs) { mTmp.multiplyMatrices(mD, M); mTmp.decompose(o.position, o.quaternion, o.scale); o.updateMatrix(); o.updateMatrixWorld(true); }
+    }
+    const khop = (a, b) => Math.abs(a.x - b.x) < 0.05 && Math.abs(a.z - b.z) < 0.05;
+    const khoiThe = (v) => vatBlock(v).filter((o) => o.r > 0).map((o) => ({ x: o.x + ox, z: o.z + oz, r: o.r }));
+    function apNhanh(cu, moi, objs) {   // vật cũ → mới (null: xoá); trả thời gian (ms)
+      const t0 = performance.now(), bc = khoiThe(cu), bm = moi ? khoiThe(moi) : [];
+      bc.forEach((c, k) => { const j = obstacles.findIndex((o) => khop(o, c) && Math.abs(o.r - c.r) < 0.05); if (j < 0) return; if (bm[k]) Object.assign(obstacles[j], bm[k]); else obstacles.splice(j, 1); });
+      const tc0 = cu.diaDanh && cu.diaDanh.toi, tc1 = moi && moi.diaDanh && moi.diaDanh.toi;
+      if (tc0) for (const e of [...(Z.entries || []), ...Object.values(Z.doors || {})]) if (khop(e, { x: tc0[0] + ox, z: tc0[1] + oz })) { if (tc1) { e.x = tc1[0] + ox; e.z = tc1[1] + oz; } }
+      if (!moi) for (const o of objs) o.visible = false;
+      luoiKhu = null;
+      lanCuoi = { ms: Math.round((performance.now() - t0) * 100) / 100, kieu: moi ? 'dời/xoay tại chỗ' : 'xoá tại chỗ', luc: Date.now() };
+      return lanCuoi.ms;
     }
 
     // ---- sửa dữ liệu, hoàn tác ----
     function lay(m) { return m.kind === 'vat' ? K.vat[m.i] : m.kind === 'cay' ? K.cay.lum[m.i] : m.kind === 'loi' ? K.loi[m.i] : K[m.kind][m.i]; }
-    function doi(fn, giuChon) {
+    function doi(fn, giuChon, nhanh) {   // nhanh(): sửa cảnh tại chỗ, trả true nếu được; không thì dựng lại bằng tải trang
       W.hoan.push(JSON.stringify(K)); if (W.hoan.length > 100) W.hoan.shift(); W.lam = [];
-      fn(); W.K = K; luuLam(); if (!giuChon) chon = null; capNhat(true);
+      fn(); W.K = K; luuLam(); if (!giuChon) chon = null;
+      if (nhanh && !taiTrang && nhanh()) { capNhat(false); if (window.parent !== window) bao('doi'); return; }
+      capNhat(true);
     }
     function datViTri(m, x, z) {   // x, z toạ độ khu
       x = R2(x); z = R2(z); const o = lay(m);
@@ -11919,8 +11953,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       const m = ds.find((q) => cung(q, chon)); if (!m) return;
       const x = pivot.position.x - ox, z = pivot.position.z - oz, moved = Math.hypot(x - m.x, z - m.z) > 1e-3, rot = Math.abs(pivot.rotation.y - (m.q || 0)) > 1e-3, sc = Math.abs(pivot.scale.x - 1) > 1e-3 || Math.abs(pivot.scale.z - 1) > 1e-3;
       if (!moved && !rot && !sc) return;
-      let khongCo = false;
-      doi(() => { if (moved) datViTri(m, x, z); if (rot) datGoc(m, pivot.rotation.y); if (sc && !datCo(m, pivot.scale.x, pivot.scale.z)) khongCo = true; }, true);
+      let khongCo = false; const cu = m.kind === 'vat' && JSON.parse(JSON.stringify(K.vat[m.i])), objs = keoGoc ? keoGoc.objs.map(([o]) => o) : [];
+      doi(() => { if (moved) datViTri(m, x, z); if (rot) datGoc(m, pivot.rotation.y); if (sc && !datCo(m, pivot.scale.x, pivot.scale.z)) khongCo = true; }, true,
+        m.kind === 'vat' && !sc ? () => { apNhanh(cu, K.vat[m.i], objs); return true; } : null);
       if (khongCo) note('Vật này không có trường cỡ (rong/sau/r): game không có tỉ lệ chung cho model, chỉ dời/xoay được');
     }
     function hoanTac() { if (!W.hoan.length) return; W.lam.push(JSON.stringify(K)); K = JSON.parse(W.hoan.pop()); W.K = K; luuLam(); chon = null; capNhat(true); }
@@ -11930,7 +11965,8 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
       if (m.kind === 'cong') { note('Cổng không xoá được ở đây (nối khu khác) — sửa trong Studio'); return; }
       if (m.kind === 'loi' && K.loi[m.i].diem.length <= 2) { note('Lối cần ít nhất 2 điểm'); return; }
       const v = lay(m); if (m.kind === 'vat' && (v.chinh || v.toi) && !confirm(`“${v.id}” là vật chính${v.toi ? ' (cửa vào ' + v.toi + ')' : ''}; code game có thể cần nó. Vẫn xoá?`)) return;
-      doi(() => { if (m.kind === 'vat') K.vat.splice(m.i, 1); else if (m.kind === 'cay') K.cay.lum.splice(m.i, 1); else if (m.kind === 'loi') K.loi[m.i].diem.splice(m.j, 1); else K[m.kind].splice(m.i, 1); });
+      const objs = objsCua(m), cu = JSON.parse(JSON.stringify(v));
+      doi(() => { if (m.kind === 'vat') K.vat.splice(m.i, 1); else if (m.kind === 'cay') K.cay.lum.splice(m.i, 1); else if (m.kind === 'loi') K.loi[m.i].diem.splice(m.j, 1); else K[m.kind].splice(m.i, 1); }, false, m.kind === 'vat' ? () => { apNhanh(cu, null, objs); return true; } : null);
     }
     const idMoi = (goc) => { const co = new Set(K.vat.map((v) => v.id)); let n = 2; while (co.has(goc + '-' + n)) n++; return goc + '-' + n; };
     function nhanBan() {
@@ -12092,7 +12128,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
           h('div', { class: 'hang' }, h('button', { 'data-kieu': 'translate', onclick: () => datKieu('translate'), title: 'G' }, '✥ Dời'), h('button', { 'data-kieu': 'rotate', onclick: () => datKieu('rotate'), title: 'R' }, '⟳ Xoay'), h('button', { 'data-kieu': 'scale', onclick: () => datKieu('scale'), title: 'T' }, '⤡ Cỡ'), h('span', { class: 'nho' }, 'bắt 0,5 m / 15°')),
           h('div', { class: 'hang' }, h('button', { onclick: hoanTac, title: 'Ctrl+Z' }, '↶'), h('button', { onclick: lamLai, title: 'Ctrl+Y' }, '↷'), h('button', { onclick: nhanBan, title: 'Ctrl+D' }, '⧉ Nhân bản'), h('button', { onclick: xoa, title: 'Delete' }, '✕ Xoá')),
           h('div', { class: 'hang' }, h('button', { onclick: dungLai, title: 'Tải lại trang với bản đang sửa: khu dựng bằng bộ dựng thật' }, '⟳ Dựng lại'),
-            h('label', {}, h('input', { type: 'checkbox', checked: tuDung, onchange: (e) => { tuDung = e.target.checked; ls.set('pmdung.tu', tuDung ? '1' : '0'); } }), ' Tự dựng lại sau mỗi thay đổi')),
+            h('label', {}, h('input', { type: 'checkbox', checked: tuDung, onchange: (e) => { tuDung = e.target.checked; ls.set('pmdung.tu', tuDung ? '1' : '0'); } }), ' Tự dựng lại sau mỗi thay đổi'),
+            h('label', { title: 'Dời/xoay/xoá vật sửa tại chỗ không tải lại; bật để mọi thay đổi đều tải lại trang' }, h('input', { type: 'checkbox', checked: taiTrang, onchange: (e) => { taiTrang = e.target.checked; ls.set('pmdung.taiTrang', taiTrang ? '1' : '0'); } }), ' Dựng lại bằng tải trang')),
+          lanCuoi ? h('p', { class: 'nho' }, `Lần sửa cuối: ${lanCuoi.kieu}, ${String(lanCuoi.ms).replace('.', ',')} ms (không tải lại)`) : null,
           h('h3', {}, m ? 'Đang chọn: ' + m.ten : 'Chưa chọn (bấm vào vật trong cảnh)'),
           m ? h('div', {}, ta, h('div', { class: 'hang' }, h('button', { onclick: () => apJSON(m, ta.value) }, 'Áp dụng'), h('button', { onclick: () => nhin(m.x, m.z) }, '◎ Nhìn tới')), canhBao[(K.vat[m.i] || {}).id] && m.kind === 'vat' ? h('p', { class: 'do' }, chuCb(canhBao[K.vat[m.i].id])) : null) : null,
           h('h3', {}, 'Thêm vật (đặt ở tâm camera)'), h('input', { type: 'search', placeholder: `Tìm trong ${loaiDs.length + aiDs.length} loại…`, value: timLoai, oninput: (e) => { timLoai = e.target.value; const l = bang.querySelector('.ds'); l.replaceChildren(...dsLoai()); } }),
@@ -12146,8 +12184,9 @@ const spotFree = (x, z, r) => inIsle(x, z, r + 0.3) && !inBalcony(x, z) && !onRo
     window.__dung = {
       khu, get K() { return K; }, get chon() { return chon; }, get canhBao() { return canhBao; }, get gocTep() { return gocTep; }, cam, muc, chonTai, nhin, hoanTac, lamLai, xoa, nhanBan, them, dungLai, xuatJSON, xuatThayDoi, kiemHet, batCam, nguon: D.nguon, loaiDs: () => [...loaiDs, ...aiDs],
       chonMuc(kind, i, j) { chon = { kind, i, j }; capNhat(false); return ds.find((q) => cung(q, chon)) || null; },
-      dat(x, z) { const m = ds.find((q) => cung(q, chon)); if (m) doi(() => datViTri(m, x, z), true); },
-      xoay(deg) { const m = ds.find((q) => cung(q, chon)); if (m) doi(() => datGoc(m, deg * DEG), true); },
+      dat(x, z) { const m = ds.find((q) => cung(q, chon)); if (!m) return; pivot.position.set(ox + x, 0, oz + z); keoTheo(); apGizmo(); },   // như kéo gizmo rồi thả
+      xoay(deg) { const m = ds.find((q) => cung(q, chon)); if (!m) return; pivot.rotation.y = deg * DEG; keoTheo(); apGizmo(); },
+      get lanCuoi() { return lanCuoi; }, hinh: () => { const m = ds.find((q) => cung(q, chon)); return m ? objsCua(m).map((o) => [o.position.x - ox, o.position.z - oz]) : []; }, taiTrang(on) { taiTrang = on; },
       tuDung(on) { tuDung = on; }, vatCan: () => obstacles,
     };
     return khung;
