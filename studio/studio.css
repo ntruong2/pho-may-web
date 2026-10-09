@@ -143,3 +143,11 @@ dialog { border: 1px solid var(--vien); border-radius: 12px; max-width: 560px; w
 #lo-ai .loat textarea { font: 12px/1.35 ui-monospace, monospace; }
 .bang-loat td { font-size: 12px; } .bang-loat .tt-xong td:nth-child(4) { color: var(--xanh); } .bang-loat .tt-loi td:nth-child(4) { color: var(--do); }
 #lo-ai .nhom > span.nho { font-weight: 400; }
+/* Chế độ dựng trong game (Q371): game thật bên cạnh bản đồ 2D */
+.khung-game { width: 100%; height: 100%; border: 0; display: block; background: #CFE8F5; }
+.game-ben .giua { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; }
+.game-ben .giua > .thanh { grid-column: 1 / 3; }
+.game-ben .khung-3d { height: auto; min-height: 0; resize: none; border-top: 0; border-left: 1px solid var(--vien); display: block; }
+.game-ben .khung-3d > .map-3d, .game-ben .khung-3d > .g3 { display: none; }
+.game-ben .nut-ben { background: var(--nhat-chinh); border-color: var(--chinh); }
+@media (max-width: 900px) { .game-ben .giua { grid-template-columns: 1fr; grid-template-rows: auto 1fr 1fr; } .game-ben .giua > .thanh { grid-column: 1; } .game-ben .khung-3d { border-left: 0; border-top: 1px solid var(--vien); } }
